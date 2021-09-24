@@ -1,6 +1,6 @@
 name: Generate PlantUML Diagrams
 on:
-  pull:
+  pull_request:
     paths:
       - '**.puml'
   push:
