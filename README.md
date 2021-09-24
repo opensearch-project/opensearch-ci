@@ -14,9 +14,7 @@ OpenSearch Continous Integration is an open source CI system for OpenSearch and 
 
 ### Architecture Overview
 
-![Architecture Diagram](.\img\opensearch-ci-overview.png)
-
-[Source](https://gist.github.com/peternied/55db1ce5277a61923519364dd6271ce5)
+![Plantuml diagram, see ./img/opensearch-ci-overview.uml for source](./charts/opensearch-ci-overview.svg)
 
 Built using [AWS Cloud Development Kit](https://aws.amazon.com/cdk/) the configuration of the CI systems will be available for replication in your own accounts.  The Jenkins instance will be hardened and publically visible, connected to GitHub to make build notifications easy for everyone to see.
 
