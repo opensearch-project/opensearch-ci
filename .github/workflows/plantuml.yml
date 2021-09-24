@@ -36,8 +36,8 @@ jobs:
         run: |
           echo ${{ steps.getfile.outputs.files }}
       - name: Generate PNG Diagrams
-        if: success()
         uses: cloudbees/plantuml-github-action@master
+        continue-on-error: true
         with:
             args: -v -tpng ${{ steps.getfile.outputs.files }}
       - name: Push Local Changes
