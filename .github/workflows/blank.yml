@@ -21,6 +21,8 @@ jobs:
 
       - name: Generate Plantuml
         uses: grassedge/generate-plantuml-action@v1.5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           # path to directory which generated svg is stored
           path: .
