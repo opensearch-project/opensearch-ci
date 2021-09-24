@@ -1,18 +1,50 @@
-name: Generate Plantuml
-
+name: Generate PlantUML Diagrams
 on:
+  pull:
+    paths:
+      - '**.puml'
   push:
-  pull_request:
-
+    paths:
+      - '**.puml'
 jobs:
-  generateplantuml:
+  ci:
     runs-on: ubuntu-latest
+    env:
+        UML_FILES: ".puml"
     steps:
-      - uses: actions/checkout@v2
-      - name: Generate Plantuml
-        uses: grassedge/generate-plantuml-action@v1.5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout Source 
+        uses: actions/checkout@v2
         with:
-          # Make *.svg files next to the *.puml files
-          path: .
+          fetch-depth: 0
+      - name: Get changed UML files
+        id: getfile
+        run: |
+          git diff-tree -r --no-commit-id --summary ${{ github.sha }} \
+          | awk -F' ' '{
+            # ensure we are not trying to process deleted files
+            # only process puml files
+            # do not try to process our theme or custom config
+            if ( $1 !~ /^delete$/ && $4 ~ /\.puml$/ && $4 !~ /(theme|config)\.puml$/ )
+            {
+              # only print the file name and strip newlines for spaces
+              printf "::set-output name=files::" "%s ", $4
+            }
+          }
+          END { print "" } # ensure we do print a newline at the end
+          '
+      - name: UML files considered echo output
+        run: |
+          echo ${{ steps.getfile.outputs.files }}
+      - name: Generate SVG Diagrams
+        uses: cloudbees/plantuml-github-action@master
+        with:
+            args: -v -tsvg ${{ steps.getfile.outputs.files }}
+      - name: Generate PNG Diagrams
+        uses: cloudbees/plantuml-github-action@master
+        with:
+            args: -v -tpng ${{ steps.getfile.outputs.files }}
+      - name: Push Local Changes
+        uses:  stefanzweifel/git-auto-commit-action@v4.1.2 
+        with: 
+          commit_message: "Generate SVG and PNG images for PlantUML diagrams" 
+          branch: ${{ github.head_ref }}
