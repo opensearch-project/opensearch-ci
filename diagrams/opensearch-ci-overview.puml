@@ -1,0 +1,28 @@
+@startuml
+skinparam backgroundColor lightgrey
+title
+OpenSearch CI Overview
+end title
+
+[GitHub]
+
+[Paging]
+
+cloud "Amazon Web Services" {
+   [Dashboards\nCloudwatch] as dash
+   [Alarms\nCloudwatch] as alarms
+   [Jenkins\non EC2] as j
+   [Artifacts\nCloudFront/S3] as artifacts
+}
+
+:Dev: -down-> GitHub: Create Issues/Pull Requests 
+:Dev: -down-> j: See jobs/results
+
+:Maintainer: -up-> dash: Monitoring
+
+alarms -> Paging: Detect issue
+Paging -left-> :Maintainer:: Alert for resolution
+
+j -> GitHub: Schedule/Pull\nRequest Builds
+j -> artifacts: Save builds/logs
+@enduml
