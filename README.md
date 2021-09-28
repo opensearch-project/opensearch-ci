@@ -15,18 +15,17 @@ OpenSearch Continous Integration is an open source CI system for OpenSearch and 
 ## Getting Started
 
 - Requires [NPM](https://docs.npmjs.com/cli/v7/configuring-npm/install) to be installed
-- [Install CDK](https://docs.aws.amazon.com/cdk/latest/guide/cli.html) using `npm install -g aws-cdk`
 - Install project dependencies using `npm install` from this project directory
 - Configure [aws credentials](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html#getting_started_prerequisites)
-- Deploy with `cdk deploy`
+- Deploy with `npm run cdk deploy`
 
 ### Useful commands
 
 - `npm run build`   compile typescript to js, run lint, run tests
 - `npm run watch`   watch for changes and compile
-- `cdk deploy`      deploy this stack to your default AWS account/region
-- `cdk diff`        compare deployed stack with current state
-- `cdk synth`       emits the synthesized CloudFormation template
+- `npm run cdk deploy`      deploy this stack to your default AWS account/region
+- `npm run cdk diff`        compare deployed stack with current state
+- `npm run cdk synth`       emits the synthesized CloudFormation template
 
 ### Architecture Overview
 
