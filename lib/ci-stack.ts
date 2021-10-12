@@ -6,21 +6,49 @@
  * compatible open source license.
  */
 
-import { Construct, Stack, StackProps } from '@aws-cdk/core';
+import { Vpc } from '@aws-cdk/aws-ec2';
+import { Secret } from '@aws-cdk/aws-secretsmanager';
+import {
+  Construct, Fn, Stack, StackProps,
+} from '@aws-cdk/core';
+import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { CIConfigStack } from './ci-config-stack';
+import { JenkinsMainNode } from './compute/jenkins-main-node';
+import { JenkinsMonitoring } from './monitoring/ci-alarms';
+import { JenkinsExternalLoadBalancer } from './network/ci-external-load-balancer';
+import { JenkinsSecurityGroups } from './security/ci-security-groups';
 
 export class CIStack extends Stack {
   // eslint-disable-next-line no-useless-constructor
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // Network / VPC
+    const vpc = new Vpc(this, 'JenkinsVPC');
 
-    // Security Groups
+    const securityGroups = new JenkinsSecurityGroups(this, vpc);
 
-    // Compute
+    const importedContentsSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE}`);
+    const importedCertSecretBucketValue = Fn.importValue(`${CIConfigStack.PRIVATE_KEY_SECRET_EXPORT_VALUE}`);
+    const importedArnSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_ARN_SECRET_EXPORT_VALUE}`);
+    const importedRedirectUrlSecretBucketValue = Fn.importValue(`${CIConfigStack.REDIRECT_URL_SECRET_EXPORT_VALUE}`);
+    const certificateArn = Secret.fromSecretCompleteArn(this, 'certificateArn', importedArnSecretBucketValue.toString());
+    const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
 
-    // Load Balancers
+    const mainJenkinsNode = new JenkinsMainNode(this, {
+      vpc,
+      sg: securityGroups.mainNodeSG,
+      sslCertContentsArn: importedContentsSecretBucketValue.toString(),
+      sslCertPrivateKeyContentsArn: importedCertSecretBucketValue.toString(),
+      redirectUrlArn: importedRedirectUrlSecretBucketValue.toString(),
+    });
 
-    // Monitoring
+    const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
+      vpc,
+      sg: securityGroups.externalAccessSG,
+      targetInstance: mainJenkinsNode.ec2Instance,
+      listenerCertificate,
+    });
+
+    const monitoring = new JenkinsMonitoring(this, externalLoadBalancer, mainJenkinsNode);
   }
 }
