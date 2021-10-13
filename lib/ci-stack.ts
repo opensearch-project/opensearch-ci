@@ -9,6 +9,7 @@
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import {
+  CfnParameter,
   Construct, Fn, Stack, StackProps,
 } from '@aws-cdk/core';
 import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -25,7 +26,13 @@ export class CIStack extends Stack {
 
     const vpc = new Vpc(this, 'JenkinsVPC');
 
-    const securityGroups = new JenkinsSecurityGroups(this, vpc);
+    const useSslParameter = new CfnParameter(this, 'useSsl', {
+      description: 'If the jenkins instance should be access via SSL',
+      allowedValues: ['true', 'false'],
+    });
+    const useSsl = useSslParameter.valueAsString === 'true';
+
+    const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl);
 
     const importedContentsSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE}`);
     const importedCertSecretBucketValue = Fn.importValue(`${CIConfigStack.PRIVATE_KEY_SECRET_EXPORT_VALUE}`);
@@ -40,6 +47,7 @@ export class CIStack extends Stack {
       sslCertContentsArn: importedContentsSecretBucketValue.toString(),
       sslCertPrivateKeyContentsArn: importedCertSecretBucketValue.toString(),
       redirectUrlArn: importedRedirectUrlSecretBucketValue.toString(),
+      useSsl,
     });
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
@@ -47,6 +55,7 @@ export class CIStack extends Stack {
       sg: securityGroups.externalAccessSG,
       targetInstance: mainJenkinsNode.ec2Instance,
       listenerCertificate,
+      useSsl,
     });
 
     const monitoring = new JenkinsMonitoring(this, externalLoadBalancer, mainJenkinsNode);

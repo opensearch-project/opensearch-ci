@@ -14,6 +14,7 @@ describe('JenkinsMainNode Config Elements', () => {
     redirectUrlArn: 'ARN:ABC',
     sslCertContentsArn: 'ARN:BCD',
     sslCertPrivateKeyContentsArn: 'ARN:CDE',
+    useSsl: true,
   });
 
   // THEN

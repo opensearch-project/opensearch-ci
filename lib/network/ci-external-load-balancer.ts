@@ -20,6 +20,7 @@ export interface JenkinsExternalLoadBalancerProps {
   readonly sg: SecurityGroup;
   readonly targetInstance: Instance;
   readonly listenerCertificate: ListenerCertificate;
+  readonly useSsl: boolean;
 }
 
 export class JenkinsExternalLoadBalancer {
@@ -37,20 +38,19 @@ export class JenkinsExternalLoadBalancer {
       internetFacing: true,
     });
 
+    const accessPort = props.useSsl ? 443 : 80;
+
     this.listener = this.loadBalancer.addListener('JenkinsListener', {
-      port: 443,
-      open: false,
-      certificates: [props.listenerCertificate],
+      port: accessPort,
+      open: true,
+      certificates: props.useSsl ? [props.listenerCertificate] : undefined,
     });
 
-    // Allow only CORP traffic to IAD, see https://apll.corp.amazon.com/?region=us-east-1
-    this.listener.connections.allowDefaultPortFrom(Peer.prefixList('pl-60b85b09'));
-
     this.targetGroup = this.listener.addTargets('MainJenkinsNodeTarget', {
-      port: 443,
-      targets: [new InstanceTarget(props.targetInstance, 443)],
+      port: accessPort,
+      targets: [new InstanceTarget(props.targetInstance, accessPort)],
       healthCheck: {
-        protocol: Protocol.HTTPS,
+        protocol: props.useSsl ? Protocol.HTTPS : Protocol.HTTP,
         path: '/login',
       },
     });

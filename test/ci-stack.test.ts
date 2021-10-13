@@ -26,7 +26,7 @@ test('CI Stack Basic Resources', () => {
   expect(stack).to(countResources('AWS::IAM::Role', 1));
 });
 
-test('External security group is locked down', () => {
+test('External security group is open', () => {
   const app = new App();
 
   // WHEN
@@ -43,13 +43,13 @@ test('External security group is locked down', () => {
   }));
 
   // Make sure that `open` is false on all the load balancers
-  expect(stack).to(not(haveResourceLike('AWS::EC2::SecurityGroup', {
+  expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
     SecurityGroupIngress: [
       {
         CidrIp: '0.0.0.0/0',
       },
     ],
-  })));
+  }));
 });
 
 test('MainNode', () => {

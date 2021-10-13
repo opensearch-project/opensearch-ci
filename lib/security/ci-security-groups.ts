@@ -16,7 +16,7 @@ export class JenkinsSecurityGroups {
 
   public readonly agentNodeSG: SecurityGroup;
 
-  constructor(stack: Stack, vpc: Vpc) {
+  constructor(stack: Stack, vpc: Vpc, useSsl: boolean) {
     this.externalAccessSG = new SecurityGroup(stack, 'ExternalAccessSG', {
       vpc,
       description: 'External access to Jenkins',
@@ -26,6 +26,7 @@ export class JenkinsSecurityGroups {
       vpc,
       description: 'Main node of Jenkins',
     });
-    this.mainNodeSG.addIngressRule(this.externalAccessSG, Port.tcp(443));
+    const accessPort = useSsl ? 443 : 80;
+    this.mainNodeSG.addIngressRule(this.externalAccessSG, Port.tcp(accessPort));
   }
 }

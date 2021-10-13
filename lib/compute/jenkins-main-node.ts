@@ -16,12 +16,11 @@ import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { JenkinsPlugins } from './jenkins-plugins';
 
-class HttpConfigProps {
+interface HttpConfigProps {
   readonly redirectUrlArn: string;
-
   readonly sslCertContentsArn: string;
-
   readonly sslCertPrivateKeyContentsArn: string;
+  readonly useSsl: boolean;
 }
 
 export interface JenkinsMainNodeProps extends HttpConfigProps{
@@ -112,6 +111,7 @@ export class JenkinsMainNode {
         stack.region,
         props,
       )),
+      initOptions: { ignoreFailures: true },
       blockDevices: [{
         deviceName: '/dev/xvda',
         volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),
@@ -160,36 +160,50 @@ export class JenkinsMainNode {
 
       // Configuration to proxy jenkins on :8080 -> :80
       InitFile.fromString('/etc/httpd/conf.d/jenkins.conf',
-        `<VirtualHost *:80>
-          ServerAdmin  webmaster@localhost
-          Redirect permanent / https://replace_url.com/
-      </VirtualHost>
-
-      <VirtualHost *:443>
-          SSLEngine on
-          SSLCertificateFile ${JenkinsMainNode.CERTIFICATE_FILE_PATH}
-          SSLCertificateKeyFile ${JenkinsMainNode.PRIVATE_KEY_PATH}
-          # SSLCertificateChainFile
-          ServerAdmin  webmaster@localhost
-          ProxyRequests     Off
-          ProxyPreserveHost On
-          AllowEncodedSlashes NoDecode
-          <Proxy *>
-              Order deny,allow
-              Allow from all
-          </Proxy>
-          ProxyPass         /  http://localhost:8080/ nocanon
-          ProxyPassReverse  /  http://localhost:8080/
-          ProxyPassReverse  /  https://replace_url.com/
-          RequestHeader set X-Forwarded-Proto "https"
-          RequestHeader set X-Forwarded-Port "443"
-      </VirtualHost>
-      <IfModule mod_headers.c>
-        Header unset Server
-      </IfModule>`),
+        httpConfigProps.useSsl
+          ? `<VirtualHost *:80>
+                ServerAdmin  webmaster@localhost
+                Redirect permanent / https://replace_url.com/
+            </VirtualHost>
+            <VirtualHost *:443>
+                SSLEngine on
+                SSLCertificateFile ${JenkinsMainNode.CERTIFICATE_FILE_PATH}
+                SSLCertificateKeyFile ${JenkinsMainNode.PRIVATE_KEY_PATH}
+                # SSLCertificateChainFile
+                ServerAdmin  webmaster@localhost
+                ProxyRequests     Off
+                ProxyPreserveHost On
+                AllowEncodedSlashes NoDecode
+                <Proxy *>
+                    Order deny,allow
+                    Allow from all
+                </Proxy>
+                ProxyPass         /  http://localhost:8080/ nocanon
+                ProxyPassReverse  /  http://localhost:8080/
+                ProxyPassReverse  /  https://replace_url.com/
+                RequestHeader set X-Forwarded-Proto "https"
+                RequestHeader set X-Forwarded-Port "443"
+            </VirtualHost>
+            <IfModule mod_headers.c>
+              Header unset Server
+            </IfModule>`
+          : `<VirtualHost *:80>
+            ServerAdmin  webmaster@127.0.0.1
+            ProxyRequests     Off
+            ProxyPreserveHost On
+            AllowEncodedSlashes NoDecode
+          
+            <Proxy http://127.0.0.1:8080/>
+                Order deny,allow
+                Allow from all
+            </Proxy>
+          
+            ProxyPass         /  http://127.0.0.1:8080/ nocanon
+            ProxyPassReverse  /  http://127.0.0.1:8080/
+        </VirtualHost>`),
 
       // eslint-disable-next-line max-len
-      InitCommand.shellCommand(`var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.redirectUrlArn} --query SecretString --output text\` && sed -i "s,https://replace_url.com/,$var," /etc/httpd/conf.d/jenkins.conf`),
+      InitCommand.shellCommand(httpConfigProps.useSsl ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.redirectUrlArn} --query SecretString --output text\` && sed -i "s,https://replace_url.com/,$var," /etc/httpd/conf.d/jenkins.conf` : 'echo Not altering the jenkins url'),
 
       InitCommand.shellCommand('sudo systemctl start httpd'),
 
