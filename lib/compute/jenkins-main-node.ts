@@ -111,7 +111,6 @@ export class JenkinsMainNode {
         stack.region,
         props,
       )),
-      initOptions: { ignoreFailures: true },
       blockDevices: [{
         deviceName: '/dev/xvda',
         volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),

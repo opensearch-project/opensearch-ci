@@ -20,7 +20,6 @@ import { JenkinsExternalLoadBalancer } from './network/ci-external-load-balancer
 import { JenkinsSecurityGroups } from './security/ci-security-groups';
 
 export class CIStack extends Stack {
-  // eslint-disable-next-line no-useless-constructor
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
