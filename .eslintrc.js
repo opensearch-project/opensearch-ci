@@ -20,6 +20,7 @@ module.exports = {
   ],
   rules: {
     hasTrailingComma: 'off',
+    indent: ['error', 2],
     'import/extensions': 'off',
     'import/no-unresolved': 'off',
     'import/no-extraneous-dependencies': 'off',

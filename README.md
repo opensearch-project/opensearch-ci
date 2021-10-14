@@ -1,6 +1,12 @@
 <img src="https://opensearch.org/assets/brand/SVG/Logo/opensearch_logo_default.svg" height="64px"/>
 
 - [OpenSearch Continous Integration](#opensearch-continous-integration)
+- [Getting Started](#getting-started)
+- [Deployment](#deployment)
+  - [Troubleshooting](#troubleshooting)
+    - [Main Node](#main-node)
+  - [Useful commands](#useful-commands)
+  - [Architecture Overview](#architecture-overview)
 - [Contributing](#contributing)
 - [Getting Help](#getting-help)
 - [Code of Conduct](#code-of-conduct)
@@ -17,7 +23,24 @@ OpenSearch Continous Integration is an open source CI system for OpenSearch and 
 - Requires [NPM](https://docs.npmjs.com/cli/v7/configuring-npm/install) to be installed
 - Install project dependencies using `npm install` from this project directory
 - Configure [aws credentials](https://docs.aws.amazon.com/cdk/latest/guide/getting_started.html#getting_started_prerequisites)
-- Deploy with `npm run cdk deploy`
+- Deploy stacks with `npm run cdk deploy`
+
+## Deployment
+1. Setup your local machine to credentials to deploy to the AWS Account
+2. Deploy the ci config stack, `npm run cdk deploy CI-Config-Dev`, takes ~1 minute to deploy
+3. [Optional] Configure the elements of the config stack for SSL configuration
+4. Deploy the ci stack, without ssl, `npm run cdk deploy CI-Dev -- --parameters useSsl=false`, takes ~10 minutes to deploy
+5. Log onto the AWS Console of the account, navigate to [cloud watch](https://console.aws.amazon.com/cloudwatch/home), open log groups, looking for `JenkinsMainNode/var/log/jenkins/jenkins.log`
+6. Search the logs for `Jenkins initial setup is required. An admin user has been created and a password generated.` After that entry the password for the jenkins instance will be in the cloudwatch logs.
+7. Go to the `CI-Dev.JenkinsExternalLoadBalancerDns` url returned by CDK output to access the jenkins host.
+
+### Troubleshooting
+#### Main Node
+Useful links
+- Log are found in [Cloud Watch Logs](https://console.aws.amazon.com/cloudwatch/home)
+- Need to access the host, ssh via Session Manager in [EC2 Console](https://console.aws.amazon.com/ec2/v2/home)
+- Instance instance isn't coming up, get the system log in [EC2 Console](https://console.aws.amazon.com/ec2/v2/home)
+
 
 ### Useful commands
 
