@@ -15,11 +15,14 @@ describe('JenkinsMainNode Config Elements', () => {
     sslCertContentsArn: 'ARN:BCD',
     sslCertPrivateKeyContentsArn: 'ARN:CDE',
     useSsl: true,
+  }, {
+    oidcCredArn: 'ARN:DEF',
+    devMode: false,
   });
 
   // THEN
   test('Config elements expected counts', async () => {
-    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(15);
+    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(19);
     expect(configElements.filter((e) => e.elementType === 'PACKAGE')).toHaveLength(14);
     expect(configElements.filter((e) => e.elementType === 'FILE')).toHaveLength(2);
   });
