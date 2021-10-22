@@ -9,7 +9,6 @@
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import {
-  CfnOutput,
   CfnParameter,
   Construct, Fn, Stack, StackProps,
 } from '@aws-cdk/core';
@@ -29,13 +28,11 @@ export class CIStack extends Stack {
     const useSslParameter = new CfnParameter(this, 'useSsl', {
       description: 'If the jenkins instance should be access via SSL',
       allowedValues: ['true', 'false'],
-      default: 'false',
     });
 
     const devModeParameter = new CfnParameter(this, 'devMode', {
       description: 'If the jenkins instance should be access in dev mode',
       allowedValues: ['true', 'false'],
-      default: 'true',
     });
 
     const useSsl = useSslParameter.valueAsString === 'true';
@@ -47,7 +44,7 @@ export class CIStack extends Stack {
     const importedCertSecretBucketValue = Fn.importValue(`${CIConfigStack.PRIVATE_KEY_SECRET_EXPORT_VALUE}`);
     const importedArnSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_ARN_SECRET_EXPORT_VALUE}`);
     const importedRedirectUrlSecretBucketValue = Fn.importValue(`${CIConfigStack.REDIRECT_URL_SECRET_EXPORT_VALUE}`);
-    const importedOidcClientIdSecretBucketValue = Fn.importValue(`${CIConfigStack.REDIRECT_OIDC_CLIENT_ID_SECRET_EXPORT_VALUE}`);
+    const importedOidcClientIdSecretBucketValue = Fn.importValue(`${CIConfigStack.OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE}`);
     const certificateArn = Secret.fromSecretCompleteArn(this, 'certificateArn', importedArnSecretBucketValue.toString());
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
 

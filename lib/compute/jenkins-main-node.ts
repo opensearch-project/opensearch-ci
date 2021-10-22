@@ -6,7 +6,7 @@
  * compatible open source license.
  */
 
-import { Stack } from '@aws-cdk/core';
+import { RemovalPolicy, Stack } from '@aws-cdk/core';
 import {
   AmazonLinuxGeneration, BlockDeviceVolume, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage, Instance,
   InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc,
@@ -106,6 +106,7 @@ export class JenkinsMainNode {
       machineImage: MachineImage.latestAmazonLinux({
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
       }),
+      // initOptions: { ignoreFailures: true },
       vpc: props.vpc,
       vpcSubnets: {
         subnetType: SubnetType.PRIVATE_WITH_NAT,
@@ -122,6 +123,8 @@ export class JenkinsMainNode {
         volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),
       }],
     });
+
+    this.ec2Instance.applyRemovalPolicy(RemovalPolicy.RETAIN);
 
     this.ec2Instance.role.addManagedPolicy(ec2SsmManagementPolicy);
     this.ec2Instance.role.addManagedPolicy(cloudwatchEventPublishingPolicy);
@@ -150,7 +153,7 @@ export class JenkinsMainNode {
       //  The yum install must be triggered via shell command to ensure the order of execution
       InitCommand.shellCommand('yum install -y jenkins-2.263.4'),
 
-      InitCommand.shellCommand('yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && yum -y install xmlstarlet'),
+      // InitCommand.shellCommand('yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && yum -y install xmlstarlet'),
 
       // Jenkins needs to be accessible for httpd proxy
       InitCommand.shellCommand('sed -i \'s@JENKINS_LISTEN_ADDRESS=""@JENKINS_LISTEN_ADDRESS="127.0.0.1"@g\' /etc/sysconfig/jenkins'),
@@ -166,7 +169,6 @@ export class JenkinsMainNode {
       InitPackage.yum('httpd'),
 
       // Configuration to proxy jenkins on :8080 -> :80
-      // Configuration changes depending on useSsl flag
       InitFile.fromString('/etc/httpd/conf.d/jenkins.conf',
         httpConfigProps.useSsl
           ? `<VirtualHost *:80>
@@ -214,7 +216,7 @@ export class JenkinsMainNode {
       // eslint-disable-next-line max-len
       InitCommand.shellCommand(httpConfigProps.useSsl ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.redirectUrlArn} --query SecretString --output text\` && sed -i "s,https://replace_url.com/,$var," /etc/httpd/conf.d/jenkins.conf` : 'echo Not altering the jenkins url'),
 
-      InitCommand.shellCommand('sudo systemctl start httpd'),
+      InitCommand.shellCommand('systemctl start httpd'),
 
       InitPackage.yum('amazon-cloudwatch-agent'),
 
@@ -282,7 +284,7 @@ export class JenkinsMainNode {
 
       // start jenkins service to generate all the default files and folders of jenkins
       // Does not use InitService.enable() because it initialises the service after the instance is launched
-      InitCommand.shellCommand('sudo systemctl start jenkins'),
+      InitCommand.shellCommand('systemctl start jenkins'),
 
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 60 seconds to wait for jenkins to start
@@ -303,35 +305,35 @@ export class JenkinsMainNode {
 
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 60 seconds to wait for plugins to install and jenkins to start which is required for the next step
-      InitCommand.shellCommand('sleep 60'),
+      // InitCommand.shellCommand('sleep 60'),
 
       // If devMode is false, first line extracts the oidcFederateProps as json from the secret manager
       // xmlstarlet is used to setup the securityRealm values for oidc
-      InitCommand.shellCommand(oidcFederateProps.devMode ? 'echo Not altering the jenkins config.xml in dev-mode'
-        // eslint-disable-next-line max-len
-        : `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` &&`
-        + 'xmlstarlet ed -L -d "/hudson/securityRealm" \\'
-        + '-s /hudson -t elem -n securityRealm -v " " \\'
-        + '-i //securityRealm -t attr -n "class" -v "org.jenkinsci.plugins.oic.OicSecurityRealm" \\'
-        + '-i //securityRealm -t attr -n "plugin" -v "oic-auth@1.8" \\'
-        + '-s /hudson/securityRealm -t elem -n clientId -v "$(echo $var | jq -r ".clientId")" \\'
-        + '-s /hudson/securityRealm -t elem -n clientSecret -v "$(echo $var | jq -r ".clientSecret")" \\'
-        + '-s /hudson/securityRealm -t elem -n wellKnownOpenIDConfigurationUrl -v "$(echo $var | jq -r ".wellKnownOpenIDConfigurationUrl")" \\'
-        + '-s /hudson/securityRealm -t elem -n tokenServerUrl -v "$(echo $var | jq -r ".tokenServerUrl")" \\'
-        + '-s /hudson/securityRealm -t elem -n authorizationServerUrl -v "$(echo $var | jq -r ".authorizationServerUrl")" \\'
-        + '-s /hudson/securityRealm -t elem -n userInfoServerUrl -v "$(echo $var | jq -r ".userInfoServerUrl")" \\'
-        + '-s /hudson/securityRealm -t elem -n userNameField -v "sub" \\'
-        + '-s /hudson/securityRealm -t elem -n scopes -v "openid" \\'
-        + '-s /hudson/securityRealm -t elem -n disableSslVerification -v false \\'
-        + '-s /hudson/securityRealm -t elem -n logoutFromOpenidProvider -v "true" \\'
-        + '-s /hudson/securityRealm -t elem -n postLogoutRedirectUrl -v "" \\'
-        + '-s /hudson/securityRealm -t elem -n escapeHatchEnabled -v "false" \\'
-        + '-s /hudson/securityRealm -t elem -n escapeHatchSecret -v "dsafsdfasfasdf" \\'
-        + '/var/lib/jenkins/config.xml'),
+      // InitCommand.shellCommand(oidcFederateProps.devMode ? 'echo Not altering the jenkins config.xml in dev-mode'
+      //   // eslint-disable-next-line max-len
+      //   : `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` &&`
+      //   + 'xmlstarlet ed -L -d "/hudson/securityRealm" \\'
+      //   + '-s /hudson -t elem -n securityRealm -v " " \\'
+      //   + '-i //securityRealm -t attr -n "class" -v "org.jenkinsci.plugins.oic.OicSecurityRealm" \\'
+      //   + '-i //securityRealm -t attr -n "plugin" -v "oic-auth@1.8" \\'
+      //   + '-s /hudson/securityRealm -t elem -n clientId -v "$(echo $var | jq -r ".clientId")" \\'
+      //   + '-s /hudson/securityRealm -t elem -n clientSecret -v "$(echo $var | jq -r ".clientSecret")" \\'
+      //   + '-s /hudson/securityRealm -t elem -n wellKnownOpenIDConfigurationUrl -v "$(echo $var | jq -r ".wellKnownOpenIDConfigurationUrl")" \\'
+      //   + '-s /hudson/securityRealm -t elem -n tokenServerUrl -v "$(echo $var | jq -r ".tokenServerUrl")" \\'
+      //   + '-s /hudson/securityRealm -t elem -n authorizationServerUrl -v "$(echo $var | jq -r ".authorizationServerUrl")" \\'
+      //   + '-s /hudson/securityRealm -t elem -n userInfoServerUrl -v "$(echo $var | jq -r ".userInfoServerUrl")" \\'
+      //   + '-s /hudson/securityRealm -t elem -n userNameField -v "sub" \\'
+      //   + '-s /hudson/securityRealm -t elem -n scopes -v "openid" \\'
+      //   + '-s /hudson/securityRealm -t elem -n disableSslVerification -v false \\'
+      //   + '-s /hudson/securityRealm -t elem -n logoutFromOpenidProvider -v "true" \\'
+      //   + '-s /hudson/securityRealm -t elem -n postLogoutRedirectUrl -v "" \\'
+      //   + '-s /hudson/securityRealm -t elem -n escapeHatchEnabled -v "false" \\'
+      //   + '-s /hudson/securityRealm -t elem -n escapeHatchSecret -v "dsafsdfasfasdf" \\'
+      //   + '/var/lib/jenkins/config.xml'),
 
       // reloading jenkins config file
-      InitCommand.shellCommand(oidcFederateProps.devMode ? 'echo not reloading jenkins config in dev-mode'
-        : 'java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault reload-configuration'),
+      // InitCommand.shellCommand(oidcFederateProps.devMode ? 'echo not reloading jenkins config in dev-mode'
+      //   : 'java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault reload-configuration'),
     ];
   }
 }

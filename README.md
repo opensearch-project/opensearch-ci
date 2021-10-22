@@ -27,11 +27,11 @@ OpenSearch Continous Integration is an open source CI system for OpenSearch and 
 
 ## Deployment
 
-### dev deployment 
+### Dev Deployment 
 1. Setup your local machine to credentials to deploy to the AWS Account
 2. Deploy the ci-config-stack, `npm run cdk deploy CI-Config-Dev`, takes ~1 minute to deploy
 3. [Optional](#ssl-configuration) Configure the elements of the config stack for SSL configuration `npm run cdk deploy CI-Dev -- --parameters useSsl=true`
-4. [Optional](#setup-oidc-via-federate) Configure the elements setting up oidc via federate `npm run cdk deploy CI-Dev -- --parameters devmode=false`
+4. [Optional](#setup-openid-connect-oidc-via-federate) Configure the elements setting up oidc via federate `npm run cdk deploy CI-Dev -- --parameters devMode=false`
 5. Deploy the ci-stack, without ssl, takes ~10 minutes to deploy
 6. Log onto the AWS Console of the account, navigate to [cloud watch](https://console.aws.amazon.com/cloudwatch/home), open log groups, looking for `JenkinsMainNode/var/log/jenkins/jenkins.log`
 7. Search the logs for `Jenkins initial setup is required. An admin user has been created and a password generated.` After that entry the password for the jenkins instance will be in the cloudwatch logs.
@@ -47,7 +47,7 @@ OpenSearch Continous Integration is an open source CI system for OpenSearch and 
 6. Run with paramenter `npm run cdk deploy CI-Dev -- --parameters useSsl=true`
 7. Continue with [next steps](#dev-deployment)
 
-#### setup OIDC via Federate
+#### setup OpenId Connect (OIDC) via Federate
 1. Locate the secret manager arns in the ci-config-stack outputs
 2. Update the secret value for the `OIDCClientIdSecret` with the credentials as json as follows:
 ```

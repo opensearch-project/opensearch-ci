@@ -21,7 +21,7 @@ export class CIConfigStack extends Stack {
 
     static readonly REDIRECT_URL_SECRET_EXPORT_VALUE: string = 'redirectUrlSecret';
 
-    static readonly REDIRECT_OIDC_CLIENT_ID_SECRET_EXPORT_VALUE: string = 'OIDCClientIdSecret';
+    static readonly OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE: string = 'OIDCConfigValueSecret';
 
     constructor(scope: Construct, id: string, props?: StackProps) {
       super(scope, id, props);
@@ -54,7 +54,7 @@ export class CIConfigStack extends Stack {
 
       new CfnOutput(this, 'OIDCClientIdSecret', {
         value: OIDCClientId.secretArn,
-        exportName: CIConfigStack.REDIRECT_OIDC_CLIENT_ID_SECRET_EXPORT_VALUE,
+        exportName: CIConfigStack.OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE,
       });
     }
 }
