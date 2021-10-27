@@ -30,7 +30,7 @@ export class CIConfigStack extends Stack {
       const certContentsSecret = new Secret(this, 'certContents', {});
       const privateKeySecret = new Secret(this, 'privateKey', {});
       const redirectUrlSecret = new Secret(this, 'redirectUrl', {});
-      const OIDCClientId = new Secret(this, 'OIDCClientId', {});
+      const OIDCConfigValuesSecret = new Secret(this, 'OIDCConfigValues', {});
 
       new CfnOutput(this, 'certificateArnSecret', {
         value: arnSecret.secretArn,
@@ -52,8 +52,8 @@ export class CIConfigStack extends Stack {
         exportName: CIConfigStack.REDIRECT_URL_SECRET_EXPORT_VALUE,
       });
 
-      new CfnOutput(this, 'OIDCClientIdSecret', {
-        value: OIDCClientId.secretArn,
+      new CfnOutput(this, 'OIDCConfigValuesSecret', {
+        value: OIDCConfigValuesSecret.secretArn,
         exportName: CIConfigStack.OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE,
       });
     }

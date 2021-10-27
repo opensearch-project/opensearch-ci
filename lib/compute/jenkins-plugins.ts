@@ -151,6 +151,6 @@ export class JenkinsPlugins {
       'project-description-setter',
       'description-setter',
       'nodelabelparameter',
-      // 'oic-auth',
+      'oic-auth',
     ];
 }

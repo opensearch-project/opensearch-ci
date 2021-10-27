@@ -31,7 +31,7 @@ export class CIStack extends Stack {
     });
 
     const devModeParameter = new CfnParameter(this, 'devMode', {
-      description: 'If the jenkins instance should be access in dev mode',
+      description: 'If the jenkins instance should use OIDC + federate',
       allowedValues: ['true', 'false'],
     });
 
@@ -44,7 +44,7 @@ export class CIStack extends Stack {
     const importedCertSecretBucketValue = Fn.importValue(`${CIConfigStack.PRIVATE_KEY_SECRET_EXPORT_VALUE}`);
     const importedArnSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_ARN_SECRET_EXPORT_VALUE}`);
     const importedRedirectUrlSecretBucketValue = Fn.importValue(`${CIConfigStack.REDIRECT_URL_SECRET_EXPORT_VALUE}`);
-    const importedOidcClientIdSecretBucketValue = Fn.importValue(`${CIConfigStack.OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE}`);
+    const importedOidcConfigValuesSecretBucketValue = Fn.importValue(`${CIConfigStack.OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE}`);
     const certificateArn = Secret.fromSecretCompleteArn(this, 'certificateArn', importedArnSecretBucketValue.toString());
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
 
@@ -54,7 +54,7 @@ export class CIStack extends Stack {
       sslCertContentsArn: importedContentsSecretBucketValue.toString(),
       sslCertPrivateKeyContentsArn: importedCertSecretBucketValue.toString(),
       redirectUrlArn: importedRedirectUrlSecretBucketValue.toString(),
-      oidcCredArn: importedOidcClientIdSecretBucketValue.toString(),
+      oidcCredArn: importedOidcConfigValuesSecretBucketValue.toString(),
       useSsl,
       devMode,
     });
