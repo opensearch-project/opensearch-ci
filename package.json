@@ -11,7 +11,7 @@
     "cdk": "cdk"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^1.123.0",
+    "@aws-cdk/assert": "^1.127.0",
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
     "aws-cdk": "^1.123.0",
@@ -26,7 +26,7 @@
     "@aws-cdk/aws-elasticloadbalancingv2-targets": "^1.127.0",
     "@aws-cdk/aws-iam": "^1.127.0",
     "@aws-cdk/aws-secretsmanager": "^1.127.0",
-    "@aws-cdk/core": "^1.123.0",
+    "@aws-cdk/core": "^1.127.0",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
     "eslint": "^7.32.0",

@@ -90,6 +90,8 @@ export class JenkinsMainNode {
             'ec2:DescribeSubnets',
             'iam:ListInstanceProfilesForRole',
             'iam:PassRole',
+            'logs:CreateLogDelivery',
+            'logs:DeleteLogDelivery',
           ],
           resources: ['*'],
         })],

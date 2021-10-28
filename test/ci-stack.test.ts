@@ -24,6 +24,7 @@ test('CI Stack Basic Resources', () => {
   expect(stack).to(countResources('AWS::EC2::SecurityGroup', 2));
   expect(stack).to(countResources('AWS::IAM::Policy', 1));
   expect(stack).to(countResources('AWS::IAM::Role', 1));
+  expect(stack).to(countResources('AWS::S3::Bucket', 1));
 });
 
 test('External security group is open', () => {
