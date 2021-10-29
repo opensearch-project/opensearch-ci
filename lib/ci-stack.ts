@@ -6,11 +6,10 @@
  * compatible open source license.
  */
 
-import { Vpc } from '@aws-cdk/aws-ec2';
+import { FlowLogDestination, FlowLogTrafficType, Vpc } from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import {
-  CfnParameter,
-  Construct, Fn, Stack, StackProps,
+  CfnParameter, Construct, Fn, Stack, StackProps,
 } from '@aws-cdk/core';
 import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { CIConfigStack } from './ci-config-stack';
@@ -18,16 +17,26 @@ import { JenkinsMainNode } from './compute/jenkins-main-node';
 import { JenkinsMonitoring } from './monitoring/ci-alarms';
 import { JenkinsExternalLoadBalancer } from './network/ci-external-load-balancer';
 import { JenkinsSecurityGroups } from './security/ci-security-groups';
+import { CiAuditLogging } from './auditing/ci-audit-logging';
 
 export class CIStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new Vpc(this, 'JenkinsVPC');
+    const auditloggingS3Bucket = new CiAuditLogging(this);
+    const vpc = new Vpc(this, 'JenkinsVPC', {
+      flowLogs: {
+        's3': {
+          destination: FlowLogDestination.toS3(auditloggingS3Bucket.bucket, 'vpcFlowLogs'),
+          trafficType: FlowLogTrafficType.ALL,
+        },
+      },
+    });
 
     const useSslParameter = new CfnParameter(this, 'useSsl', {
       description: 'If the jenkins instance should be access via SSL',
       allowedValues: ['true', 'false'],
+
     });
 
     const devModeParameter = new CfnParameter(this, 'devMode', {
