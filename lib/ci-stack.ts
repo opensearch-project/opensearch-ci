@@ -26,7 +26,7 @@ export class CIStack extends Stack {
     const auditloggingS3Bucket = new CiAuditLogging(this);
     const vpc = new Vpc(this, 'JenkinsVPC', {
       flowLogs: {
-        's3': {
+        s3: {
           destination: FlowLogDestination.toS3(auditloggingS3Bucket.bucket, 'vpcFlowLogs'),
           trafficType: FlowLogTrafficType.ALL,
         },
@@ -39,13 +39,13 @@ export class CIStack extends Stack {
 
     });
 
-    const devModeParameter = new CfnParameter(this, 'devMode', {
+    const runWithOidcParameter = new CfnParameter(this, 'runWithOidc', {
       description: 'If the jenkins instance should use OIDC + federate',
       allowedValues: ['true', 'false'],
     });
 
     const useSsl = useSslParameter.valueAsString === 'true';
-    const devMode = devModeParameter.value.toString() === 'true';
+    const runWithOidc = runWithOidcParameter.valueAsString === 'true';
 
     const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl);
 
@@ -67,7 +67,7 @@ export class CIStack extends Stack {
       redirectUrlArn: importedRedirectUrlSecretBucketValue.toString(),
       oidcCredArn: importedOidcConfigValuesSecretBucketValue.toString(),
       useSsl,
-      devMode,
+      runWithOidc,
     });
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {

@@ -18,7 +18,7 @@ describe('JenkinsMainNode Config Elements', () => {
     useSsl: true,
   }, {
     oidcCredArn: 'ARN:DEF',
-    devMode: false,
+    runWithOidc: false,
   });
 
   // THEN
