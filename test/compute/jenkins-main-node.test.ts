@@ -32,3 +32,23 @@ describe('JenkinsMainNode Config Elements', () => {
     expect(configElements.filter((e) => e.elementType === 'SERVICE')).toHaveLength(0);
   });
 });
+
+test('Verify config.xml fields for jenkins OIDC', async () => {
+  expect(JenkinsMainNode.oidcConfigFields()).toBeInstanceOf(Array);
+
+  const oidcConfigFields : string[][] = [['clientId', 'replace'],
+    ['clientSecret', 'replace'],
+    ['wellKnownOpenIDConfigurationUrl', 'replace'],
+    ['tokenServerUrl', 'replace'],
+    ['authorizationServerUrl', 'replace'],
+    ['userInfoServerUrl', 'replace'],
+    ['userNameField', 'sub'],
+    ['scopes', 'openid'],
+    ['disableSslVerification', 'false'],
+    ['logoutFromOpenidProvider', 'true'],
+    ['postLogoutRedirectUrl', ''],
+    ['escapeHatchEnabled', 'false'],
+    ['escapeHatchSecret', 'random']];
+
+  expect(JSON.stringify(JenkinsMainNode.oidcConfigFields()) === JSON.stringify(oidcConfigFields)).toBeTruthy();
+});

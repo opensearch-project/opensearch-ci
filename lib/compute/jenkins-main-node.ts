@@ -138,20 +138,6 @@ export class JenkinsMainNode {
   }
 
   public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps, oidcFederateProps: OidcFederateProps): InitElement[] {
-    const jenkinsOidcConfigFields:string[][] = [['clientId', 'replace'],
-      ['clientSecret', 'replace'],
-      ['wellKnownOpenIDConfigurationUrl', 'replace'],
-      ['tokenServerUrl', 'replace'],
-      ['authorizationServerUrl', 'replace'],
-      ['userInfoServerUrl', 'replace'],
-      ['userNameField', 'sub'],
-      ['scopes', 'openid'],
-      ['disableSslVerification', 'false'],
-      ['logoutFromOpenidProvider', 'true'],
-      ['postLogoutRedirectUrl', ''],
-      ['escapeHatchEnabled', 'false'],
-      ['escapeHatchSecret', 'random']];
-
     return [
       InitPackage.yum('curl'),
       InitPackage.yum('wget'),
@@ -353,7 +339,7 @@ export class JenkinsMainNode {
         + '-i //securityRealm -t attr -n "class" -v "org.jenkinsci.plugins.oic.OicSecurityRealm" '
         + '-i //securityRealm -t attr -n "plugin" -v "oic-auth@1.8" '
         // eslint-disable-next-line max-len
-        + `${jenkinsOidcConfigFields.map((e) => ` -s /hudson/securityRealm -t elem -n ${e[0]} -v ${e[1] === 'replace' ? `"$(echo $var | jq -r ".${e[0]}")"` : `"${e[1]}"`}`).join(' ')}`
+        + `${this.oidcConfigFields().map((e) => ` -s /hudson/securityRealm -t elem -n ${e[0]} -v ${e[1] === 'replace' ? `"$(echo $var | jq -r ".${e[0]}")"` : `"${e[1]}"`}`).join(' ')}`
         + ' /var/lib/jenkins/config.xml'
         : 'echo Not altering the jenkins config.xml when not running with OIDC'),
 
@@ -362,5 +348,21 @@ export class JenkinsMainNode {
         ? 'java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault reload-configuration'
         : 'echo not reloading jenkins config when not running with OIDC'),
     ];
+  }
+
+  public static oidcConfigFields() : string[][] {
+    return [['clientId', 'replace'],
+      ['clientSecret', 'replace'],
+      ['wellKnownOpenIDConfigurationUrl', 'replace'],
+      ['tokenServerUrl', 'replace'],
+      ['authorizationServerUrl', 'replace'],
+      ['userInfoServerUrl', 'replace'],
+      ['userNameField', 'sub'],
+      ['scopes', 'openid'],
+      ['disableSslVerification', 'false'],
+      ['logoutFromOpenidProvider', 'true'],
+      ['postLogoutRedirectUrl', ''],
+      ['escapeHatchEnabled', 'false'],
+      ['escapeHatchSecret', 'random']];
   }
 }
