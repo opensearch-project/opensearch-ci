@@ -76,7 +76,7 @@ $aws secretsmanager put-secret-value \
         "userInfoServerUrl": "https://example.com/userinfo"
     }
     ```
-   2. command example [see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)
+   2. Command Eg: [see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)
    ```
     $aws secretsmanager put-secret-value \
     --secret-id MyTestDatabaseSecret_or_ARN \
