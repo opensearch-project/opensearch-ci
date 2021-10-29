@@ -18,9 +18,9 @@
 - [License](#license)
 - [Copyright](#copyright)
 
-## OpenSearch Continous Integration
+## OpenSearch Continuous Integration
 
-OpenSearch Continous Integration is an open source CI system for OpenSearch and its plugins.
+OpenSearch Continuous Integration is an open source CI system for OpenSearch and its plugins.
 
 ## Getting Started
 
