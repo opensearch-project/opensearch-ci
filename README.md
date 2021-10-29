@@ -35,10 +35,12 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
 1. Setup your local machine to credentials to deploy to the AWS Account
 2. Deploy the ci-config-stackusing the with one of the following (takes ~1 minute to deploy) - 
    1. `npm run cdk deploy CI-Config-Dev` or,
-   2.  `cdk deploy CI-Config-Dev`
-3. [Optional](#ssl-configuration) Configure the elements of the config stack for SSL configuration `npm run cdk deploy CI-Dev -- --parameters useSsl=true`
-4. [Optional](#setup-openid-connect-oidc-via-federate) Configure the elements setting up oidc via federate `npm run cdk deploy CI-Dev -- --parameters runWithOidc=false`
-5. Deploy the ci-stack, takes ~10 minutes to deploy
+   2. `cdk deploy CI-Config-Dev`
+3. [Optional](#ssl-configuration) Configure the elements of the config stack for SSL configuration
+4. [Optional](#setup-openid-connect-oidc-via-federate) Configure the elements setting up oidc via federate
+5. Deploy the ci-stack, takes ~10 minutes to deploy (parameter values depend on step 3 and step 4)
+   1. `npm run cdk deploy CI-Dev -- --parameters useSsl=false --parameters runWithOidc=false` or,
+   2. `cdk deploy CI-Dev --parameters useSsl=false --parameters runWithOidc=false`
 6. Log onto the AWS Console of the account, navigate to [cloud watch](https://console.aws.amazon.com/cloudwatch/home), open log groups, looking for `JenkinsMainNode/var/log/jenkins/jenkins.log`
 7. Search the logs for `Jenkins initial setup is required. An admin user has been created and a password generated.` After that entry the password for the jenkins instance will be in the cloudwatch logs.
 8. Go to the `CI-Dev.JenkinsExternalLoadBalancerDns` url returned by CDK output to access the jenkins host.
