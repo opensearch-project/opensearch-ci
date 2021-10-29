@@ -17,6 +17,8 @@ export class CIConfigStack extends Stack {
 
     static readonly CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE: string = 'certContentsSecret';
 
+    static readonly CERTIFICATE_CHAIN_SECRET_EXPORT_VALUE: string = 'certChainSecret';
+
     static readonly PRIVATE_KEY_SECRET_EXPORT_VALUE: string = 'privateKeySecret';
 
     static readonly REDIRECT_URL_SECRET_EXPORT_VALUE: string = 'redirectUrlSecret';
@@ -28,6 +30,7 @@ export class CIConfigStack extends Stack {
 
       const arnSecret = new Secret(this, 'certificateArn', {});
       const certContentsSecret = new Secret(this, 'certContents', {});
+      const certChainSecret = new Secret(this, 'certChain', {});
       const privateKeySecret = new Secret(this, 'privateKey', {});
       const redirectUrlSecret = new Secret(this, 'redirectUrl', {});
       const OIDCConfigValuesSecret = new Secret(this, 'OIDCConfigValues', {});
@@ -40,6 +43,11 @@ export class CIConfigStack extends Stack {
       new CfnOutput(this, 'certContentsSecret', {
         value: certContentsSecret.secretArn,
         exportName: CIConfigStack.CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE,
+      });
+
+      new CfnOutput(this, 'certChainSecret', {
+        value: certChainSecret.secretArn,
+        exportName: CIConfigStack.CERTIFICATE_CHAIN_SECRET_EXPORT_VALUE,
       });
 
       new CfnOutput(this, 'privateKeySecret', {

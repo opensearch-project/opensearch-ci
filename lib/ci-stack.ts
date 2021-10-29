@@ -36,11 +36,12 @@ export class CIStack extends Stack {
     });
 
     const useSsl = useSslParameter.valueAsString === 'true';
-    const devMode = devModeParameter.valueAsString === 'true';
+    const devMode = devModeParameter.value.toString() === 'true';
 
     const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl);
 
     const importedContentsSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE}`);
+    const importedContentsChainBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CHAIN_SECRET_EXPORT_VALUE}`);
     const importedCertSecretBucketValue = Fn.importValue(`${CIConfigStack.PRIVATE_KEY_SECRET_EXPORT_VALUE}`);
     const importedArnSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_ARN_SECRET_EXPORT_VALUE}`);
     const importedRedirectUrlSecretBucketValue = Fn.importValue(`${CIConfigStack.REDIRECT_URL_SECRET_EXPORT_VALUE}`);
@@ -52,6 +53,7 @@ export class CIStack extends Stack {
       vpc,
       sg: securityGroups.mainNodeSG,
       sslCertContentsArn: importedContentsSecretBucketValue.toString(),
+      sslCertChainArn: importedContentsChainBucketValue.toString(),
       sslCertPrivateKeyContentsArn: importedCertSecretBucketValue.toString(),
       redirectUrlArn: importedRedirectUrlSecretBucketValue.toString(),
       oidcCredArn: importedOidcConfigValuesSecretBucketValue.toString(),

@@ -19,6 +19,7 @@ import { JenkinsPlugins } from './jenkins-plugins';
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
   readonly sslCertContentsArn: string;
+  readonly sslCertChainArn: string;
   readonly sslCertPrivateKeyContentsArn: string;
   readonly useSsl: boolean;
 }
@@ -35,6 +36,8 @@ export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps
 
 export class JenkinsMainNode {
   static readonly CERTIFICATE_FILE_PATH: String = '/etc/ssl/certs/test-jenkins.opensearch.org.crt';
+
+  static readonly CERTIFICATE_CHAIN_FILE_PATH: String = '/etc/ssl/certs/test-jenkins.opensearch.org.pem';
 
   static readonly PRIVATE_KEY_PATH: String = '/etc/ssl/private/test-jenkins.opensearch.org.key';
 
@@ -138,7 +141,8 @@ export class JenkinsMainNode {
       ['wellKnownOpenIDConfigurationUrl', 'replace'],
       ['tokenServerUrl', 'replace'],
       ['authorizationServerUrl', 'replace'],
-      ['userInfoServerUrl', 'sub'],
+      ['userInfoServerUrl', 'replace'],
+      ['userNameField', 'sub'],
       ['scopes', 'openid'],
       ['disableSslVerification', 'false'],
       ['logoutFromOpenidProvider', 'true'],
@@ -174,10 +178,13 @@ export class JenkinsMainNode {
       InitCommand.shellCommand('sed -i \'s@JENKINS_LISTEN_ADDRESS=""@JENKINS_LISTEN_ADDRESS="127.0.0.1"@g\' /etc/sysconfig/jenkins'),
 
       // eslint-disable-next-line max-len
-      InitCommand.shellCommand(`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.sslCertContentsArn} --query SecretString --output text  > ${JenkinsMainNode.CERTIFICATE_FILE_PATH}`),
+      InitCommand.shellCommand(httpConfigProps.useSsl ? `aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.sslCertContentsArn} --query SecretString --output text  > ${JenkinsMainNode.CERTIFICATE_FILE_PATH}` : 'echo useSsl is false, not creating cert file'),
 
       // eslint-disable-next-line max-len
-      InitCommand.shellCommand(`mkdir /etc/ssl/private/ && aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.sslCertPrivateKeyContentsArn} --query SecretString --output text  > ${JenkinsMainNode.PRIVATE_KEY_PATH}`),
+      InitCommand.shellCommand(httpConfigProps.useSsl ? `aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.sslCertChainArn} --query SecretString --output text  > ${JenkinsMainNode.CERTIFICATE_CHAIN_FILE_PATH}` : 'echo useSsl is false, not creating cert-chain file'),
+
+      // eslint-disable-next-line max-len
+      InitCommand.shellCommand(httpConfigProps.useSsl ? `mkdir /etc/ssl/private/ && aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.sslCertPrivateKeyContentsArn} --query SecretString --output text  > ${JenkinsMainNode.PRIVATE_KEY_PATH}` : 'echo useSsl is false, not creating key file'),
 
       // Local reverse proxy is used, see design for details
       // https://quip-amazon.com/jjIKA6tIPQbw/ODFE-Jenkins-Production-Cluster-JPC-High-Level-Design#BeF9CAIwx3k
@@ -194,7 +201,7 @@ export class JenkinsMainNode {
                 SSLEngine on
                 SSLCertificateFile ${JenkinsMainNode.CERTIFICATE_FILE_PATH}
                 SSLCertificateKeyFile ${JenkinsMainNode.PRIVATE_KEY_PATH}
-                # SSLCertificateChainFile
+                SSLCertificateChainFile ${JenkinsMainNode.CERTIFICATE_CHAIN_FILE_PATH}
                 ServerAdmin  webmaster@localhost
                 ProxyRequests     Off
                 ProxyPreserveHost On
