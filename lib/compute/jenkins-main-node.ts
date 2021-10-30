@@ -6,7 +6,7 @@
  * compatible open source license.
  */
 
-import { Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import {
   AmazonLinuxGeneration, BlockDeviceVolume, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage, Instance,
   InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc,
@@ -19,17 +19,25 @@ import { JenkinsPlugins } from './jenkins-plugins';
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
   readonly sslCertContentsArn: string;
+  readonly sslCertChainArn: string;
   readonly sslCertPrivateKeyContentsArn: string;
   readonly useSsl: boolean;
 }
 
-export interface JenkinsMainNodeProps extends HttpConfigProps{
+interface OidcFederateProps {
+  readonly oidcCredArn: string;
+  readonly runWithOidc: boolean;
+}
+
+export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps{
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
 }
 
 export class JenkinsMainNode {
   static readonly CERTIFICATE_FILE_PATH: String = '/etc/ssl/certs/test-jenkins.opensearch.org.crt';
+
+  static readonly CERTIFICATE_CHAIN_FILE_PATH: String = '/etc/ssl/certs/test-jenkins.opensearch.org.pem';
 
   static readonly PRIVATE_KEY_PATH: String = '/etc/ssl/private/test-jenkins.opensearch.org.key';
 
@@ -103,6 +111,9 @@ export class JenkinsMainNode {
       machineImage: MachineImage.latestAmazonLinux({
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
       }),
+      initOptions: {
+        timeout: Duration.minutes(20),
+      },
       vpc: props.vpc,
       vpcSubnets: {
         subnetType: SubnetType.PRIVATE_WITH_NAT,
@@ -111,6 +122,7 @@ export class JenkinsMainNode {
       init: CloudFormationInit.fromElements(...JenkinsMainNode.configElements(
         stack.stackName,
         stack.region,
+        props,
         props,
       )),
       blockDevices: [{
@@ -125,7 +137,7 @@ export class JenkinsMainNode {
     this.ec2Instance.role.addManagedPolicy(accessPolicy);
   }
 
-  public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps): InitElement[] {
+  public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps, oidcFederateProps: OidcFederateProps): InitElement[] {
     return [
       InitPackage.yum('curl'),
       InitPackage.yum('wget'),
@@ -146,14 +158,29 @@ export class JenkinsMainNode {
       //  The yum install must be triggered via shell command to ensure the order of execution
       InitCommand.shellCommand('yum install -y jenkins-2.263.4'),
 
+      InitCommand.shellCommand('sleep 60'),
+
+      InitCommand.shellCommand(oidcFederateProps.runWithOidc
+        ? 'yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && yum -y install xmlstarlet'
+        : 'echo not installing xmlstarlet as not running with OIDC'),
+
       // Jenkins needs to be accessible for httpd proxy
       InitCommand.shellCommand('sed -i \'s@JENKINS_LISTEN_ADDRESS=""@JENKINS_LISTEN_ADDRESS="127.0.0.1"@g\' /etc/sysconfig/jenkins'),
 
-      // eslint-disable-next-line max-len
-      InitCommand.shellCommand(`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.sslCertContentsArn} --query SecretString --output text  > ${JenkinsMainNode.CERTIFICATE_FILE_PATH}`),
+      InitCommand.shellCommand(httpConfigProps.useSsl
+        // eslint-disable-next-line max-len
+        ? `aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.sslCertContentsArn} --query SecretString --output text  > ${JenkinsMainNode.CERTIFICATE_FILE_PATH}`
+        : 'echo useSsl is false, not creating cert file'),
 
-      // eslint-disable-next-line max-len
-      InitCommand.shellCommand(`mkdir /etc/ssl/private/ && aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.sslCertPrivateKeyContentsArn} --query SecretString --output text  > ${JenkinsMainNode.PRIVATE_KEY_PATH}`),
+      InitCommand.shellCommand(httpConfigProps.useSsl
+        // eslint-disable-next-line max-len
+        ? `aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.sslCertChainArn} --query SecretString --output text  > ${JenkinsMainNode.CERTIFICATE_CHAIN_FILE_PATH}`
+        : 'echo useSsl is false, not creating cert-chain file'),
+
+      InitCommand.shellCommand(httpConfigProps.useSsl
+        // eslint-disable-next-line max-len
+        ? `mkdir /etc/ssl/private/ && aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.sslCertPrivateKeyContentsArn} --query SecretString --output text  > ${JenkinsMainNode.PRIVATE_KEY_PATH}`
+        : 'echo useSsl is false, not creating key file'),
 
       // Local reverse proxy is used, see design for details
       // https://quip-amazon.com/jjIKA6tIPQbw/ODFE-Jenkins-Production-Cluster-JPC-High-Level-Design#BeF9CAIwx3k
@@ -170,7 +197,7 @@ export class JenkinsMainNode {
                 SSLEngine on
                 SSLCertificateFile ${JenkinsMainNode.CERTIFICATE_FILE_PATH}
                 SSLCertificateKeyFile ${JenkinsMainNode.PRIVATE_KEY_PATH}
-                # SSLCertificateChainFile
+                SSLCertificateChainFile ${JenkinsMainNode.CERTIFICATE_CHAIN_FILE_PATH}
                 ServerAdmin  webmaster@localhost
                 ProxyRequests     Off
                 ProxyPreserveHost On
@@ -203,10 +230,14 @@ export class JenkinsMainNode {
             ProxyPassReverse  /  http://127.0.0.1:8080/
         </VirtualHost>`),
 
+      // replacing the jenkins redirect url if the using ssl
       // eslint-disable-next-line max-len
-      InitCommand.shellCommand(httpConfigProps.useSsl ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.redirectUrlArn} --query SecretString --output text\` && sed -i "s,https://replace_url.com/,$var," /etc/httpd/conf.d/jenkins.conf` : 'echo Not altering the jenkins url'),
+      InitCommand.shellCommand(httpConfigProps.useSsl
+        ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.redirectUrlArn} --query SecretString --output text\``
+        + ' && sed -i "s,https://replace_url.com/,$var," /etc/httpd/conf.d/jenkins.conf'
+        : 'echo Not altering the jenkins url'),
 
-      InitCommand.shellCommand('sudo systemctl start httpd'),
+      InitCommand.shellCommand('systemctl start httpd'),
 
       InitPackage.yum('amazon-cloudwatch-agent'),
 
@@ -274,7 +305,7 @@ export class JenkinsMainNode {
 
       // start jenkins service to generate all the default files and folders of jenkins
       // Does not use InitService.enable() because it initialises the service after the instance is launched
-      InitCommand.shellCommand('sudo systemctl start jenkins'),
+      InitCommand.shellCommand('systemctl start jenkins'),
 
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 60 seconds to wait for jenkins to start
@@ -290,8 +321,48 @@ export class JenkinsMainNode {
 
       // install all the list of plugins from the list and restart (done in same command as restart is to be done after completion of install-plugin)
       // eslint-disable-next-line max-len
-      InitCommand.shellCommand(`java -jar jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault install-plugin ${JenkinsPlugins.plugins.join(' ')} && java -jar jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault restart`),
+      InitCommand.shellCommand(`java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault install-plugin ${JenkinsPlugins.plugins.join(' ')} `
+      + ' && java -jar jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault restart'),
       // Warning : any commands after this may be executed before the above command is complete
+
+      // Commands are fired one after the other but it does not wait for the command to complete.
+      // Therefore, sleep 60 seconds to wait for plugins to install and jenkins to start which is required for the next step
+      InitCommand.shellCommand('sleep 60'),
+
+      // If devMode is false, first line extracts the oidcFederateProps as json from the secret manager
+      // xmlstarlet is used to setup the securityRealm values for oidc by editing the jenkins' config.xml file
+      InitCommand.shellCommand(oidcFederateProps.runWithOidc
+        // eslint-disable-next-line max-len
+        ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` && `
+        + 'xmlstarlet ed -L -d "/hudson/securityRealm" '
+        + '-s /hudson -t elem -n securityRealm -v " " '
+        + '-i //securityRealm -t attr -n "class" -v "org.jenkinsci.plugins.oic.OicSecurityRealm" '
+        + '-i //securityRealm -t attr -n "plugin" -v "oic-auth@1.8" '
+        // eslint-disable-next-line max-len
+        + `${this.oidcConfigFields().map((e) => ` -s /hudson/securityRealm -t elem -n ${e[0]} -v ${e[1] === 'replace' ? `"$(echo $var | jq -r ".${e[0]}")"` : `"${e[1]}"`}`).join(' ')}`
+        + ' /var/lib/jenkins/config.xml'
+        : 'echo Not altering the jenkins config.xml when not running with OIDC'),
+
+      // reloading jenkins config file
+      InitCommand.shellCommand(oidcFederateProps.runWithOidc
+        ? 'java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault reload-configuration'
+        : 'echo not reloading jenkins config when not running with OIDC'),
     ];
+  }
+
+  public static oidcConfigFields() : string[][] {
+    return [['clientId', 'replace'],
+      ['clientSecret', 'replace'],
+      ['wellKnownOpenIDConfigurationUrl', 'replace'],
+      ['tokenServerUrl', 'replace'],
+      ['authorizationServerUrl', 'replace'],
+      ['userInfoServerUrl', 'replace'],
+      ['userNameField', 'sub'],
+      ['scopes', 'openid'],
+      ['disableSslVerification', 'false'],
+      ['logoutFromOpenidProvider', 'true'],
+      ['postLogoutRedirectUrl', ''],
+      ['escapeHatchEnabled', 'false'],
+      ['escapeHatchSecret', 'random']];
   }
 }

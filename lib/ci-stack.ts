@@ -26,7 +26,7 @@ export class CIStack extends Stack {
     const auditloggingS3Bucket = new CiAuditLogging(this);
     const vpc = new Vpc(this, 'JenkinsVPC', {
       flowLogs: {
-        's3': {
+        s3: {
           destination: FlowLogDestination.toS3(auditloggingS3Bucket.bucket, 'vpcFlowLogs'),
           trafficType: FlowLogTrafficType.ALL,
         },
@@ -38,14 +38,23 @@ export class CIStack extends Stack {
       allowedValues: ['true', 'false'],
 
     });
+
+    const runWithOidcParameter = new CfnParameter(this, 'runWithOidc', {
+      description: 'If the jenkins instance should use OIDC + federate',
+      allowedValues: ['true', 'false'],
+    });
+
     const useSsl = useSslParameter.valueAsString === 'true';
+    const runWithOidc = runWithOidcParameter.valueAsString === 'true';
 
     const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl);
 
     const importedContentsSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE}`);
+    const importedContentsChainBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CHAIN_SECRET_EXPORT_VALUE}`);
     const importedCertSecretBucketValue = Fn.importValue(`${CIConfigStack.PRIVATE_KEY_SECRET_EXPORT_VALUE}`);
     const importedArnSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_ARN_SECRET_EXPORT_VALUE}`);
     const importedRedirectUrlSecretBucketValue = Fn.importValue(`${CIConfigStack.REDIRECT_URL_SECRET_EXPORT_VALUE}`);
+    const importedOidcConfigValuesSecretBucketValue = Fn.importValue(`${CIConfigStack.OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE}`);
     const certificateArn = Secret.fromSecretCompleteArn(this, 'certificateArn', importedArnSecretBucketValue.toString());
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
 
@@ -53,9 +62,12 @@ export class CIStack extends Stack {
       vpc,
       sg: securityGroups.mainNodeSG,
       sslCertContentsArn: importedContentsSecretBucketValue.toString(),
+      sslCertChainArn: importedContentsChainBucketValue.toString(),
       sslCertPrivateKeyContentsArn: importedCertSecretBucketValue.toString(),
       redirectUrlArn: importedRedirectUrlSecretBucketValue.toString(),
+      oidcCredArn: importedOidcConfigValuesSecretBucketValue.toString(),
       useSsl,
+      runWithOidc,
     });
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
