@@ -9,7 +9,7 @@
 import {
   CfnOutput, Construct, Stack, StackProps,
 } from '@aws-cdk/core';
-
+import { Key } from '@aws-cdk/aws-kms';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 
 export class CIConfigStack extends Stack {
@@ -24,10 +24,24 @@ export class CIConfigStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
       super(scope, id, props);
 
-      const arnSecret = new Secret(this, 'certificateArn', {});
-      const certContentsSecret = new Secret(this, 'certContents', {});
-      const privateKeySecret = new Secret(this, 'privateKey', {});
-      const redirectUrlSecret = new Secret(this, 'redirectUrl', {});
+      const kmsKey = new Key(this, 'ciKey', {
+        description: 'KMS key for encrypting ci-config secrets',
+        enableKeyRotation: true,
+        // removalPolicy: RemovalPolicy.DESTROY,
+      });
+
+      const arnSecret = new Secret(this, 'certificateArn', {
+        encryptionKey: kmsKey,
+      });
+      const certContentsSecret = new Secret(this, 'certContents', {
+        encryptionKey: kmsKey,
+      });
+      const privateKeySecret = new Secret(this, 'privateKey', {
+        encryptionKey: kmsKey,
+      });
+      const redirectUrlSecret = new Secret(this, 'redirectUrl', {
+        encryptionKey: kmsKey,
+      });
 
       new CfnOutput(this, 'certificateArnSecret', {
         value: arnSecret.secretArn,
