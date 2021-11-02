@@ -9,7 +9,7 @@
 import { FlowLogDestination, FlowLogTrafficType, Vpc } from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import {
-  CfnParameter, Construct, Fn, Stack, StackProps,
+  Construct, Fn, Stack, StackProps
 } from '@aws-cdk/core';
 import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { CIConfigStack } from './ci-config-stack';
@@ -33,19 +33,11 @@ export class CIStack extends Stack {
       },
     });
 
-    const useSslParameter = new CfnParameter(this, 'useSsl', {
-      description: 'If the jenkins instance should be access via SSL',
-      allowedValues: ['true', 'false'],
+    const useSslParameter = this.node.tryGetContext('useSsl');
+    const useSsl = useSslParameter === 'true';
 
-    });
-
-    const runWithOidcParameter = new CfnParameter(this, 'runWithOidc', {
-      description: 'If the jenkins instance should use OIDC + federate',
-      allowedValues: ['true', 'false'],
-    });
-
-    const useSsl = useSslParameter.valueAsString === 'true';
-    const runWithOidc = runWithOidcParameter.valueAsString === 'true';
+    const runWithOidcParameter = this.node.tryGetContext('runWithOidc');
+    const runWithOidc = runWithOidcParameter === 'true';
 
     const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl);
 
