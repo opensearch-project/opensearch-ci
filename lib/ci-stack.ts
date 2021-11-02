@@ -34,9 +34,17 @@ export class CIStack extends Stack {
     });
 
     const useSslParameter = this.node.tryGetContext('useSsl');
+    if (useSslParameter !== 'true' && useSslParameter !== 'false') {
+      throw new ReferenceError('useSsl parameter is required to be set as "true" or "false"');
+    }
+
     const useSsl = useSslParameter === 'true';
 
     const runWithOidcParameter = this.node.tryGetContext('runWithOidc');
+    if (runWithOidcParameter !== 'true' && runWithOidcParameter !== 'false') {
+      throw new ReferenceError('runWithOidc parameter is required to be set as "true" or "false"');
+    }
+
     const runWithOidc = runWithOidcParameter === 'true';
 
     // Setting CfnParameters to recorded the value in cloudFormation
