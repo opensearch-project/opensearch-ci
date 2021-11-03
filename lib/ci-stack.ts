@@ -33,19 +33,31 @@ export class CIStack extends Stack {
       },
     });
 
-    const useSslParameter = new CfnParameter(this, 'useSsl', {
-      description: 'If the jenkins instance should be access via SSL',
-      allowedValues: ['true', 'false'],
+    const useSslParameter = this.node.tryGetContext('useSsl');
+    if (useSslParameter !== 'true' && useSslParameter !== 'false') {
+      throw new Error('useSsl parameter is required to be set as - true or false');
+    }
 
-    });
+    const useSsl = useSslParameter === 'true';
 
-    const runWithOidcParameter = new CfnParameter(this, 'runWithOidc', {
+    const runWithOidcParameter = this.node.tryGetContext('runWithOidc');
+    if (runWithOidcParameter !== 'true' && runWithOidcParameter !== 'false') {
+      throw new Error('runWithOidc parameter is required to be set as - true or false');
+    }
+
+    const runWithOidc = runWithOidcParameter === 'true';
+
+    // Setting CfnParameters to recorded the value in cloudFormation
+    new CfnParameter(this, 'runWithOidc', {
       description: 'If the jenkins instance should use OIDC + federate',
-      allowedValues: ['true', 'false'],
+      default: runWithOidc,
     });
 
-    const useSsl = useSslParameter.valueAsString === 'true';
-    const runWithOidc = runWithOidcParameter.valueAsString === 'true';
+    // Setting CfnParameters to record the value in cloudFormation
+    new CfnParameter(this, 'useSsl', {
+      description: 'If the jenkins instance should be access via SSL',
+      default: useSsl,
+    });
 
     const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl);
 

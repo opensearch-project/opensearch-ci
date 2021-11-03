@@ -13,7 +13,9 @@ import { App } from '@aws-cdk/core';
 import { CIStack } from '../lib/ci-stack';
 
 test('CI Stack Basic Resources', () => {
-  const app = new App();
+  const app = new App({
+    context: { useSsl: 'true', runWithOidc: 'true' },
+  });
 
   // WHEN
   const stack = new CIStack(app, 'TestStack', {});
@@ -28,7 +30,9 @@ test('CI Stack Basic Resources', () => {
 });
 
 test('External security group is open', () => {
-  const app = new App();
+  const app = new App({
+    context: { useSsl: 'true', runWithOidc: 'true' },
+  });
 
   // WHEN
   const stack = new CIStack(app, 'MyTestStack');
@@ -54,7 +58,9 @@ test('External security group is open', () => {
 });
 
 test('MainNode', () => {
-  const app = new App();
+  const app = new App({
+    context: { useSsl: 'true', runWithOidc: 'true' },
+  });
 
   // WHEN
   const stack = new CIStack(app, 'MyTestStack');
@@ -80,7 +86,9 @@ test('MainNode', () => {
 });
 
 test('LoadBalancer', () => {
-  const app = new App();
+  const app = new App({
+    context: { useSsl: 'true', runWithOidc: 'true' },
+  });
 
   // WHEN
   const stack = new CIStack(app, 'MyTestStack');
