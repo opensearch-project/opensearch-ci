@@ -6,7 +6,17 @@
  * compatible open source license.
  */
 
-import { FlowLogDestination, FlowLogTrafficType, Vpc } from '@aws-cdk/aws-ec2';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import {
+  AmazonLinuxCpuType,
+  AmazonLinuxGeneration,
+  FlowLogDestination,
+  FlowLogTrafficType,
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  Vpc,
+} from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import {
   CfnParameter, Construct, Fn, Stack, StackProps,
@@ -80,6 +90,33 @@ export class CIStack extends Stack {
       oidcCredArn: importedOidcConfigValuesSecretBucketValue.toString(),
       useSsl,
       runWithOidc,
+    },
+    {
+      region: this.region.toString(),
+      agent_node_security_group: securityGroups.agentNodeSG.securityGroupId.toString(),
+      subnet_id: vpc.publicSubnets[0].subnetId.toString(),
+    },
+    {
+      ec2_cloud_name: 'AL2-X64',
+      instance_type: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4).toString(),
+      worker_label_string: 'AL2-X64',
+      number_of_executors: '2',
+      remote_user: 'ec2-user',
+      ami_id: ec2.MachineImage.latestAmazonLinux({
+        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+        cpuType: AmazonLinuxCpuType.X86_64,
+      }).getImage(this).imageId.toString(),
+    },
+    {
+      ec2_cloud_name: 'AL2-ARM64',
+      instance_type: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4).toString(),
+      worker_label_string: 'AL2-ARM64',
+      number_of_executors: '2',
+      remote_user: 'ec2-user',
+      ami_id: ec2.MachineImage.latestAmazonLinux({
+        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+        cpuType: AmazonLinuxCpuType.ARM_64,
+      }).getImage(this).imageId.toString(),
     });
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {

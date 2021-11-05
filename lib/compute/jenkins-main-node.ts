@@ -15,6 +15,7 @@ import { ManagedPolicy, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { JenkinsPlugins } from './jenkins-plugins';
+import { AgentNode, AgentNodeConfig } from './agent-nodes';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -34,6 +35,14 @@ export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps
   readonly sg: SecurityGroup;
 }
 
+export interface AgentNodeProps{
+  readonly region : string;
+  // eslint-disable-next-line camelcase
+  readonly agent_node_security_group : string;
+  // eslint-disable-next-line camelcase
+  readonly subnet_id : string;
+}
+
 export class JenkinsMainNode {
   static readonly CERTIFICATE_FILE_PATH: String = '/etc/ssl/certs/test-jenkins.opensearch.org.crt';
 
@@ -50,7 +59,10 @@ export class JenkinsMainNode {
   }
 
   constructor(stack: Stack,
-    props:JenkinsMainNodeProps) {
+    props:JenkinsMainNodeProps,
+    agentNodeProps: AgentNodeProps,
+    al2x64AgentNodeConfig: AgentNodeConfig,
+    al2arm64AgentNodeConfig: AgentNodeConfig) {
     this.ec2InstanceMetrics = {
       cpuTime: new Metric({
         metricName: 'procstat_cpu_usage',
@@ -100,11 +112,13 @@ export class JenkinsMainNode {
             'iam:PassRole',
             'logs:CreateLogDelivery',
             'logs:DeleteLogDelivery',
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:ListSecrets',
           ],
           resources: ['*'],
         })],
       });
-
+    const agentNode = new AgentNode(stack);
     this.ec2Instance = new Instance(stack, 'MainNode', {
 
       instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4),
@@ -113,6 +127,7 @@ export class JenkinsMainNode {
       }),
       initOptions: {
         timeout: Duration.minutes(20),
+        ignoreFailures: true,
       },
       vpc: props.vpc,
       vpcSubnets: {
@@ -124,6 +139,10 @@ export class JenkinsMainNode {
         stack.region,
         props,
         props,
+        agentNode,
+        agentNodeProps,
+        al2x64AgentNodeConfig,
+        al2arm64AgentNodeConfig,
       )),
       blockDevices: [{
         deviceName: '/dev/xvda',
@@ -137,7 +156,8 @@ export class JenkinsMainNode {
     this.ec2Instance.role.addManagedPolicy(accessPolicy);
   }
 
-  public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps, oidcFederateProps: OidcFederateProps): InitElement[] {
+  public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps, oidcFederateProps: OidcFederateProps,
+    agentNode: AgentNode, agentNodeProps: AgentNodeProps, al2x64AgentNodeConfig: AgentNodeConfig, al2arm64AgentNodeConfig: AgentNodeConfig): InitElement[] {
     return [
       InitPackage.yum('curl'),
       InitPackage.yum('wget'),
@@ -329,6 +349,19 @@ export class JenkinsMainNode {
       // Therefore, sleep 60 seconds to wait for plugins to install and jenkins to start which is required for the next step
       InitCommand.shellCommand('sleep 60'),
 
+      // Create groovy script that holds the agent Node config for EC2 plugin ref:https://gist.github.com/vrivellino/97954495938e38421ba4504049fd44ea
+      agentNode.asInitFile('/agent-node-al2-x64.groovy', agentNodeProps, al2x64AgentNodeConfig),
+
+      // Run the above groovy script
+      // eslint-disable-next-line max-len
+      InitCommand.shellCommand('java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault groovy = < /agent-node-al2-x64.groovy'),
+
+      // Generating groovy script for arm64 Agent Node
+      agentNode.asInitFile('/agent-node-al2-arm64.groovy', agentNodeProps, al2arm64AgentNodeConfig),
+
+      // Run the arm64 groovy script to set up ARM64 agent
+      // eslint-disable-next-line max-len
+      InitCommand.shellCommand('java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault groovy = < /agent-node-al2-arm64.groovy'),
       // If devMode is false, first line extracts the oidcFederateProps as json from the secret manager
       // xmlstarlet is used to setup the securityRealm values for oidc by editing the jenkins' config.xml file
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
