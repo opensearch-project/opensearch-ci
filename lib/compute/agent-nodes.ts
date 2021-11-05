@@ -1,9 +1,3 @@
-import { CfnInstanceProfile, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Fn, Stack, Tags } from '@aws-cdk/core';
-import { KeyPair } from 'cdk-ec2-key-pair';
-import { InitFile, InitFileOptions } from '@aws-cdk/aws-ec2';
-import { AgentNodeProps } from './jenkins-main-node';
-
 /**
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -11,6 +5,12 @@ import { AgentNodeProps } from './jenkins-main-node';
  * this file be licensed under the Apache-2.0 license or a
  * compatible open source license.
  */
+
+import { CfnInstanceProfile, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Fn, Stack, Tags } from '@aws-cdk/core';
+import { KeyPair } from 'cdk-ec2-key-pair';
+import { InitFile, InitFileOptions } from '@aws-cdk/aws-ec2';
+import { AgentNodeProps } from './jenkins-main-node';
 
 export interface AgentNodeConfig{
   // eslint-disable-next-line camelcase
