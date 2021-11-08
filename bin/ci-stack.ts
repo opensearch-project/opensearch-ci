@@ -7,11 +7,11 @@
  */
 
 import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core';
+import { App } from '@aws-cdk/core';
 import { CIStack } from '../lib/ci-stack';
 import { CIConfigStack } from '../lib/ci-config-stack';
 
-const app = new cdk.App();
+const app = new App();
 
 new CIConfigStack(app, 'CI-Config-Dev', {});
 
