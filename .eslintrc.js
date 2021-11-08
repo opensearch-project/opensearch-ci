@@ -21,9 +21,10 @@ module.exports = {
   rules: {
     hasTrailingComma: 'off',
     indent: ['error', 2],
-    'import/extensions': 'off',
-    'import/no-unresolved': 'off',
-    'import/no-extraneous-dependencies': 'off',
+    'import/extensions': 'error',
+    'import/no-namespace': 'error',
+    'import/no-unresolved': 'error',
+    'import/no-extraneous-dependencies': 'error',
     'import/prefer-default-export': 'off',
     'max-classes-per-file': 'off',
     'no-unused-vars': 'off',
