@@ -6,30 +6,28 @@
  * compatible open source license.
  */
 
-import { CfnInstanceProfile, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { CfnInstanceProfile, ServicePrincipal, Role } from '@aws-cdk/aws-iam';
 import { Fn, Stack, Tags } from '@aws-cdk/core';
 import { KeyPair } from 'cdk-ec2-key-pair';
 import { InitFile, InitFileOptions } from '@aws-cdk/aws-ec2';
 import { AgentNodeProps } from './jenkins-main-node';
 
 export interface AgentNodeConfig{
-  // eslint-disable-next-line camelcase
-  ami_id : string;
-  // eslint-disable-next-line camelcase
-  ec2_cloud_name : string;
-  // eslint-disable-next-line camelcase
-  instance_type : string;
-  // eslint-disable-next-line camelcase
-  worker_label_string : string;
-  // eslint-disable-next-line camelcase
-  number_of_executors : string;
-  // eslint-disable-next-line camelcase
-  remote_user : string;
+  amiId : string;
+  ec2CloudName : string;
+  instanceType : string;
+  workerLabelString : string;
+  numberOfExecutors : string;
+  remoteUser : string;
 }
 export class AgentNode {
   public readonly AgentNodeInstanceProfileArn: string;
 
   public readonly SSHEC2KeySecretId: string;
+
+  public readonly InitScript: string = 'sudo mkdir -p /var/jenkins/ && sudo chown -R ec2-user:ec2-user /var/jenkins '
+    + '&& sudo yum install -y java-1.8.0-openjdk cmake python3 python3-pip && sudo yum groupinstall -y \'Development Tools\' '
+    + '&& sudo ln -sfn `which pip3` /usr/bin/pip && pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin';
 
   constructor(stack: Stack) {
     const key = new KeyPair(stack, 'AgentNode-KeyPair', {
@@ -38,7 +36,6 @@ export class AgentNode {
     });
     Tags.of(key)
       .add('jenkins:credentials:type', 'sshUserPrivateKey');
-
     const AgentNodeRole = new Role(stack, 'JenkinsAgentNodeRole', {
       assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
     });
@@ -47,34 +44,35 @@ export class AgentNode {
     this.SSHEC2KeySecretId = Fn.join('/', ['ec2-ssh-key', key.keyPairName.toString(), 'private']);
   }
 
-  public asInitFile(filePath: string, stackConfig: AgentNodeProps, config: AgentNodeConfig, options?: InitFileOptions): InitFile {
+  public asInitFile(filePath: string, stackConfig: AgentNodeProps, config: AgentNodeConfig, stackRegion: string, options?: InitFileOptions): InitFile {
     return InitFile.fromString(filePath,
-      `import hudson.model.*
+      `
+    import hudson.model.*
     import jenkins.model.*
     import hudson.plugins.ec2.*
     import com.amazonaws.services.ec2.model.InstanceType
 
     def instance = Jenkins.getInstance()
-    def init_script = 'sudo mkdir -p /var/jenkins/ && sudo chown -R ec2-user:ec2-user /var/jenkins \
-    && sudo yum install -y java-1.8.0-openjdk cmake python3 python3-pip && sudo yum groupinstall -y "Development Tools" \
-    && sudo ln -sfn \`which pip3\` /usr/bin/pip && pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin'
-
-// variables
-    def ec2_cloud_name = "${config.ec2_cloud_name}"
-    def instance_type = "${config.instance_type}"
-    def worker_label_string = "${config.worker_label_string}"
-    def number_of_executors = "${config.number_of_executors}"
-    def remote_user = "${config.remote_user}"
-    def ami_id = "${config.ami_id}"
-
-// info imported the stack
-    def region = "${stackConfig.region}"
-    def security_group = "${stackConfig.agent_node_security_group}"
-    def subnet_id = "${stackConfig.subnet_id}"
+    def init_script = "${this.InitScript}"
     def instance_profile_arn = "${this.AgentNodeInstanceProfileArn}"
     def sshKeysASMSecretId = "${this.SSHEC2KeySecretId}"
-    def ec2_tags = [new EC2Tag('Name', 'jenkins-agent-node')]
 
+    // Agent node configuration specific to each node
+    def ec2_cloud_name = "${config.ec2CloudName}"
+    def instance_type = "${config.instanceType}"
+    def worker_label_string = "${config.workerLabelString}"
+    def number_of_executors = "${config.numberOfExecutors}"
+    def remote_user = "${config.remoteUser}"
+    def ami_id = "${config.amiId}"
+
+    // Values that are imported from the stack
+    def region = "${stackRegion}"
+    def security_group = "${stackConfig.agentNodeSecurityGroup}"
+    def subnet_id = "${stackConfig.subnetId}"
+    def ec2_tags = [new EC2Tag('Name', 'jenkins-agent-node')]
+    
+    
+    // SlaveTemplate ref: https://github.com/jenkinsci/ec2-plugin/blob/master/src/main/java/hudson/plugins/ec2/SlaveTemplate.java
     def agent_node_template = new SlaveTemplate(
       // String ami
       ami_id,
@@ -155,7 +153,8 @@ export class AgentNode {
       //EbsEncryptRootVolume ebsEncryptRootVolume,
       EbsEncryptRootVolume.ENCRYPTED,
     )
-
+    
+    // AmazonEC2Cloud ref: https://github.com/jenkinsci/ec2-plugin/blob/master/src/main/java/hudson/plugins/ec2/AmazonEC2Cloud.java
     def new_cloud = new AmazonEC2Cloud(
       // String cloudName
       ec2_cloud_name,
@@ -173,7 +172,7 @@ export class AgentNode {
       "10",
       // List<? extends SlaveTemplate> templates
       [agent_node_template],
-      // String roleArn
+      // String roleArn: We have instance profile with a role attached to the instance
       '',
       // String roleSessionName
       ''

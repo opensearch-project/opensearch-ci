@@ -6,7 +6,7 @@
  * compatible open source license.
  */
 
-import { Duration, Stack } from '@aws-cdk/core';
+import { Duration, Fn, Stack } from '@aws-cdk/core';
 import {
   AmazonLinuxGeneration, BlockDeviceVolume, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage, Instance,
   InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc,
@@ -36,11 +36,8 @@ export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps
 }
 
 export interface AgentNodeProps{
-  readonly region : string;
-  // eslint-disable-next-line camelcase
-  readonly agent_node_security_group : string;
-  // eslint-disable-next-line camelcase
-  readonly subnet_id : string;
+  readonly agentNodeSecurityGroup : string;
+  readonly subnetId : string;
 }
 
 export class JenkinsMainNode {
@@ -114,6 +111,7 @@ export class JenkinsMainNode {
             'logs:DeleteLogDelivery',
             'secretsmanager:GetSecretValue',
             'secretsmanager:ListSecrets',
+            'sts:AssumeRole',
           ],
           resources: ['*'],
         })],
@@ -149,7 +147,6 @@ export class JenkinsMainNode {
         volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),
       }],
     });
-
     this.ec2Instance.role.addManagedPolicy(ec2SsmManagementPolicy);
     this.ec2Instance.role.addManagedPolicy(cloudwatchEventPublishingPolicy);
     this.ec2Instance.role.addManagedPolicy(mainJenkinsNodePolicy);
@@ -253,6 +250,7 @@ export class JenkinsMainNode {
       // replacing the jenkins redirect url if the using ssl
       // eslint-disable-next-line max-len
       InitCommand.shellCommand(httpConfigProps.useSsl
+        // eslint-disable-next-line max-len
         ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.redirectUrlArn} --query SecretString --output text\``
         + ' && sed -i "s,https://replace_url.com/,$var," /etc/httpd/conf.d/jenkins.conf'
         : 'echo Not altering the jenkins url'),
@@ -350,18 +348,18 @@ export class JenkinsMainNode {
       InitCommand.shellCommand('sleep 60'),
 
       // Create groovy script that holds the agent Node config for EC2 plugin ref:https://gist.github.com/vrivellino/97954495938e38421ba4504049fd44ea
-      agentNode.asInitFile('/agent-node-al2-x64.groovy', agentNodeProps, al2x64AgentNodeConfig),
+      agentNode.asInitFile(`/${al2x64AgentNodeConfig.ec2CloudName}.groovy`, agentNodeProps, al2x64AgentNodeConfig,stackRegion ),
 
       // Run the above groovy script
       // eslint-disable-next-line max-len
-      InitCommand.shellCommand('java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault groovy = < /agent-node-al2-x64.groovy'),
+      InitCommand.shellCommand(`java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault groovy = < /${al2x64AgentNodeConfig.ec2CloudName}.groovy`),
 
       // Generating groovy script for arm64 Agent Node
-      agentNode.asInitFile('/agent-node-al2-arm64.groovy', agentNodeProps, al2arm64AgentNodeConfig),
+      agentNode.asInitFile(`/${al2arm64AgentNodeConfig.ec2CloudName}.groovy`, agentNodeProps, al2arm64AgentNodeConfig, stackRegion),
 
       // Run the arm64 groovy script to set up ARM64 agent
       // eslint-disable-next-line max-len
-      InitCommand.shellCommand('java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault groovy = < /agent-node-al2-arm64.groovy'),
+      InitCommand.shellCommand(`java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault groovy = < /${al2arm64AgentNodeConfig.ec2CloudName}.groovy`),
       // If devMode is false, first line extracts the oidcFederateProps as json from the secret manager
       // xmlstarlet is used to setup the securityRealm values for oidc by editing the jenkins' config.xml file
       InitCommand.shellCommand(oidcFederateProps.runWithOidc

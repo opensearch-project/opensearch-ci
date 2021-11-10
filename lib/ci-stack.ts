@@ -6,15 +6,9 @@
  * compatible open source license.
  */
 
-import * as ec2 from '@aws-cdk/aws-ec2';
 import {
-  AmazonLinuxCpuType,
-  AmazonLinuxGeneration,
   FlowLogDestination,
   FlowLogTrafficType,
-  InstanceClass,
-  InstanceSize,
-  InstanceType,
   Vpc,
 } from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
@@ -28,6 +22,7 @@ import { JenkinsMonitoring } from './monitoring/ci-alarms';
 import { JenkinsExternalLoadBalancer } from './network/ci-external-load-balancer';
 import { JenkinsSecurityGroups } from './security/ci-security-groups';
 import { CiAuditLogging } from './auditing/ci-audit-logging';
+import { CloudAgentNodeConfig } from './compute/agent-node-config';
 
 export class CIStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -70,7 +65,6 @@ export class CIStack extends Stack {
     });
 
     const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl);
-
     const importedContentsSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE}`);
     const importedContentsChainBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CHAIN_SECRET_EXPORT_VALUE}`);
     const importedCertSecretBucketValue = Fn.importValue(`${CIConfigStack.PRIVATE_KEY_SECRET_EXPORT_VALUE}`);
@@ -79,6 +73,7 @@ export class CIStack extends Stack {
     const importedOidcConfigValuesSecretBucketValue = Fn.importValue(`${CIConfigStack.OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE}`);
     const certificateArn = Secret.fromSecretCompleteArn(this, 'certificateArn', importedArnSecretBucketValue.toString());
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
+    const agentNodesConfig = new CloudAgentNodeConfig(this);
 
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
@@ -92,32 +87,11 @@ export class CIStack extends Stack {
       runWithOidc,
     },
     {
-      region: this.region.toString(),
-      agent_node_security_group: securityGroups.agentNodeSG.securityGroupId.toString(),
-      subnet_id: vpc.publicSubnets[0].subnetId.toString(),
+      agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId.toString(),
+      subnetId: vpc.publicSubnets[0].subnetId.toString(),
     },
-    {
-      ec2_cloud_name: 'AL2-X64',
-      instance_type: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4).toString(),
-      worker_label_string: 'AL2-X64',
-      number_of_executors: '2',
-      remote_user: 'ec2-user',
-      ami_id: ec2.MachineImage.latestAmazonLinux({
-        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
-        cpuType: AmazonLinuxCpuType.X86_64,
-      }).getImage(this).imageId.toString(),
-    },
-    {
-      ec2_cloud_name: 'AL2-ARM64',
-      instance_type: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4).toString(),
-      worker_label_string: 'AL2-ARM64',
-      number_of_executors: '2',
-      remote_user: 'ec2-user',
-      ami_id: ec2.MachineImage.latestAmazonLinux({
-        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
-        cpuType: AmazonLinuxCpuType.ARM_64,
-      }).getImage(this).imageId.toString(),
-    });
+    agentNodesConfig.AL2_X64,
+    agentNodesConfig.AL2_ARM64);
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,

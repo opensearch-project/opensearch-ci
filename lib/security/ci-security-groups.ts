@@ -27,12 +27,13 @@ export class JenkinsSecurityGroups {
       description: 'Main node of Jenkins',
     });
 
+    const accessPort = useSsl ? 443 : 80;
+    this.mainNodeSG.addIngressRule(this.externalAccessSG, Port.tcp(accessPort));
+
     this.agentNodeSG = new SecurityGroup(stack, 'AgentNodeSG', {
       vpc,
       description: 'Agent Node of Jenkins',
     });
-    const accessPort = useSsl ? 443 : 80;
-    this.mainNodeSG.addIngressRule(this.externalAccessSG, Port.tcp(accessPort));
     this.agentNodeSG.addIngressRule(this.mainNodeSG, Port.tcp(22), 'Main node SSH Access into agent nodes');
   }
 }
