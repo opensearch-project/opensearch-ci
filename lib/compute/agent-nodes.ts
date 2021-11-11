@@ -9,8 +9,9 @@
 import { CfnInstanceProfile, ServicePrincipal, Role } from '@aws-cdk/aws-iam';
 import { Fn, Stack, Tags } from '@aws-cdk/core';
 import { KeyPair } from 'cdk-ec2-key-pair';
-import { InitFile, InitFileOptions } from '@aws-cdk/aws-ec2';
-import { AgentNodeProps } from './jenkins-main-node';
+import {
+  InitCommand, InitElement, InitFile, InitFileOptions,
+} from '@aws-cdk/aws-ec2';
 
 export interface AgentNodeConfig{
   amiId : string;
@@ -20,6 +21,12 @@ export interface AgentNodeConfig{
   numberOfExecutors : string;
   remoteUser : string;
 }
+
+export interface AgentNodeProps{
+  readonly agentNodeSecurityGroup : string;
+  readonly subnetId : string;
+}
+
 export class AgentNode {
   public readonly AgentNodeInstanceProfileArn: string;
 
@@ -180,5 +187,24 @@ export class AgentNode {
 
     instance.clouds.add(new_cloud)
     instance.save()`);
+  }
+
+  public configElements(stackRegion: string, agentNodeProps: AgentNodeProps, al2x64AgentNodeConfig: AgentNodeConfig,
+    al2arm64AgentNodeConfig: AgentNodeConfig): InitElement[] {
+    return [
+    // Create groovy script that holds the agent Node config for EC2 plugin ref:https://gist.github.com/vrivellino/97954495938e38421ba4504049fd44ea
+      this.asInitFile(`/${al2x64AgentNodeConfig.ec2CloudName}.groovy`, agentNodeProps, al2x64AgentNodeConfig, stackRegion),
+
+      // Run the above groovy script
+      // eslint-disable-next-line max-len
+      InitCommand.shellCommand(`java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault groovy = < /${al2x64AgentNodeConfig.ec2CloudName}.groovy`),
+
+      // Generating groovy script for arm64 Agent Node
+      this.asInitFile(`/${al2arm64AgentNodeConfig.ec2CloudName}.groovy`, agentNodeProps, al2arm64AgentNodeConfig, stackRegion),
+
+      // Run the arm64 groovy script to set up ARM64 agent
+      // eslint-disable-next-line max-len
+      InitCommand.shellCommand(`java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault groovy = < /${al2arm64AgentNodeConfig.ec2CloudName}.groovy`),
+    ];
   }
 }

@@ -7,7 +7,7 @@
  */
 
 import {
-  expect, countResources, not, haveResourceLike, ResourcePart,
+  expect, countResources, haveResourceLike, ResourcePart,
 } from '@aws-cdk/assert';
 import { App } from '@aws-cdk/core';
 import { CIStack } from '../lib/ci-stack';
@@ -23,10 +23,12 @@ test('CI Stack Basic Resources', () => {
   // THEN
   expect(stack).to(countResources('AWS::EC2::Instance', 1));
   expect(stack).to(countResources('AWS::ElasticLoadBalancingV2::LoadBalancer', 1));
-  expect(stack).to(countResources('AWS::EC2::SecurityGroup', 2));
+  expect(stack).to(countResources('AWS::EC2::SecurityGroup', 3));
   expect(stack).to(countResources('AWS::IAM::Policy', 1));
-  expect(stack).to(countResources('AWS::IAM::Role', 1));
+  expect(stack).to(countResources('AWS::IAM::Role', 3));
   expect(stack).to(countResources('AWS::S3::Bucket', 1));
+  expect(stack).to(countResources('Custom::EC2-Key-Pair', 1));
+  expect(stack).to(countResources('AWS::IAM::InstanceProfile', 2));
 });
 
 test('External security group is open', () => {

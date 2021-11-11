@@ -6,7 +6,7 @@
  * compatible open source license.
  */
 
-import { Duration, Fn, Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import {
   AmazonLinuxGeneration, BlockDeviceVolume, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage, Instance,
   InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc,
@@ -137,11 +137,7 @@ export class JenkinsMainNode {
         stack.region,
         props,
         props,
-        agentNode,
-        agentNodeProps,
-        al2x64AgentNodeConfig,
-        al2arm64AgentNodeConfig,
-      )),
+      ), ...agentNode.configElements(stack.region, agentNodeProps, al2x64AgentNodeConfig, al2arm64AgentNodeConfig)),
       blockDevices: [{
         deviceName: '/dev/xvda',
         volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),
@@ -153,8 +149,7 @@ export class JenkinsMainNode {
     this.ec2Instance.role.addManagedPolicy(accessPolicy);
   }
 
-  public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps, oidcFederateProps: OidcFederateProps,
-    agentNode: AgentNode, agentNodeProps: AgentNodeProps, al2x64AgentNodeConfig: AgentNodeConfig, al2arm64AgentNodeConfig: AgentNodeConfig): InitElement[] {
+  public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps, oidcFederateProps: OidcFederateProps): InitElement[] {
     return [
       InitPackage.yum('curl'),
       InitPackage.yum('wget'),
@@ -347,19 +342,6 @@ export class JenkinsMainNode {
       // Therefore, sleep 60 seconds to wait for plugins to install and jenkins to start which is required for the next step
       InitCommand.shellCommand('sleep 60'),
 
-      // Create groovy script that holds the agent Node config for EC2 plugin ref:https://gist.github.com/vrivellino/97954495938e38421ba4504049fd44ea
-      agentNode.asInitFile(`/${al2x64AgentNodeConfig.ec2CloudName}.groovy`, agentNodeProps, al2x64AgentNodeConfig,stackRegion ),
-
-      // Run the above groovy script
-      // eslint-disable-next-line max-len
-      InitCommand.shellCommand(`java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault groovy = < /${al2x64AgentNodeConfig.ec2CloudName}.groovy`),
-
-      // Generating groovy script for arm64 Agent Node
-      agentNode.asInitFile(`/${al2arm64AgentNodeConfig.ec2CloudName}.groovy`, agentNodeProps, al2arm64AgentNodeConfig, stackRegion),
-
-      // Run the arm64 groovy script to set up ARM64 agent
-      // eslint-disable-next-line max-len
-      InitCommand.shellCommand(`java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault groovy = < /${al2arm64AgentNodeConfig.ec2CloudName}.groovy`),
       // If devMode is false, first line extracts the oidcFederateProps as json from the secret manager
       // xmlstarlet is used to setup the securityRealm values for oidc by editing the jenkins' config.xml file
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
