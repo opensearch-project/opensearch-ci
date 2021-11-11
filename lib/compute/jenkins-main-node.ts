@@ -243,9 +243,7 @@ export class JenkinsMainNode {
         </VirtualHost>`),
 
       // replacing the jenkins redirect url if the using ssl
-      // eslint-disable-next-line max-len
       InitCommand.shellCommand(httpConfigProps.useSsl
-        // eslint-disable-next-line max-len
         ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.redirectUrlArn} --query SecretString --output text\``
         + ' && sed -i "s,https://replace_url.com/,$var," /etc/httpd/conf.d/jenkins.conf'
         : 'echo Not altering the jenkins url'),
