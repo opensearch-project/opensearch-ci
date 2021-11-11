@@ -74,8 +74,8 @@ export class AgentNode {
 
     // Values that are imported from the stack
     def region = "${stackRegion}"
-    def security_group = "${stackConfig.agentNodeSecurityGroup}"
-    def subnet_id = "${stackConfig.subnetId}"
+    def security_group = "${stackConfig.agentNodeSecurityGroup.toString()}"
+    def subnet_id = "${stackConfig.subnetId.toString()}"
     def ec2_tags = [new EC2Tag('Name', 'jenkins-agent-node')]
     
     

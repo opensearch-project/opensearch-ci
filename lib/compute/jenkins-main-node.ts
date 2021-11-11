@@ -15,7 +15,8 @@ import { ManagedPolicy, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { JenkinsPlugins } from './jenkins-plugins';
-import { AgentNode, AgentNodeConfig } from './agent-nodes';
+import { AgentNode, AgentNodeConfig, AgentNodeProps } from './agent-nodes';
+import { CloudAgentNodeConfig } from './agent-node-config';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -33,11 +34,6 @@ interface OidcFederateProps {
 export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps{
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
-}
-
-export interface AgentNodeProps{
-  readonly agentNodeSecurityGroup : string;
-  readonly subnetId : string;
 }
 
 export class JenkinsMainNode {
@@ -58,8 +54,7 @@ export class JenkinsMainNode {
   constructor(stack: Stack,
     props:JenkinsMainNodeProps,
     agentNodeProps: AgentNodeProps,
-    al2x64AgentNodeConfig: AgentNodeConfig,
-    al2arm64AgentNodeConfig: AgentNodeConfig) {
+    agentNodeConfig: CloudAgentNodeConfig) {
     this.ec2InstanceMetrics = {
       cpuTime: new Metric({
         metricName: 'procstat_cpu_usage',
@@ -137,7 +132,7 @@ export class JenkinsMainNode {
         stack.region,
         props,
         props,
-      ), ...agentNode.configElements(stack.region, agentNodeProps, al2x64AgentNodeConfig, al2arm64AgentNodeConfig)),
+      ), ...agentNode.configElements(stack.region, agentNodeProps, agentNodeConfig.AL2_X64, agentNodeConfig.AL2_ARM64)),
       blockDevices: [{
         deviceName: '/dev/xvda',
         volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),

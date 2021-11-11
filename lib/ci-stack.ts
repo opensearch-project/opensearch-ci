@@ -87,11 +87,10 @@ export class CIStack extends Stack {
       runWithOidc,
     },
     {
-      agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId.toString(),
-      subnetId: vpc.publicSubnets[0].subnetId.toString(),
+      agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
+      subnetId: vpc.publicSubnets[0].subnetId,
     },
-    agentNodesConfig.AL2_X64,
-    agentNodesConfig.AL2_ARM64);
+    agentNodesConfig);
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,
