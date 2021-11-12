@@ -41,6 +41,8 @@ export class JenkinsMainNode {
 
   static readonly PRIVATE_KEY_PATH: String = '/etc/ssl/private/test-jenkins.opensearch.org.key';
 
+  static readonly JENKINS_DEFAULT_ID_PASS_PATH: String = '/var/lib/jenkins/secrets/myIdPassDefault';
+
   public readonly ec2Instance: Instance;
 
   public readonly ec2InstanceMetrics: {
@@ -161,7 +163,7 @@ export class JenkinsMainNode {
       InitCommand.shellCommand('sleep 60'),
 
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
-        ? 'yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && yum -y install xmlstarlet'
+        ? 'amazon-linux-extras install epel -y && yum -y install xmlstarlet'
         : 'echo not installing xmlstarlet as not running with OIDC'),
 
       // Jenkins needs to be accessible for httpd proxy
@@ -314,20 +316,22 @@ export class JenkinsMainNode {
 
       // creating a default  user:password file to use to authenticate the jenkins-cli
       // eslint-disable-next-line max-len
-      InitCommand.shellCommand('echo -n "admin:" > /var/lib/jenkins/secrets/myIdPassDefault && cat /var/lib/jenkins/secrets/initialAdminPassword >> /var/lib/jenkins/secrets/myIdPassDefault'),
+      InitCommand.shellCommand(`echo -n "admin:" > ${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} && cat /var/lib/jenkins/secrets/initialAdminPassword >> ${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH}`),
 
       // Download jenkins-cli from the local machine
       InitCommand.shellCommand('wget -O "jenkins-cli.jar" http://localhost:8080/jnlpJars/jenkins-cli.jar'),
 
       // install all the list of plugins from the list and restart (done in same command as restart is to be done after completion of install-plugin)
       // eslint-disable-next-line max-len
-      InitCommand.shellCommand(`java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault install-plugin ${JenkinsPlugins.plugins.join(' ')} `
-      + ' && java -jar jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault restart'),
+      InitCommand.shellCommand(`java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} install-plugin ${JenkinsPlugins.plugins.join(' ')} `
+      + ` && java -jar jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} restart`),
       // Warning : any commands after this may be executed before the above command is complete
 
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 60 seconds to wait for plugins to install and jenkins to start which is required for the next step
       InitCommand.shellCommand('sleep 60'),
+
+      InitFile.fromFileInline('/var/lib/jenkins/jenkins.yaml', 'jenkins.yaml'),
 
       // If devMode is false, first line extracts the oidcFederateProps as json from the secret manager
       // xmlstarlet is used to setup the securityRealm values for oidc by editing the jenkins' config.xml file
@@ -345,7 +349,7 @@ export class JenkinsMainNode {
 
       // reloading jenkins config file
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
-        ? 'java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault reload-configuration'
+        ? `java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`
         : 'echo not reloading jenkins config when not running with OIDC'),
     ];
   }
