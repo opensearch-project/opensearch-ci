@@ -15,6 +15,8 @@ import { ManagedPolicy, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { JenkinsPlugins } from './jenkins-plugins';
+import { AgentNode, AgentNodeConfig, AgentNodeProps } from './agent-nodes';
+import { CloudAgentNodeConfig } from './agent-node-config';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -50,7 +52,9 @@ export class JenkinsMainNode {
   }
 
   constructor(stack: Stack,
-    props:JenkinsMainNodeProps) {
+    props:JenkinsMainNodeProps,
+    agentNodeProps: AgentNodeProps,
+    agentNodeConfig: CloudAgentNodeConfig) {
     this.ec2InstanceMetrics = {
       cpuTime: new Metric({
         metricName: 'procstat_cpu_usage',
@@ -100,11 +104,14 @@ export class JenkinsMainNode {
             'iam:PassRole',
             'logs:CreateLogDelivery',
             'logs:DeleteLogDelivery',
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:ListSecrets',
+            'sts:AssumeRole',
           ],
           resources: ['*'],
         })],
       });
-
+    const agentNode = new AgentNode(stack);
     this.ec2Instance = new Instance(stack, 'MainNode', {
 
       instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4),
@@ -113,6 +120,7 @@ export class JenkinsMainNode {
       }),
       initOptions: {
         timeout: Duration.minutes(20),
+        ignoreFailures: true,
       },
       vpc: props.vpc,
       vpcSubnets: {
@@ -124,13 +132,12 @@ export class JenkinsMainNode {
         stack.region,
         props,
         props,
-      )),
+      ), ...agentNode.configElements(stack.region, agentNodeProps, agentNodeConfig.AL2_X64, agentNodeConfig.AL2_ARM64)),
       blockDevices: [{
         deviceName: '/dev/xvda',
         volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),
       }],
     });
-
     this.ec2Instance.role.addManagedPolicy(ec2SsmManagementPolicy);
     this.ec2Instance.role.addManagedPolicy(cloudwatchEventPublishingPolicy);
     this.ec2Instance.role.addManagedPolicy(mainJenkinsNodePolicy);
@@ -231,7 +238,6 @@ export class JenkinsMainNode {
         </VirtualHost>`),
 
       // replacing the jenkins redirect url if the using ssl
-      // eslint-disable-next-line max-len
       InitCommand.shellCommand(httpConfigProps.useSsl
         ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.redirectUrlArn} --query SecretString --output text\``
         + ' && sed -i "s,https://replace_url.com/,$var," /etc/httpd/conf.d/jenkins.conf'
