@@ -6,7 +6,11 @@
  * compatible open source license.
  */
 
-import { FlowLogDestination, FlowLogTrafficType, Vpc } from '@aws-cdk/aws-ec2';
+import {
+  FlowLogDestination,
+  FlowLogTrafficType,
+  Vpc,
+} from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import {
   CfnParameter, Construct, Fn, Stack, StackProps,
@@ -18,6 +22,7 @@ import { JenkinsMonitoring } from './monitoring/ci-alarms';
 import { JenkinsExternalLoadBalancer } from './network/ci-external-load-balancer';
 import { JenkinsSecurityGroups } from './security/ci-security-groups';
 import { CiAuditLogging } from './auditing/ci-audit-logging';
+import { CloudAgentNodeConfig } from './compute/agent-node-config';
 
 export class CIStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -60,7 +65,6 @@ export class CIStack extends Stack {
     });
 
     const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl);
-
     const importedContentsSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE}`);
     const importedContentsChainBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CHAIN_SECRET_EXPORT_VALUE}`);
     const importedCertSecretBucketValue = Fn.importValue(`${CIConfigStack.PRIVATE_KEY_SECRET_EXPORT_VALUE}`);
@@ -69,6 +73,7 @@ export class CIStack extends Stack {
     const importedOidcConfigValuesSecretBucketValue = Fn.importValue(`${CIConfigStack.OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE}`);
     const certificateArn = Secret.fromSecretCompleteArn(this, 'certificateArn', importedArnSecretBucketValue.toString());
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
+    const agentNodesConfig = new CloudAgentNodeConfig(this);
 
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
@@ -80,7 +85,12 @@ export class CIStack extends Stack {
       oidcCredArn: importedOidcConfigValuesSecretBucketValue.toString(),
       useSsl,
       runWithOidc,
-    });
+    },
+    {
+      agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
+      subnetId: vpc.publicSubnets[0].subnetId,
+    },
+    agentNodesConfig);
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,
