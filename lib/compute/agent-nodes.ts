@@ -12,6 +12,7 @@ import { KeyPair } from 'cdk-ec2-key-pair';
 import {
   InitCommand, InitElement, InitFile, InitFileOptions,
 } from '@aws-cdk/aws-ec2';
+import { JenkinsMainNode } from './jenkins-main-node';
 
 export interface AgentNodeConfig{
   amiId : string;
@@ -197,14 +198,14 @@ export class AgentNode {
 
       // Run the above groovy script
       // eslint-disable-next-line max-len
-      InitCommand.shellCommand(`java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault groovy = < /${al2x64AgentNodeConfig.ec2CloudName}.groovy`),
+      InitCommand.shellCommand(`java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} groovy = < /${al2x64AgentNodeConfig.ec2CloudName}.groovy`),
 
       // Generating groovy script for arm64 Agent Node
       this.asInitFile(`/${al2arm64AgentNodeConfig.ec2CloudName}.groovy`, agentNodeProps, al2arm64AgentNodeConfig, stackRegion),
 
       // Run the arm64 groovy script to set up ARM64 agent
       // eslint-disable-next-line max-len
-      InitCommand.shellCommand(`java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault groovy = < /${al2arm64AgentNodeConfig.ec2CloudName}.groovy`),
+      InitCommand.shellCommand(`java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} groovy = < /${al2arm64AgentNodeConfig.ec2CloudName}.groovy`),
     ];
   }
 }
