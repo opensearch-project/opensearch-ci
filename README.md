@@ -33,17 +33,20 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
 
 ### Dev Deployment 
 1. Setup your local machine to credentials to deploy to the AWS Account
-1. Deploy the bootstrap stack by running following command that sets up required resources to create the stacks. [More info](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html):
-   1. `npm run cdk bootstrap -- -c useSsl=false -c runWithOidc=false`
-   1. `cdk boostrap -c useSsl=false -c runWithOidc=false` 
+1. Deploy the bootstrap stack by running following command that sets up required resources to create the stacks. [More info](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
+   
+   `npm run cdk bootstrap -- -c useSsl=false -c runWithOidc=false`
+   
 1. Deploy the ci-config-stack using the with one of the following (takes ~1 minute to deploy) - 
-   1. `npm run cdk deploy CI-Config-Dev -- -c useSsl=false -c runWithOidc=false` or,
-   1. `cdk deploy CI-Config-Dev -c useSsl=false -c runWithOidc=false`
+   
+   `npm run cdk deploy CI-Config-Dev -- -c useSsl=false -c runWithOidc=false`
+   
 1. [Optional](#ssl-configuration) Configure the elements of the config stack for SSL configuration
 1. [Optional](#setup-openid-connect-oidc-via-federate) Configure the elements setting up oidc via federate
 1. Deploy the ci-stack, takes ~10 minutes to deploy (parameter values depend on step 2 and step 3)
-   1. `npm run cdk deploy CI-Dev -- -c useSsl=false -c runWithOidc=false` or,
-   1. `cdk deploy CI-Dev -c useSsl=false -c runWithOidc=false`
+   
+   `npm run cdk deploy CI-Dev -- -c useSsl=false -c runWithOidc=false`
+   
 1. Log onto the AWS Console of the account, navigate to [cloud watch](https://console.aws.amazon.com/cloudwatch/home), open log groups, looking for `JenkinsMainNode/var/log/jenkins/jenkins.log`
 1. Search the logs for `Jenkins initial setup is required. An admin user has been created and a password generated.` After that entry the password for the jenkins instance will be in the cloudwatch logs.
 1. Go to the `CI-Dev.JenkinsExternalLoadBalancerDns` url returned by CDK output to access the jenkins host.
