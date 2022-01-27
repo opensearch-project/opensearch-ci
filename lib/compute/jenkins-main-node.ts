@@ -13,6 +13,7 @@ import {
 } from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
+import { join } from 'path';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { JenkinsPlugins } from './jenkins-plugins';
 import { AgentNode, AgentNodeConfig, AgentNodeProps } from './agent-nodes';
@@ -337,7 +338,7 @@ export class JenkinsMainNode {
       // Therefore, sleep 60 seconds to wait for plugins to install and jenkins to start which is required for the next step
       InitCommand.shellCommand('sleep 60'),
 
-      InitFile.fromFileInline('/var/lib/jenkins/jenkins.yaml', 'jenkins.yaml'),
+      InitFile.fromFileInline('/var/lib/jenkins/jenkins.yaml', join(__dirname, '../../resources/jenkins.yaml')),
 
       // If devMode is false, first line extracts the oidcFederateProps as json from the secret manager
       // xmlstarlet is used to setup the securityRealm values for oidc by editing the jenkins' config.xml file
