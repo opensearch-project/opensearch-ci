@@ -330,8 +330,7 @@ export class JenkinsMainNode {
 
       // install all the list of plugins from the list and restart (done in same command as restart is to be done after completion of install-plugin)
       // eslint-disable-next-line max-len
-      InitCommand.shellCommand(`java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} install-plugin ${JenkinsPlugins.plugins.join(' ')} `
-      + ` && java -jar jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} restart`),
+      ...JenkinsMainNode.createPluginInstallCommands(JenkinsPlugins.plugins),
       // Warning : any commands after this may be executed before the above command is complete
 
       // Commands are fired one after the other but it does not wait for the command to complete.
@@ -359,6 +358,22 @@ export class JenkinsMainNode {
         ? `java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`
         : 'echo not reloading jenkins config when not running with OIDC'),
     ];
+  }
+
+  /** Creates the commands to install plugins, typically done in blocks */
+  public static createPluginInstallCommands(pluginList: string[]): InitCommand[] {
+    const pluginInstallBlockSize = 10;
+    const jenkinsCliCommand = `java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH}`;
+    const pluginListCopy = Object.assign([], pluginList);
+    const pluginListSlices: String[] = [];
+    do {
+      pluginListSlices.push(pluginListCopy.splice(0, pluginInstallBlockSize).join(' '));
+    } while (pluginListCopy.length !== 0);
+
+    return pluginListSlices.map((slice, index) => {
+      const extraCommand = (index === pluginListSlices.length - 1) ? `${jenkinsCliCommand} restart` : '';
+      return InitCommand.shellCommand(`${jenkinsCliCommand} install-plugin ${slice} ${extraCommand}`);
+    });
   }
 
   public static oidcConfigFields() : string[][] {

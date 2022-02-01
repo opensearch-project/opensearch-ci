@@ -23,7 +23,7 @@ describe('JenkinsMainNode Config Elements', () => {
 
   // THEN
   test('Config elements expected counts', async () => {
-    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(21);
+    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(34);
     expect(configElements.filter((e) => e.elementType === 'PACKAGE')).toHaveLength(14);
     expect(configElements.filter((e) => e.elementType === 'FILE')).toHaveLength(3);
   });
@@ -51,4 +51,16 @@ test('Verify config.xml fields for jenkins OIDC', async () => {
     ['escapeHatchSecret', 'random']];
 
   expect(JSON.stringify(JenkinsMainNode.oidcConfigFields()) === JSON.stringify(oidcConfigFields)).toBeTruthy();
+});
+
+test('createPluginInstallCommands breaks apart many plugins', async () => {
+  const plugins = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `${n}`);
+  const commands = JenkinsMainNode.createPluginInstallCommands(plugins);
+  expect(commands).toHaveLength(2);
+});
+
+test('createPluginInstallCommands works with one plugin', async () => {
+  const plugins = ['0'];
+  const commands = JenkinsMainNode.createPluginInstallCommands(plugins);
+  expect(commands).toHaveLength(1);
 });
