@@ -300,7 +300,7 @@ export class JenkinsMainNode {
                   auto_removal: true,
                   log_stream_name: 'jenkins.log',
                   //  2021-07-20 16:15:55.319+0000 [id=868]   INFO    jenkins.InitReactorRunner$1#onAttained: Completed initialization
-                  timestamp_format: '%Y-%m-%d %H:%M:%S.%%z',
+                  timestamp_format: '%Y-%m-%d %H:%M:%S.%f%z',
                 },
               ],
             },
