@@ -16,7 +16,7 @@ import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
 import { join } from 'path';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { JenkinsPlugins } from './jenkins-plugins';
-import { AgentNode, AgentNodeConfig, AgentNodeProps } from './agent-nodes';
+import { AgentNode, AgentNodeProps } from './agent-nodes';
 import { CloudAgentNodeConfig } from './agent-node-config';
 
 interface HttpConfigProps {
@@ -35,6 +35,7 @@ interface OidcFederateProps {
 export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps{
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
+  readonly failOnCloudInitError?: boolean;
 }
 
 export class JenkinsMainNode {
@@ -55,7 +56,7 @@ export class JenkinsMainNode {
   }
 
   constructor(stack: Stack,
-    props:JenkinsMainNodeProps,
+    props: JenkinsMainNodeProps,
     agentNodeProps: AgentNodeProps,
     agentNodeConfig: CloudAgentNodeConfig) {
     this.ec2InstanceMetrics = {
@@ -123,7 +124,7 @@ export class JenkinsMainNode {
       }),
       initOptions: {
         timeout: Duration.minutes(20),
-        ignoreFailures: true,
+        ignoreFailures: props.failOnCloudInitError ?? true,
       },
       vpc: props.vpc,
       vpcSubnets: {
@@ -299,7 +300,7 @@ export class JenkinsMainNode {
                   auto_removal: true,
                   log_stream_name: 'jenkins.log',
                   //  2021-07-20 16:15:55.319+0000 [id=868]   INFO    jenkins.InitReactorRunner$1#onAttained: Completed initialization
-                  timestamp_format: '%Y-%m-%d %H:%M:%S.%f%z',
+                  timestamp_format: '%Y-%m-%d %H:%M:%S.%%z',
                 },
               ],
             },
