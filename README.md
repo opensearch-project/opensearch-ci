@@ -1,12 +1,13 @@
 <img src="https://opensearch.org/assets/brand/SVG/Logo/opensearch_logo_default.svg" height="64px"/>
 
-- [OpenSearch Continous Integration](#opensearch-continous-integration)
+- [OpenSearch Continuous Integration](#opensearch-continuous-integration)
 - [Getting Started](#getting-started)
 - [Deployment](#deployment)
+  - [CI Deployment](#ci-deployment)
   - [Dev Deployment](#dev-deployment)
   - [Executing Optional Tasks](#executing-optional-tasks)
     - [SSL Configuration](#ssl-configuration)
-    - [setup OpenId Connect (OIDC) via Federate](#setup-openid-connect-oidc-via-federate)
+    - [Setup OpenId Connect (OIDC) via Federate](#setup-openid-connect-oidc-via-federate)
   - [Troubleshooting](#troubleshooting)
     - [Main Node](#main-node)
   - [Useful commands](#useful-commands)
@@ -30,6 +31,16 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
 - Deploy stacks with `npm run cdk deploy`
 
 ## Deployment
+
+### CI Deployment
+1. Create another cdk project and depend on this package
+2. Import the config / ci stacks alongside the other resources
+   ```
+   new CIConfigStack(app, 'CI-Config-Beta', {});
+   new CIStack(app, 'CI-Beta', ciSettings);
+   ```
+3. Update the `ciSettings` according to the environment needs such as SSL or strict deployment, see [CIStackProps](./lib/ci-stack.ts) for details.
+4. Deploy using the CI system of your choice.
 
 ### Dev Deployment 
 1. Setup your local machine to credentials to deploy to the AWS Account

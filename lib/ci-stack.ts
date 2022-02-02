@@ -25,8 +25,12 @@ import { CiAuditLogging } from './auditing/ci-audit-logging';
 import { CloudAgentNodeConfig } from './compute/agent-node-config';
 
 export interface CIStackProps extends StackProps {
+  /** Should the Jenkins use https  */
   useSsl?: boolean;
+  /** Should an OIDC provider be installed on Jenkins. */
   runWithOidc?: boolean;
+  /** Additional verification during deployment and resource startup. */
+  strictMode?: boolean;
 }
 
 export class CIStack extends Stack {
@@ -90,6 +94,7 @@ export class CIStack extends Stack {
       oidcCredArn: importedOidcConfigValuesSecretBucketValue.toString(),
       useSsl,
       runWithOidc,
+      failOnCloudInitError: props?.strictMode,
     },
     {
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
