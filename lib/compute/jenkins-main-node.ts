@@ -372,7 +372,7 @@ export class JenkinsMainNode {
     } while (pluginListCopy.length !== 0);
 
     return pluginListSlices.map((slice, index) => {
-      const extraCommand = (index === pluginListSlices.length - 1) ? `${jenkinsCliCommand} restart` : '';
+      const extraCommand = (index === pluginListSlices.length - 1) ? `&& ${jenkinsCliCommand} restart` : '';
       return InitCommand.shellCommand(`${jenkinsCliCommand} install-plugin ${slice} ${extraCommand}`);
     });
   }
