@@ -32,13 +32,13 @@ export class CIConfigStack extends Stack {
         description: 'Certificate ARN retrieved after uploading certificate to IAM server',
       });
       const certContentsSecret = new Secret(this, 'certContents', {
-        description: 'Contents of SSL certificate',
+        description: 'Contents of publick key of the SSL certificate',
       });
       const certChainSecret = new Secret(this, 'certChain', {
-        description: 'Contents of SSL certificate chain',
+        description: 'Contents of the SSL certificate chain',
       });
       const privateKeySecret = new Secret(this, 'privateKey', {
-        description: 'Private key content of the SSL certificate',
+        description: 'Contents of private key of the SSL certificate',
       });
       const redirectUrlSecret = new Secret(this, 'redirectUrl', {
         description: 'Redirect url for Jenkins',
