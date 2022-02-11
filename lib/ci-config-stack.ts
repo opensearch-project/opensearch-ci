@@ -32,7 +32,7 @@ export class CIConfigStack extends Stack {
         description: 'Certificate ARN retrieved after uploading certificate to IAM server',
       });
       const certContentsSecret = new Secret(this, 'certContents', {
-        description: 'Contents of publick key of the SSL certificate',
+        description: 'Contents of public key of the SSL certificate',
       });
       const certChainSecret = new Secret(this, 'certChain', {
         description: 'Contents of the SSL certificate chain',
