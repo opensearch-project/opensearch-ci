@@ -28,12 +28,24 @@ export class CIConfigStack extends Stack {
     constructor(scope: Construct, id: string, props?: StackProps) {
       super(scope, id, props);
 
-      const arnSecret = new Secret(this, 'certificateArn', {});
-      const certContentsSecret = new Secret(this, 'certContents', {});
-      const certChainSecret = new Secret(this, 'certChain', {});
-      const privateKeySecret = new Secret(this, 'privateKey', {});
-      const redirectUrlSecret = new Secret(this, 'redirectUrl', {});
-      const OIDCConfigValuesSecret = new Secret(this, 'OIDCConfigValues', {});
+      const arnSecret = new Secret(this, 'certificateArn', {
+        description: 'Certificate ARN retrieved after uploading certificate to IAM server',
+      });
+      const certContentsSecret = new Secret(this, 'certContents', {
+        description: 'Contents of SSL certificate',
+      });
+      const certChainSecret = new Secret(this, 'certChain', {
+        description: 'Contents of SSL certificate chain',
+      });
+      const privateKeySecret = new Secret(this, 'privateKey', {
+        description: 'Private key content of the SSL certificate',
+      });
+      const redirectUrlSecret = new Secret(this, 'redirectUrl', {
+        description: 'Redirect url for Jenkins',
+      });
+      const OIDCConfigValuesSecret = new Secret(this, 'OIDCConfigValues', {
+        description: 'OIDC params in JSON format',
+      });
 
       new CfnOutput(this, 'certificateArnSecret', {
         value: arnSecret.secretArn,
