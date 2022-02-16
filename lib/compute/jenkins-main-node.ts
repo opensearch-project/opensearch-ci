@@ -219,7 +219,7 @@ export class JenkinsMainNode {
                 </Proxy>
                 ProxyPass         /  http://localhost:8080/ nocanon
                 ProxyPassReverse  /  http://localhost:8080/
-                ProxyPassReverse  /  https://replace_url.com/
+                ProxyPassReverse  /  http://replace_url.com/
                 RequestHeader set X-Forwarded-Proto "https"
                 RequestHeader set X-Forwarded-Port "443"
             </VirtualHost>
@@ -246,6 +246,12 @@ export class JenkinsMainNode {
         ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.redirectUrlArn} --query SecretString --output text\``
         + ' && sed -i "s,https://replace_url.com/,$var," /etc/httpd/conf.d/jenkins.conf'
         : 'echo Not altering the jenkins url'),
+
+      // Auto redirect http to https if ssl is enabled
+      InitCommand.shellCommand(httpConfigProps.useSsl
+        ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.redirectUrlArn} --query SecretString --output text\``
+        + '&& newVar=`echo $var | sed \'s/https/http/g\'` && sed -i "s,http://replace_url.com/,$newVar," /etc/httpd/conf.d/jenkins.conf'
+        : 'echo Not altering the ProxyPassReverse url'),
 
       InitCommand.shellCommand('systemctl start httpd'),
 
