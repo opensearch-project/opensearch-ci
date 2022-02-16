@@ -125,7 +125,7 @@ export class AgentNode {
       // String idleTerminationMinutes
       '30',
       //int minimumNumberOfInstances,
-      1,
+      0,
       //int minimumNumberOfSpareInstances,
       1,
       // String instanceCapStr
