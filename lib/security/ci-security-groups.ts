@@ -27,8 +27,11 @@ export class JenkinsSecurityGroups {
       description: 'Main node of Jenkins',
     });
 
-    const accessPort = useSsl ? 443 : 80;
+    const accessPort = 80;
     this.mainNodeSG.addIngressRule(this.externalAccessSG, Port.tcp(accessPort));
+    if (useSsl) {
+      this.mainNodeSG.addIngressRule(this.externalAccessSG, Port.tcp(443));
+    }
 
     this.agentNodeSG = new SecurityGroup(stack, 'AgentNodeSG', {
       vpc,

@@ -10,7 +10,8 @@ import {
   Instance, Peer, SecurityGroup, Vpc,
 } from '@aws-cdk/aws-ec2';
 import {
-  ApplicationListener, ApplicationLoadBalancer, ApplicationTargetGroup, ListenerCertificate, Protocol,
+  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
+  ListenerCertificate, Protocol, SslPolicy,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { InstanceTarget } from '@aws-cdk/aws-elasticloadbalancingv2-targets';
 import { CfnOutput, Stack } from '@aws-cdk/core';
@@ -41,10 +42,20 @@ export class JenkinsExternalLoadBalancer {
     const accessPort = props.useSsl ? 443 : 80;
 
     this.listener = this.loadBalancer.addListener('JenkinsListener', {
+      sslPolicy: SslPolicy.TLS12,
       port: accessPort,
       open: true,
       certificates: props.useSsl ? [props.listenerCertificate] : undefined,
     });
+
+    if (props.useSsl) {
+      this.loadBalancer.addRedirect({
+        sourceProtocol: ApplicationProtocol.HTTP,
+        sourcePort: 80,
+        targetProtocol: ApplicationProtocol.HTTPS,
+        targetPort: 443,
+      });
+    }
 
     this.targetGroup = this.listener.addTargets('MainJenkinsNodeTarget', {
       port: accessPort,
