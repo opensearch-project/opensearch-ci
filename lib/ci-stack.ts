@@ -34,6 +34,9 @@ export interface CIStackProps extends StackProps {
 }
 
 export class CIStack extends Stack {
+
+  public readonly mainJenkinsNode : JenkinsMainNode;
+
   constructor(scope: Construct, id: string, props?: CIStackProps) {
     super(scope, id, props);
 
@@ -84,7 +87,7 @@ export class CIStack extends Stack {
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
     const agentNodesConfig = new CloudAgentNodeConfig(this);
 
-    const mainJenkinsNode = new JenkinsMainNode(this, {
+    this.mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
       sg: securityGroups.mainNodeSG,
       sslCertContentsArn: importedContentsSecretBucketValue.toString(),
@@ -105,11 +108,11 @@ export class CIStack extends Stack {
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,
       sg: securityGroups.externalAccessSG,
-      targetInstance: mainJenkinsNode.ec2Instance,
+      targetInstance: this.mainJenkinsNode.ec2Instance,
       listenerCertificate,
       useSsl,
     });
 
-    const monitoring = new JenkinsMonitoring(this, externalLoadBalancer, mainJenkinsNode);
+    const monitoring = new JenkinsMonitoring(this, externalLoadBalancer, this.mainJenkinsNode);
   }
 }

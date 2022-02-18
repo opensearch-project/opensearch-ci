@@ -49,6 +49,8 @@ export class JenkinsMainNode {
 
   public readonly ec2Instance: Instance;
 
+  public readonly agentNode: AgentNode;
+
   public readonly ec2InstanceMetrics: {
     cpuTime: Metric,
     memUsed: Metric,
@@ -115,7 +117,7 @@ export class JenkinsMainNode {
           resources: ['*'],
         })],
       });
-    const agentNode = new AgentNode(stack);
+    this.agentNode = new AgentNode(stack);
     this.ec2Instance = new Instance(stack, 'MainNode', {
 
       instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4),
@@ -136,7 +138,7 @@ export class JenkinsMainNode {
         stack.region,
         props,
         props,
-      ), ...agentNode.configElements(stack.region, agentNodeProps, agentNodeConfig.AL2_X64, agentNodeConfig.AL2_ARM64)),
+      ), ...this.agentNode.configElements(stack.region, agentNodeProps, agentNodeConfig.AL2_X64, agentNodeConfig.AL2_ARM64)),
       blockDevices: [{
         deviceName: '/dev/xvda',
         volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),

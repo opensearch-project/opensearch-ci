@@ -7,12 +7,17 @@
  */
 
 import 'source-map-support/register';
-import { App } from '@aws-cdk/core';
+import { App, RemovalPolicy } from '@aws-cdk/core';
 import { CIStack } from '../lib/ci-stack';
 import { CIConfigStack } from '../lib/ci-config-stack';
+import { DeployAssets } from './DeployAssets';
 
 const app = new App();
 
 new CIConfigStack(app, 'CI-Config-Dev', {});
 
-new CIStack(app, 'CI-Dev', { });
+const ciStack = new CIStack(app, 'CI-Dev', { });
+
+const deployAssets = new DeployAssets(app, 'CI-Deploy-Assets', { ciStack, removalPolicy: RemovalPolicy.DESTROY });
+
+deployAssets.addDependency(ciStack);
