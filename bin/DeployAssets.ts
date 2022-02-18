@@ -31,6 +31,7 @@ export class DeployAssets extends Stack {
     const ecrStack = new CiEcrStack(scope, 'CI-ECR-Dev', {
       mainNodeRoleArn: props.ciStack.mainJenkinsNode.ec2Instance.role.roleArn,
       removalPolicy: props.removalPolicy,
+      createRepositories: true,
     });
 
     // const policy = new Policy(props.ciStack, 'myLambda_policy', {
