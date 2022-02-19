@@ -106,7 +106,7 @@ $aws secretsmanager put-secret-value \
    1. `cdk deploy CI-Dev -c runWithOidc=false -c useSsl=true`
 1. Continue with [next steps](#dev-deployment) 
 
-Note: With OIDC enabled, Role Based Authentication is also enabled that helps users/admins from locking out. You can modify who gets the admin access based on your choice of OIDC by modifying the array [here](https://github.com/opensearch-project/opensearch-ci/blob/main/lib/compute/jenkins-main-node.ts#L479-L487)
+_Note: With OIDC enabled, Role Based Authentication is also enabled that helps users/admins from locking out. You can modify who gets the admin access based on your choice of OIDC by modifying the array [here](https://github.com/opensearch-project/opensearch-ci/blob/main/lib/compute/jenkins-main-node.ts#L479-L487)_
 
 ### Troubleshooting
 #### Main Node
