@@ -346,6 +346,32 @@ export class JenkinsMainNode {
 
       InitFile.fromFileInline('/var/lib/jenkins/jenkins.yaml', join(__dirname, '../../resources/jenkins.yaml')),
 
+      // Enabling Role Based Authentication by editing config.xml file:
+      InitCommand.shellCommand(oidcFederateProps.runWithOidc
+        ? 'xmlstarlet ed -L -d /hudson/authorizationStrategy'
+        + ' -s /hudson -t elem -n authorizationStrategy -v " "'
+        + ' -i //authorizationStrategy -t attr -n "class" -v "com.michelin.cio.hudson.plugins.rolestrategy.RoleBasedAuthorizationStrategy"'
+        + ' -s /hudson/authorizationStrategy -t elem -n roleMap'
+        + ' -i /hudson/authorizationStrategy/roleMap -t attr -n "type" -v "projectRoles"'
+        + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
+        + ' -i /hudson/authorizationStrategy/roleMap[2] -t attr -n "type" -v "globalRoles"'
+        + ' -s /hudson/authorizationStrategy/roleMap[2] -t elem -n role -v " "'
+        + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "name" -v "admin"'
+        + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "pattern" -v ".*"'
+        + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n permissions -v " "'
+        // eslint-disable-next-line max-len
+        + `${this.rolePermissions().map((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/permissions -t elem -n "permission" -v ${e}`).join(' ')}`
+        + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n "assignedSIDs" -v " " '
+        + `${this.admins().map(((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/assignedSIDs -t elem -n "sid" -v ${e}`)).join(' ')}`
+        + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
+        + ' -i /hudson/authorizationStrategy/roleMap[3] -t attr -n "type" -v "slaveRolesRoles"'
+        + ' /var/lib/jenkins/config.xml'
+        : 'echo Not enabling Role based authenication '),
+
+      InitCommand.shellCommand(oidcFederateProps.runWithOidc
+        ? `java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`
+        : 'echo OIDC is disabled hence not reloading the config'),
+
       // If devMode is false, first line extracts the oidcFederateProps as json from the secret manager
       // xmlstarlet is used to setup the securityRealm values for oidc by editing the jenkins' config.xml file
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
@@ -397,5 +423,68 @@ export class JenkinsMainNode {
       ['postLogoutRedirectUrl', ''],
       ['escapeHatchEnabled', 'false'],
       ['escapeHatchSecret', 'random']];
+  }
+
+  public static rolePermissions() : string[] {
+    return ['hudson.model.Hudson.Manage',
+      'hudson.model.Computer.Connect',
+      'hudson.model.Hudson.UploadPlugins',
+      'com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin.Jobs',
+      'hudson.model.Hudson.ConfigureUpdateCenter',
+      'hudson.model.Hudson.Administer',
+      'hudson.model.Item.Cancel',
+      'com.cloudbees.plugins.credentials.CredentialsProvider.View',
+      'hudson.model.Computer.Delete',
+      'hudson.model.Item.Build',
+      'hudson.plugins.jobConfigHistory.JobConfigHistory.DeleteEntry',
+      'hudson.model.Item.Move',
+      'com.cloudbees.plugins.credentials.CredentialsProvider.Update',
+      'org.jenkins.plugins.lockableresources.LockableResourcesManager.Steal',
+      'hudson.model.Item.Create',
+      'com.cloudbees.plugins.credentials.CredentialsProvider.Delete',
+      'hudson.model.Run.Replay',
+      'hudson.model.Item.WipeOut',
+      'hudson.model.Hudson.RunScripts',
+      'hudson.model.Hudson.SystemRead',
+      'hudson.model.View.Create',
+      'hudson.model.Computer.ExtendedRead',
+      'hudson.model.Computer.Configure',
+      'com.synopsys.arc.jenkins.plugins.ownership.OwnershipPlugin.Nodes',
+      'com.cloudbees.plugins.credentials.CredentialsProvider.UseOwn',
+      'hudson.model.Run.Update',
+      'hudson.model.View.Delete',
+      'hudson.model.Run.Delete',
+      'com.cloudbees.plugins.credentials.CredentialsProvider.ManageDomains',
+      'hudson.model.Computer.Create',
+      'hudson.model.View.Configure',
+      'hudson.model.Computer.Build',
+      'hudson.model.Item.Configure',
+      'hudson.model.Item.Read',
+      'org.jenkins.plugins.lockableresources.LockableResourcesManager.Unlock',
+      'hudson.model.Item.ExtendedRead',
+      'hudson.scm.SCM.Tag',
+      'hudson.model.Item.Discover',
+      'hudson.model.Hudson.Read',
+      'hudson.model.Item.Workspace',
+      'hudson.model.Computer.Provision',
+      'hudson.model.View.Read',
+      'org.jenkins.plugins.lockableresources.LockableResourcesManager.View',
+      'hudson.model.Item.Delete',
+      'com.cloudbees.plugins.credentials.CredentialsProvider.Create',
+      'hudson.model.Computer.Disconnect',
+      'hudson.model.Run.Artifacts',
+      'com.cloudbees.plugins.credentials.CredentialsProvider.UseItem',
+      'org.jenkins.plugins.lockableresources.LockableResourcesManager.Reserve'];
+  }
+
+  public static admins() : string[] {
+    return [
+      'admin',
+      'gaiksaya',
+      'zhujiaxi',
+      'abhng',
+      'bbarani',
+      'zelinhao',
+    ];
   }
 }
