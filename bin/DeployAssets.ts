@@ -1,9 +1,9 @@
 import {
-  Arn,
-  Construct, RemovalPolicy, Stack, StackProps,
+  Arn, CfnParameter,
+  Construct, Fn, RemovalPolicy, Stack, StackProps,
 } from '@aws-cdk/core';
 import {
-  ArnPrincipal, Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal,
+  ArnPrincipal, Effect, IRole, ManagedPolicy, Policy, PolicyStatement, Role,
 } from '@aws-cdk/aws-iam';
 import { CiEcrStack } from '../lib/ci-ecr-stack';
 import { CIStack } from '../lib/ci-stack';
@@ -20,18 +20,23 @@ export class DeployAssets extends Stack {
     super(scope, id, props);
     const deployECRParameter = `${props?.deployECR ?? this.node.tryGetContext('deployEcr')}`;
 
-    const deployECR = deployECRParameter === 'true';
+    new CfnParameter(this, 'runWithOidc', {
+      description: 'Should ECR repositories + roles be created',
+      default: deployECRParameter === 'true',
+    });
 
-    if (deployECR) {
-      DeployAssets.deployEcrStack(scope, props);
+    if (deployECRParameter === 'true') {
+      DeployAssets.deployEcrStack(scope, this, props);
     }
   }
 
-  public static deployEcrStack(scope: Construct, props: deployAssetsProps): CiEcrStack {
+  public static deployEcrStack(scope: Construct, stack: Stack, props: deployAssetsProps): CiEcrStack {
+    const importedMainNodeRoleArn = Fn.importValue(`${CIStack.MAIN_NODE_ROLE_ARN_EXPORT_VALUE}`);
+
     const ecrStack = new CiEcrStack(scope, 'CI-ECR-Dev', {
-      mainNodeRoleArn: props.ciStack.mainJenkinsNode.ec2Instance.role.roleArn,
+      mainNodeRoleArn: importedMainNodeRoleArn,
       removalPolicy: props.removalPolicy,
-      createRepositories: true,
+      createRepositories: false,
     });
 
     // const policy = new Policy(props.ciStack, 'myLambda_policy', {
@@ -47,16 +52,54 @@ export class DeployAssets extends Stack {
     console.log('***********');
     console.log(ecrStack.ecrRoleArn.toString());
 
-    // props.ciStack.mainJenkinsNode.ec2Instance.role.attachInlinePolicy(
-    //   new Policy(props.ciStack, 'new-policy', {
+    const mainNodeRole = Role.fromRoleArn(
+      stack,
+      'imported-role',
+      importedMainNodeRoleArn,
+      { mutable: false },
+    );
+
+    mainNodeRole.addToPolicy(
+      new PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        effect: Effect.ALLOW,
+        principals: [new ArnPrincipal(ecrStack.ecrRoleArn.toString())],
+        resources: ['*'],
+      }),
+    );
+
+    // mainNodeRole.attachInlinePolicy(
+    //   new Policy(props.ciStack, 'ecr-policy-main-node', {
     //     statements: [new PolicyStatement({
     //       actions: ['sts:AssumeRole'],
     //       effect: Effect.ALLOW,
     //       principals: [new ArnPrincipal(ecrStack.ecrRoleArn.toString())],
+    //       resources: ['*'],
     //     })],
     //   }),
     // );
-    //
+
+    // mainNodeRole.addManagedPolicy(
+    //   new ManagedPolicy(props.ciStack, 'ecr-policy-main-node', {
+    //     statements: [new PolicyStatement({
+    //       actions: ['sts:AssumeRole'],
+    //       effect: Effect.ALLOW,
+    //       principals: [new ArnPrincipal(ecrStack.ecrRoleArn.toString())],
+    //       resources: ['*'],
+    //     })],
+    //   }),
+    // );
+
+    mainNodeRole.grant(new ArnPrincipal(ecrStack.ecrRoleArn.toString()), 'sts:AssumeRole');
+
+    mainNodeRole.addToPrincipalPolicy(
+      new PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        effect: Effect.ALLOW,
+        principals: [new ArnPrincipal(ecrStack.ecrRoleArn.toString())],
+        resources: ['*'],
+      }),
+    );
 
     // props.ciStack.mainJenkinsNode.ec2Instance.role?.grant(new ArnPrincipal(ecrStack.ecrRoleArn.toString()));
 
@@ -68,15 +111,15 @@ export class DeployAssets extends Stack {
     //     resources: ['*'],
     //   }),
     // );
-    //
-    props.ciStack.mainJenkinsNode.ec2Instance.role?.addToPrincipalPolicy(
-      new PolicyStatement({
-        actions: ['sts:AssumeRole'],
-        effect: Effect.ALLOW,
-        principals: [new ArnPrincipal(ecrStack.ecrRoleArn.toString())],
-        resources: ['*'],
-      }),
-    );
+
+    // mainNodeRole.assumeRolePolicy?.addToPrincipalPolicy(
+    //   new PolicyStatement({
+    //     actions: ['sts:AssumeRole'],
+    //     effect: Effect.ALLOW,
+    //     principals: [new ArnPrincipal(ecrStack.ecrRoleArn)],
+    //     resources: ['*'],
+    //   }),
+    // );
 
     return ecrStack;
   }

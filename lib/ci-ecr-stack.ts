@@ -9,7 +9,9 @@ import {
 export interface ecrStackProps extends StackProps {
   /** Main Node role arn */
   mainNodeRoleArn: string;
+  /** removal policy for the ECR Repositories */
   removalPolicy?: RemovalPolicy;
+  /** should we skip creating ecr  */
   createRepositories?: boolean;
 }
 

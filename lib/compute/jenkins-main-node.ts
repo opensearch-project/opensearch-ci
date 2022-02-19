@@ -6,7 +6,7 @@
  * compatible open source license.
  */
 
-import { Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import {
   AmazonLinuxGeneration, BlockDeviceVolume, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage, Instance,
   InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc,
@@ -18,6 +18,7 @@ import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { JenkinsPlugins } from './jenkins-plugins';
 import { AgentNode, AgentNodeProps } from './agent-nodes';
 import { CloudAgentNodeConfig } from './agent-node-config';
+import { CIStack } from '../ci-stack';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -148,6 +149,11 @@ export class JenkinsMainNode {
     this.ec2Instance.role.addManagedPolicy(cloudwatchEventPublishingPolicy);
     this.ec2Instance.role.addManagedPolicy(mainJenkinsNodePolicy);
     this.ec2Instance.role.addManagedPolicy(accessPolicy);
+
+    new CfnOutput(stack, 'certificateArnSecret', {
+      value: this.ec2Instance.role.roleArn.toString(),
+      exportName: CIStack.MAIN_NODE_ROLE_ARN_EXPORT_VALUE,
+    });
   }
 
   public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps, oidcFederateProps: OidcFederateProps): InitElement[] {

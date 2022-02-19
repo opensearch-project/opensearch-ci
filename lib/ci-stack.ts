@@ -37,6 +37,8 @@ export class CIStack extends Stack {
 
   public readonly mainJenkinsNode : JenkinsMainNode;
 
+  static readonly MAIN_NODE_ROLE_ARN_EXPORT_VALUE: string = 'mainNodeRoleArn';
+
   constructor(scope: Construct, id: string, props?: CIStackProps) {
     super(scope, id, props);
 
