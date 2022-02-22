@@ -101,12 +101,11 @@ $aws secretsmanager put-secret-value \
     --secret-id MyTestDatabaseSecret_or_ARN \
     --secret-string file://mycreds.json_or_value
     ```
+1. Add additional `adminUsers` for role based authentication according to your needs, see [CIStackProps](./lib/ci-stack.ts) for details.
 1. Run with parameter with one of the following (refer [this](#ssl-configuration) for value of `useSsL`) -
    1. `npm run cdk deploy CI-Dev -- -c runWithOidc=false -c useSsl=true` or,
    1. `cdk deploy CI-Dev -c runWithOidc=false -c useSsl=true`
-1. Continue with [next steps](#dev-deployment) 
-
-_Note: With OIDC enabled, Role Based Authentication is also enabled that helps users/admins from locking out. You can modify who gets the admin access based on your choice of OIDC by modifying the array [here](https://github.com/opensearch-project/opensearch-ci/blob/main/lib/compute/jenkins-main-node-config.ts)_
+1. Continue with [next steps](#dev-deployment)
 
 ### Troubleshooting
 #### Main Node
