@@ -349,7 +349,8 @@ export class JenkinsMainNode {
       InitFile.fromFileInline('/var/lib/jenkins/jenkins.yaml', join(__dirname, '../../resources/jenkins.yaml')),
 
       // Enabling Role Based Authentication by editing config.xml file:
-      InitCommand.shellCommand('xmlstarlet ed -L -d /hudson/authorizationStrategy'
+      InitCommand.shellCommand(oidcFederateProps.runWithOidc
+        ?'xmlstarlet ed -L -d /hudson/authorizationStrategy'
         + ' -s /hudson -t elem -n authorizationStrategy -v " "'
         + ' -i //authorizationStrategy -t attr -n "class" -v "com.michelin.cio.hudson.plugins.rolestrategy.RoleBasedAuthorizationStrategy"'
         + ' -s /hudson/authorizationStrategy -t elem -n roleMap'
@@ -367,7 +368,8 @@ export class JenkinsMainNode {
         + `${this.admins(oidcFederateProps.adminUsers).map(((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/assignedSIDs -t elem -n "sid" -v ${e}`)).join(' ')}`
         + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
         + ' -i /hudson/authorizationStrategy/roleMap[3] -t attr -n "type" -v "slaveRolesRoles"'
-        + ' /var/lib/jenkins/config.xml'),
+        + ' /var/lib/jenkins/config.xml'
+        : 'echo Not enabling Role based authenication'),
 
       // If devMode is false, first line extracts the oidcFederateProps as json from the secret manager
       // xmlstarlet is used to setup the securityRealm values for oidc by editing the jenkins' config.xml file
