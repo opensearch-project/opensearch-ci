@@ -6,6 +6,7 @@
  * compatible open source license.
  */
 
+import { JenkinsMainNode } from '../../lib/compute/jenkins-main-node';
 import { JenkinsMainNodeConfig } from '../../lib/compute/jenkins-main-node-config';
 
 test('Verify config.xml fields for jenkins OIDC', async () => {
@@ -85,16 +86,24 @@ test('Verify config.xml fields for jenkins Role Based Auth', async () => {
 });
 
 test('Verify initial admin users for when OIDC is enabled', async () => {
-  expect(JenkinsMainNodeConfig.admins()).toBeInstanceOf(Array);
+  expect(JenkinsMainNode.admins()).toBeInstanceOf(Array);
 
   const admins : string[] = [
     'admin',
-    'gaiksaya',
-    'zhujiaxi',
-    'abhng',
-    'bbarani',
-    'zelinhao',
   ];
 
-  expect(JSON.stringify(JenkinsMainNodeConfig.admins()) === JSON.stringify(admins)).toBeTruthy();
+  expect(JSON.stringify(JenkinsMainNode.admins()) === JSON.stringify(admins)).toBeTruthy();
+});
+
+test('Verify additional admin users are added', async () => {
+  expect(JenkinsMainNode.admins()).toBeInstanceOf(Array);
+
+  const additionalAdminUsers: String[] = ['admin1', 'admin2'];
+  const admins : string[] = [
+    'admin',
+    'admin1',
+    'admin2',
+  ];
+
+  expect(JSON.stringify(JenkinsMainNode.admins(additionalAdminUsers)) === JSON.stringify(admins)).toBeTruthy();
 });

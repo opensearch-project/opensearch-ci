@@ -6,6 +6,8 @@
  * compatible open source license.
  */
 
+import { JenkinsMainNode } from './jenkins-main-node';
+
 export class JenkinsMainNodeConfig {
   public static oidcConfigFields() : string[][] {
     return [['clientId', 'replace'],
@@ -73,16 +75,5 @@ export class JenkinsMainNodeConfig {
       'hudson.model.Run.Artifacts',
       'com.cloudbees.plugins.credentials.CredentialsProvider.UseItem',
       'org.jenkins.plugins.lockableresources.LockableResourcesManager.Reserve'];
-  }
-
-  public static admins() : string[] {
-    return [
-      'admin',
-      'gaiksaya',
-      'zhujiaxi',
-      'abhng',
-      'bbarani',
-      'zelinhao',
-    ];
   }
 }

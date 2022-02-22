@@ -31,6 +31,8 @@ export interface CIStackProps extends StackProps {
   runWithOidc?: boolean;
   /** Additional verification during deployment and resource startup. */
   strictMode?: boolean;
+  /** Users with admin access during initial deployment */
+  adminUsers?: Array<String>;
 }
 
 export class CIStack extends Stack {
@@ -95,6 +97,7 @@ export class CIStack extends Stack {
       useSsl,
       runWithOidc,
       failOnCloudInitError: props?.strictMode,
+      adminUsers: props?.adminUsers,
     },
     {
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
