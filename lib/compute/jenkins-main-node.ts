@@ -371,6 +371,11 @@ export class JenkinsMainNode {
         + ' /var/lib/jenkins/config.xml'
         : 'echo Not enabling Role based authenication'),
 
+      // reloading jenkins config file
+      InitCommand.shellCommand(oidcFederateProps.runWithOidc
+        ? `java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`
+        : 'echo not reloading jenkins config when not running with OIDC'),
+
       // If devMode is false, first line extracts the oidcFederateProps as json from the secret manager
       // xmlstarlet is used to setup the securityRealm values for oidc by editing the jenkins' config.xml file
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
