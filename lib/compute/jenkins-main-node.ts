@@ -18,6 +18,7 @@ import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { JenkinsPlugins } from './jenkins-plugins';
 import { AgentNode, AgentNodeProps } from './agent-nodes';
 import { CloudAgentNodeConfig } from './agent-node-config';
+import { JenkinsMainNodeConfig } from './jenkins-main-node-config';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -30,6 +31,7 @@ interface HttpConfigProps {
 interface OidcFederateProps {
   readonly oidcCredArn: string;
   readonly runWithOidc: boolean;
+  readonly adminUsers?: Array<String>;
 }
 
 export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps{
@@ -346,6 +348,29 @@ export class JenkinsMainNode {
 
       InitFile.fromFileInline('/var/lib/jenkins/jenkins.yaml', join(__dirname, '../../resources/jenkins.yaml')),
 
+      // Enabling Role Based Authentication by editing config.xml file:
+      InitCommand.shellCommand(oidcFederateProps.runWithOidc
+        ?'xmlstarlet ed -L -d /hudson/authorizationStrategy'
+        + ' -s /hudson -t elem -n authorizationStrategy -v " "'
+        + ' -i //authorizationStrategy -t attr -n "class" -v "com.michelin.cio.hudson.plugins.rolestrategy.RoleBasedAuthorizationStrategy"'
+        + ' -s /hudson/authorizationStrategy -t elem -n roleMap'
+        + ' -i /hudson/authorizationStrategy/roleMap -t attr -n "type" -v "projectRoles"'
+        + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
+        + ' -i /hudson/authorizationStrategy/roleMap[2] -t attr -n "type" -v "globalRoles"'
+        + ' -s /hudson/authorizationStrategy/roleMap[2] -t elem -n role -v " "'
+        + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "name" -v "admin"'
+        + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "pattern" -v ".*"'
+        + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n permissions -v " "'
+        // eslint-disable-next-line max-len
+        + `${JenkinsMainNodeConfig.rolePermissions().map((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/permissions -t elem -n "permission" -v ${e}`).join(' ')}`
+        + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n "assignedSIDs" -v " " '
+        // eslint-disable-next-line max-len
+        + `${this.admins(oidcFederateProps.adminUsers).map(((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/assignedSIDs -t elem -n "sid" -v ${e}`)).join(' ')}`
+        + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
+        + ' -i /hudson/authorizationStrategy/roleMap[3] -t attr -n "type" -v "slaveRolesRoles"'
+        + ' /var/lib/jenkins/config.xml'
+        : 'echo Not enabling Role based authenication'),
+
       // If devMode is false, first line extracts the oidcFederateProps as json from the secret manager
       // xmlstarlet is used to setup the securityRealm values for oidc by editing the jenkins' config.xml file
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
@@ -356,7 +381,7 @@ export class JenkinsMainNode {
         + '-i //securityRealm -t attr -n "class" -v "org.jenkinsci.plugins.oic.OicSecurityRealm" '
         + '-i //securityRealm -t attr -n "plugin" -v "oic-auth@1.8" '
         // eslint-disable-next-line max-len
-        + `${this.oidcConfigFields().map((e) => ` -s /hudson/securityRealm -t elem -n ${e[0]} -v ${e[1] === 'replace' ? `"$(echo $var | jq -r ".${e[0]}")"` : `"${e[1]}"`}`).join(' ')}`
+        + `${JenkinsMainNodeConfig.oidcConfigFields().map((e) => ` -s /hudson/securityRealm -t elem -n ${e[0]} -v ${e[1] === 'replace' ? `"$(echo $var | jq -r ".${e[0]}")"` : `"${e[1]}"`}`).join(' ')}`
         + ' /var/lib/jenkins/config.xml'
         : 'echo Not altering the jenkins config.xml when not running with OIDC'),
 
@@ -383,19 +408,13 @@ export class JenkinsMainNode {
     });
   }
 
-  public static oidcConfigFields() : string[][] {
-    return [['clientId', 'replace'],
-      ['clientSecret', 'replace'],
-      ['wellKnownOpenIDConfigurationUrl', 'replace'],
-      ['tokenServerUrl', 'replace'],
-      ['authorizationServerUrl', 'replace'],
-      ['userInfoServerUrl', 'replace'],
-      ['userNameField', 'sub'],
-      ['scopes', 'openid'],
-      ['disableSslVerification', 'false'],
-      ['logoutFromOpenidProvider', 'true'],
-      ['postLogoutRedirectUrl', ''],
-      ['escapeHatchEnabled', 'false'],
-      ['escapeHatchSecret', 'random']];
+  /** Adds user provided admin users along with default 'admin' */
+  public static admins(additionalAdminUsers?: any) : String[] {
+    const adminUsers = ['admin'];
+    if (additionalAdminUsers) {
+      const addedAdminUsers = adminUsers.concat(additionalAdminUsers);
+      return addedAdminUsers;
+    }
+    return adminUsers;
   }
 }
