@@ -88,7 +88,7 @@ $aws secretsmanager put-secret-value \
    ```
     {
         "clientId": "example_id",
-        "clientPassword": "example_password",
+        "clientSecret": "example_password",
         "wellKnownOpenIDConfigurationUrl": "https://www.example.com",
         "tokenServerUrl": "https://example.com/token",
         "authorizationServerUrl": "https://example.com/authorize",
