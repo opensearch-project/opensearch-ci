@@ -137,8 +137,8 @@ export class JenkinsMainNode {
         stack.stackName,
         stack.region,
         props,
-        props,
-      ), ...agentNode.configElements(stack.region, agentNodeProps, agentNodeConfig.AL2_X64, agentNodeConfig.AL2_ARM64)),
+      ), ...agentNode.configElements(stack.region, agentNodeProps, agentNodeConfig.AL2_X64, agentNodeConfig.AL2_ARM64),
+      ...JenkinsMainNode.configOidcElements(stack.region, props)),
       blockDevices: [{
         deviceName: '/dev/xvda',
         volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),
@@ -150,7 +150,7 @@ export class JenkinsMainNode {
     this.ec2Instance.role.addManagedPolicy(accessPolicy);
   }
 
-  public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps, oidcFederateProps: OidcFederateProps): InitElement[] {
+  public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps): InitElement[] {
     return [
       InitPackage.yum('curl'),
       InitPackage.yum('wget'),
@@ -172,10 +172,6 @@ export class JenkinsMainNode {
       InitCommand.shellCommand('yum install -y jenkins-2.263.4'),
 
       InitCommand.shellCommand('sleep 60'),
-
-      InitCommand.shellCommand(oidcFederateProps.runWithOidc
-        ? 'amazon-linux-extras install epel -y && yum -y install xmlstarlet'
-        : 'echo not installing xmlstarlet as not running with OIDC'),
 
       // Jenkins needs to be accessible for httpd proxy
       InitCommand.shellCommand('sed -i \'s@JENKINS_LISTEN_ADDRESS=""@JENKINS_LISTEN_ADDRESS="127.0.0.1"@g\' /etc/sysconfig/jenkins'),
@@ -347,53 +343,48 @@ export class JenkinsMainNode {
       InitCommand.shellCommand('sleep 60'),
 
       InitFile.fromFileInline('/var/lib/jenkins/jenkins.yaml', join(__dirname, '../../resources/jenkins.yaml')),
+    ];
+  }
 
-      // Enabling Role Based Authentication by editing config.xml file:
-      InitCommand.shellCommand(oidcFederateProps.runWithOidc
-        ?'xmlstarlet ed -L -d /hudson/authorizationStrategy'
-        + ' -s /hudson -t elem -n authorizationStrategy -v " "'
-        + ' -i //authorizationStrategy -t attr -n "class" -v "com.michelin.cio.hudson.plugins.rolestrategy.RoleBasedAuthorizationStrategy"'
-        + ' -s /hudson/authorizationStrategy -t elem -n roleMap'
-        + ' -i /hudson/authorizationStrategy/roleMap -t attr -n "type" -v "projectRoles"'
-        + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
-        + ' -i /hudson/authorizationStrategy/roleMap[2] -t attr -n "type" -v "globalRoles"'
-        + ' -s /hudson/authorizationStrategy/roleMap[2] -t elem -n role -v " "'
-        + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "name" -v "admin"'
-        + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "pattern" -v ".*"'
-        + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n permissions -v " "'
-        // eslint-disable-next-line max-len
-        + `${JenkinsMainNodeConfig.rolePermissions().map((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/permissions -t elem -n "permission" -v ${e}`).join(' ')}`
-        + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n "assignedSIDs" -v " " '
-        // eslint-disable-next-line max-len
-        + `${this.admins(oidcFederateProps.adminUsers).map(((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/assignedSIDs -t elem -n "sid" -v ${e}`)).join(' ')}`
-        + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
-        + ' -i /hudson/authorizationStrategy/roleMap[3] -t attr -n "type" -v "slaveRolesRoles"'
-        + ' /var/lib/jenkins/config.xml'
-        : 'echo Not enabling Role based authenication'),
+  public static configOidcElements(stackRegion: string, oidcFederateProps: OidcFederateProps): InitElement[] {
+    return [
 
-      // reloading jenkins config file
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
-        ? `java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`
-        : 'echo not reloading jenkins config when not running with OIDC'),
+        ? 'amazon-linux-extras install epel -y && yum -y install xmlstarlet'
+        : 'echo not installing xmlstarlet as not running with OIDC'),
 
-      // If devMode is false, first line extracts the oidcFederateProps as json from the secret manager
-      // xmlstarlet is used to setup the securityRealm values for oidc by editing the jenkins' config.xml file
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
-        // eslint-disable-next-line max-len
-        ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` && `
-        + 'xmlstarlet ed -L -d "/hudson/securityRealm" '
-        + '-s /hudson -t elem -n securityRealm -v " " '
-        + '-i //securityRealm -t attr -n "class" -v "org.jenkinsci.plugins.oic.OicSecurityRealm" '
-        + '-i //securityRealm -t attr -n "plugin" -v "oic-auth@1.8" '
-        // eslint-disable-next-line max-len
-        + `${JenkinsMainNodeConfig.oidcConfigFields().map((e) => ` -s /hudson/securityRealm -t elem -n ${e[0]} -v ${e[1] === 'replace' ? `"$(echo $var | jq -r ".${e[0]}")"` : `"${e[1]}"`}`).join(' ')}`
-        + ' /var/lib/jenkins/config.xml'
-        : 'echo Not altering the jenkins config.xml when not running with OIDC'),
-
-      // reloading jenkins config file
-      InitCommand.shellCommand(oidcFederateProps.runWithOidc
-        ? `java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`
-        : 'echo not reloading jenkins config when not running with OIDC'),
+        ? 'xmlstarlet ed -L -d /hudson/authorizationStrategy'
+          + ' -s /hudson -t elem -n authorizationStrategy -v " "'
+          + ' -i //authorizationStrategy -t attr -n "class" -v "com.michelin.cio.hudson.plugins.rolestrategy.RoleBasedAuthorizationStrategy"'
+          + ' -s /hudson/authorizationStrategy -t elem -n roleMap'
+          + ' -i /hudson/authorizationStrategy/roleMap -t attr -n "type" -v "projectRoles"'
+          + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
+          + ' -i /hudson/authorizationStrategy/roleMap[2] -t attr -n "type" -v "globalRoles"'
+          + ' -s /hudson/authorizationStrategy/roleMap[2] -t elem -n role -v " "'
+          + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "name" -v "admin"'
+          + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "pattern" -v ".*"'
+          + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n permissions -v " "'
+          // eslint-disable-next-line max-len
+          + `${JenkinsMainNodeConfig.rolePermissions().map((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/permissions -t elem -n "permission" -v ${e}`).join(' ')}`
+          + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n "assignedSIDs" -v " " '
+          // eslint-disable-next-line max-len
+          + `${this.admins(oidcFederateProps.adminUsers).map(((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/assignedSIDs -t elem -n "sid" -v ${e}`)).join(' ')}`
+          + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
+          + ' -i /hudson/authorizationStrategy/roleMap[3] -t attr -n "type" -v "slaveRolesRoles"'
+          + ' /var/lib/jenkins/config.xml'
+          + ` && java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`
+          // eslint-disable-next-line max-len
+          + ` && var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` && `
+          + 'xmlstarlet ed -L -d "/hudson/securityRealm"'
+          + ' -s /hudson -t elem -n securityRealm -v " "'
+          + ' -i //securityRealm -t attr -n "class" -v "org.jenkinsci.plugins.oic.OicSecurityRealm"'
+          + ' -i //securityRealm -t attr -n "plugin" -v "oic-auth@1.8"'
+          // eslint-disable-next-line max-len
+          + `${JenkinsMainNodeConfig.oidcConfigFields().map((e) => ` -s /hudson/securityRealm -t elem -n ${e[0]} -v ${e[1] === 'replace' ? `"$(echo $var | jq -r ".${e[0]}")"` : `"${e[1]}"`}`).join(' ')}`
+          + ' /var/lib/jenkins/config.xml'
+          + ` && java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`
+        : 'echo OIDC disabled: Not changing the configuration'),
     ];
   }
 
