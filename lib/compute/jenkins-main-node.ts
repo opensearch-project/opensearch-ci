@@ -191,8 +191,7 @@ export class JenkinsMainNode {
         ? `mkdir /etc/ssl/private/ && aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.sslCertPrivateKeyContentsArn} --query SecretString --output text  > ${JenkinsMainNode.PRIVATE_KEY_PATH}`
         : 'echo useSsl is false, not creating key file'),
 
-      // Local reverse proxy is used, see design for details
-      // https://quip-amazon.com/jjIKA6tIPQbw/ODFE-Jenkins-Production-Cluster-JPC-High-Level-Design#BeF9CAIwx3k
+      // Local reverse proxy is used
       InitPackage.yum('httpd'),
 
       // Configuration to proxy jenkins on :8080 -> :80
@@ -324,7 +323,7 @@ export class JenkinsMainNode {
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 60 seconds to wait for jenkins to start
       // This allows jenkins to generate the secrets files used for auth in jenkins-cli APIs
-      InitCommand.shellCommand('sleep 60'),
+      InitCommand.shellCommand('sleep 65'),
 
       // creating a default  user:password file to use to authenticate the jenkins-cli
       // eslint-disable-next-line max-len
@@ -343,6 +342,7 @@ export class JenkinsMainNode {
       InitCommand.shellCommand('sleep 60'),
 
       InitFile.fromFileInline('/var/lib/jenkins/jenkins.yaml', join(__dirname, '../../resources/jenkins.yaml')),
+
     ];
   }
 
