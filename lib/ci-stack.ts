@@ -31,15 +31,16 @@ export interface CIStackProps extends StackProps {
   runWithOidc?: boolean;
   /** Additional verification during deployment and resource startup. */
   strictMode?: boolean;
+  /** Environment the stack is ebing deployed on */
+  readonly envName : string;
+  /** Environment the stack is ebing deployed on */
+  readonly ecrAccountId: string;
 }
 
 export class CIStack extends Stack {
-
   public readonly mainJenkinsNode : JenkinsMainNode;
 
-  static readonly MAIN_NODE_ROLE_ARN_EXPORT_VALUE: string = 'mainNodeRoleArn';
-
-  constructor(scope: Construct, id: string, props?: CIStackProps) {
+  constructor(scope: Construct, id: string, props: CIStackProps) {
     super(scope, id, props);
 
     const auditloggingS3Bucket = new CiAuditLogging(this);
@@ -100,6 +101,8 @@ export class CIStack extends Stack {
       useSsl,
       runWithOidc,
       failOnCloudInitError: props?.strictMode,
+      envName: props.envName,
+      ecrAccountId: props.ecrAccountId,
     },
     {
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,

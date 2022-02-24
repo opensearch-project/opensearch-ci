@@ -6,23 +6,21 @@ import {
   ArnPrincipal, IRole, ManagedPolicy, PolicyStatement, Role,
 } from '@aws-cdk/aws-iam';
 
-export interface ecrStackProps extends StackProps {
+export interface EcrStackProps extends StackProps {
+  /** Should we deploy ECR */
+  readonly deployECR?: boolean;
   /** Main Node role arn */
-  mainNodeRoleArn: string;
+  readonly mainNodeAccountNumber: string;
   /** removal policy for the ECR Repositories */
-  removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy;
   /** should we skip creating ecr  */
-  createRepositories?: boolean;
+  readonly createRepositories?: boolean;
 }
 
 export class CiEcrStack extends Stack {
   public readonly ecrRoleArn: string;
 
-  public readonly roleName: string;
-
-  public readonly role: IRole;
-
-  constructor(scope: Construct, id: string, props: ecrStackProps) {
+  constructor(scope: Construct, id: string, envName: string, props: EcrStackProps) {
     super(scope, id, props);
 
     if (props.createRepositories ?? false) {
@@ -30,17 +28,15 @@ export class CiEcrStack extends Stack {
     }
     const ecrPolicy = CiEcrStack.createEcrPolicy(this, id);
 
-    const role = CiEcrStack.createEcrRole(this, ecrPolicy, props.mainNodeRoleArn);
+    const role = CiEcrStack.createEcrRole(this, ecrPolicy, props.mainNodeAccountNumber, envName);
 
     this.ecrRoleArn = role.roleArn;
-
-    this.roleName = role.roleName;
   }
 
-  public static createEcrRole(stack: Stack, ecrPolicy: ManagedPolicy, mainNodeRoleArn: string) : IRole {
+  public static createEcrRole(stack: Stack, ecrPolicy: ManagedPolicy, mainNodeAccountNumber: string, envName: String) : IRole {
     return new Role(stack, 'ecr-role', {
-      roleName: `${stack.stackName}-ecr-role`,
-      assumedBy: new ArnPrincipal(mainNodeRoleArn),
+      roleName: `OpenSearch-CI-ECR-${envName}-ecr-role`,
+      assumedBy: new ArnPrincipal(`arn:aws:iam::${mainNodeAccountNumber}:role/OpenSearch-CI-${envName}-MainNodeRole`),
       managedPolicies: [
         ecrPolicy,
       ],

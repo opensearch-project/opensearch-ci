@@ -7,17 +7,26 @@
  */
 
 import 'source-map-support/register';
-import { App, RemovalPolicy } from '@aws-cdk/core';
+import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { CIStack } from '../lib/ci-stack';
 import { CIConfigStack } from '../lib/ci-config-stack';
-import { DeployAssets } from './DeployAssets';
+import { DeployAWSAssets } from './DeployAWSAssets';
 
 const app = new App();
 
-new CIConfigStack(app, 'CI-Config-Dev', {});
+const env: string = 'Dev';
 
-const ciStack = new CIStack(app, 'CI-Dev', { });
+const ciConfigStack = new CIConfigStack(app, `OpenSearch-CI-Config-${env}`, {});
 
-const deployAssets = new DeployAssets(app, 'CI-Deploy-Assets', { ciStack, removalPolicy: RemovalPolicy.DESTROY });
+const ciStack = new CIStack(app, `OpenSearch-CI-${env}`, {
+  envName: env,
+  ecrAccountId: ciConfigStack.account,
+});
 
-deployAssets.addDependency(ciStack);
+const deployAssets = new DeployAWSAssets(app, `OpenSearch-CI-Deploy-Assets-${env}`, {
+  removalPolicy: RemovalPolicy.DESTROY,
+  envName: env,
+  mainNodeAccountNumber: ciStack.account,
+});
+
+// deployAssets.addDependency(ciStack);

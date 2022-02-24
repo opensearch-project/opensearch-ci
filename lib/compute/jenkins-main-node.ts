@@ -11,14 +11,16 @@ import {
   AmazonLinuxGeneration, BlockDeviceVolume, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage, Instance,
   InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc,
 } from '@aws-cdk/aws-ec2';
-import { ManagedPolicy, PolicyStatement } from '@aws-cdk/aws-iam';
+import {
+  Effect,
+  ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
+} from '@aws-cdk/aws-iam';
 import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
 import { join } from 'path';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { JenkinsPlugins } from './jenkins-plugins';
 import { AgentNode, AgentNodeProps } from './agent-nodes';
 import { CloudAgentNodeConfig } from './agent-node-config';
-import { CIStack } from '../ci-stack';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -33,10 +35,15 @@ interface OidcFederateProps {
   readonly runWithOidc: boolean;
 }
 
-export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps{
+interface EcrStackProps {
+  readonly ecrAccountId : string
+}
+
+export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, EcrStackProps{
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
   readonly failOnCloudInitError?: boolean;
+  readonly envName: string;
 }
 
 export class JenkinsMainNode {
@@ -118,12 +125,28 @@ export class JenkinsMainNode {
           resources: ['*'],
         })],
       });
+
+    const ecrPolicy = new ManagedPolicy(stack, 'ecr-policy-main-node', {
+      description: 'Policy for ECR to assume role',
+      statements: [new PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        effect: Effect.ALLOW,
+        resources: [`arn:aws:iam::${props.ecrAccountId}:role/OpenSearch-CI-ECR-${props.envName}-ecr-role`],
+      })],
+    });
+
+    // `arn:aws:iam::${props.ecrAccountId}/OpenSearch-CI-ECR-${props.envName}-ecr-role`
+
     this.agentNode = new AgentNode(stack);
     this.ec2Instance = new Instance(stack, 'MainNode', {
 
       instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4),
       machineImage: MachineImage.latestAmazonLinux({
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+      }),
+      role: new Role(stack, `OpenSearch-CI-${props.envName}-MainNodeRole`, {
+        roleName: `OpenSearch-CI-${props.envName}-MainNodeRole`,
+        assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
       }),
       initOptions: {
         timeout: Duration.minutes(20),
@@ -149,11 +172,12 @@ export class JenkinsMainNode {
     this.ec2Instance.role.addManagedPolicy(cloudwatchEventPublishingPolicy);
     this.ec2Instance.role.addManagedPolicy(mainJenkinsNodePolicy);
     this.ec2Instance.role.addManagedPolicy(accessPolicy);
+    this.ec2Instance.role.addManagedPolicy(ecrPolicy);
 
-    new CfnOutput(stack, 'certificateArnSecret', {
-      value: this.ec2Instance.role.roleArn.toString(),
-      exportName: CIStack.MAIN_NODE_ROLE_ARN_EXPORT_VALUE,
-    });
+    // this.ec2Instance.role.roleName = new CfnOutput(stack, 'certificateArnSecret', {
+    //   value: this.ec2Instance.role.roleArn.toString(),
+    //   exportName: CIStack.MAIN_NODE_ROLE_ARN_EXPORT_VALUE,
+    // });
   }
 
   public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps, oidcFederateProps: OidcFederateProps): InitElement[] {
