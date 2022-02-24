@@ -88,7 +88,7 @@ $aws secretsmanager put-secret-value \
    ```
     {
         "clientId": "example_id",
-        "clientPassword": "example_password",
+        "clientSecret": "example_password",
         "wellKnownOpenIDConfigurationUrl": "https://www.example.com",
         "tokenServerUrl": "https://example.com/token",
         "authorizationServerUrl": "https://example.com/authorize",
@@ -101,10 +101,11 @@ $aws secretsmanager put-secret-value \
     --secret-id MyTestDatabaseSecret_or_ARN \
     --secret-string file://mycreds.json_or_value
     ```
+1. Add additional `adminUsers` for role based authentication according to your needs, see [CIStackProps](./lib/ci-stack.ts) for details.
 1. Run with parameter with one of the following (refer [this](#ssl-configuration) for value of `useSsL`) -
-   1. `npm run cdk deploy CI-Dev -- -c runWithOidc=false -c useSsl=true` or,
-   1. `cdk deploy CI-Dev -c runWithOidc=false -c useSsl=true`
-1. Continue with [next steps](#dev-deployment) 
+   1. `npm run cdk deploy CI-Dev -- -c runWithOidc=true -c useSsl=true` or,
+   1. `cdk deploy CI-Dev -c runWithOidc=true -c useSsl=true`
+1. Continue with [next steps](#dev-deployment)
 
 ### Troubleshooting
 #### Main Node

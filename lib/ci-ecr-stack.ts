@@ -22,7 +22,7 @@ export class CiEcrStack extends Stack {
 
   constructor(scope: Construct, id: string, envName: string, props: EcrStackProps) {
     super(scope, id, props);
-
+    console.log(`account = ${props.env?.account}`);
     if (props.createRepositories ?? false) {
       CiEcrStack.createRepositories(this, props.removalPolicy ?? RemovalPolicy.RETAIN);
     }

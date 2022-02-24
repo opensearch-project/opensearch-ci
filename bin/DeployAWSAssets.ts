@@ -18,11 +18,13 @@ export class DeployAWSAssets extends Stack {
     });
 
     if (deployECRParameter === 'true') {
+      console.log('**deploying ecr **');
       DeployAWSAssets.deployEcrStack(scope, props);
     }
   }
 
   public static deployEcrStack(scope: Construct, props: DeployAssetsProps): void {
+    console.log(`account = ${props.env?.account}`);
     new CiEcrStack(scope, `OpenSearch-CI-ECR-${props.envName}`, props.envName, props);
   }
 }

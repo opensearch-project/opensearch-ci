@@ -6,14 +6,13 @@
  * compatible open source license.
  */
 
-import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import {
   AmazonLinuxGeneration, BlockDeviceVolume, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage, Instance,
   InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc,
 } from '@aws-cdk/aws-ec2';
 import {
-  Effect,
-  ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
+  Effect, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
 import { join } from 'path';
@@ -21,6 +20,7 @@ import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { JenkinsPlugins } from './jenkins-plugins';
 import { AgentNode, AgentNodeProps } from './agent-nodes';
 import { CloudAgentNodeConfig } from './agent-node-config';
+import { JenkinsMainNodeConfig } from './jenkins-main-node-config';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -33,6 +33,7 @@ interface HttpConfigProps {
 interface OidcFederateProps {
   readonly oidcCredArn: string;
   readonly runWithOidc: boolean;
+  readonly adminUsers?: Array<String>;
 }
 
 interface EcrStackProps {
@@ -56,8 +57,6 @@ export class JenkinsMainNode {
   static readonly JENKINS_DEFAULT_ID_PASS_PATH: String = '/var/lib/jenkins/secrets/myIdPassDefault';
 
   public readonly ec2Instance: Instance;
-
-  public readonly agentNode: AgentNode;
 
   public readonly ec2InstanceMetrics: {
     cpuTime: Metric,
@@ -135,9 +134,7 @@ export class JenkinsMainNode {
       })],
     });
 
-    // `arn:aws:iam::${props.ecrAccountId}/OpenSearch-CI-ECR-${props.envName}-ecr-role`
-
-    this.agentNode = new AgentNode(stack);
+    const agentNode = new AgentNode(stack);
     this.ec2Instance = new Instance(stack, 'MainNode', {
 
       instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4),
@@ -161,8 +158,8 @@ export class JenkinsMainNode {
         stack.stackName,
         stack.region,
         props,
-        props,
-      ), ...this.agentNode.configElements(stack.region, agentNodeProps, agentNodeConfig.AL2_X64, agentNodeConfig.AL2_ARM64)),
+      ), ...agentNode.configElements(stack.region, agentNodeProps, agentNodeConfig.AL2_X64, agentNodeConfig.AL2_ARM64),
+      ...JenkinsMainNode.configOidcElements(stack.region, props)),
       blockDevices: [{
         deviceName: '/dev/xvda',
         volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),
@@ -173,14 +170,9 @@ export class JenkinsMainNode {
     this.ec2Instance.role.addManagedPolicy(mainJenkinsNodePolicy);
     this.ec2Instance.role.addManagedPolicy(accessPolicy);
     this.ec2Instance.role.addManagedPolicy(ecrPolicy);
-
-    // this.ec2Instance.role.roleName = new CfnOutput(stack, 'certificateArnSecret', {
-    //   value: this.ec2Instance.role.roleArn.toString(),
-    //   exportName: CIStack.MAIN_NODE_ROLE_ARN_EXPORT_VALUE,
-    // });
   }
 
-  public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps, oidcFederateProps: OidcFederateProps): InitElement[] {
+  public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps): InitElement[] {
     return [
       InitPackage.yum('curl'),
       InitPackage.yum('wget'),
@@ -203,10 +195,6 @@ export class JenkinsMainNode {
 
       InitCommand.shellCommand('sleep 60'),
 
-      InitCommand.shellCommand(oidcFederateProps.runWithOidc
-        ? 'amazon-linux-extras install epel -y && yum -y install xmlstarlet'
-        : 'echo not installing xmlstarlet as not running with OIDC'),
-
       // Jenkins needs to be accessible for httpd proxy
       InitCommand.shellCommand('sed -i \'s@JENKINS_LISTEN_ADDRESS=""@JENKINS_LISTEN_ADDRESS="127.0.0.1"@g\' /etc/sysconfig/jenkins'),
 
@@ -225,8 +213,7 @@ export class JenkinsMainNode {
         ? `mkdir /etc/ssl/private/ && aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.sslCertPrivateKeyContentsArn} --query SecretString --output text  > ${JenkinsMainNode.PRIVATE_KEY_PATH}`
         : 'echo useSsl is false, not creating key file'),
 
-      // Local reverse proxy is used, see design for details
-      // https://quip-amazon.com/jjIKA6tIPQbw/ODFE-Jenkins-Production-Cluster-JPC-High-Level-Design#BeF9CAIwx3k
+      // Local reverse proxy is used
       InitPackage.yum('httpd'),
 
       // Configuration to proxy jenkins on :8080 -> :80
@@ -358,7 +345,7 @@ export class JenkinsMainNode {
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 60 seconds to wait for jenkins to start
       // This allows jenkins to generate the secrets files used for auth in jenkins-cli APIs
-      InitCommand.shellCommand('sleep 60'),
+      InitCommand.shellCommand('sleep 65'),
 
       // creating a default  user:password file to use to authenticate the jenkins-cli
       // eslint-disable-next-line max-len
@@ -378,24 +365,48 @@ export class JenkinsMainNode {
 
       InitFile.fromFileInline('/var/lib/jenkins/jenkins.yaml', join(__dirname, '../../resources/jenkins.yaml')),
 
-      // If devMode is false, first line extracts the oidcFederateProps as json from the secret manager
-      // xmlstarlet is used to setup the securityRealm values for oidc by editing the jenkins' config.xml file
-      InitCommand.shellCommand(oidcFederateProps.runWithOidc
-        // eslint-disable-next-line max-len
-        ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` && `
-        + 'xmlstarlet ed -L -d "/hudson/securityRealm" '
-        + '-s /hudson -t elem -n securityRealm -v " " '
-        + '-i //securityRealm -t attr -n "class" -v "org.jenkinsci.plugins.oic.OicSecurityRealm" '
-        + '-i //securityRealm -t attr -n "plugin" -v "oic-auth@1.8" '
-        // eslint-disable-next-line max-len
-        + `${this.oidcConfigFields().map((e) => ` -s /hudson/securityRealm -t elem -n ${e[0]} -v ${e[1] === 'replace' ? `"$(echo $var | jq -r ".${e[0]}")"` : `"${e[1]}"`}`).join(' ')}`
-        + ' /var/lib/jenkins/config.xml'
-        : 'echo Not altering the jenkins config.xml when not running with OIDC'),
+    ];
+  }
 
-      // reloading jenkins config file
+  public static configOidcElements(stackRegion: string, oidcFederateProps: OidcFederateProps): InitElement[] {
+    return [
+
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
-        ? `java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`
-        : 'echo not reloading jenkins config when not running with OIDC'),
+        ? 'amazon-linux-extras install epel -y && yum -y install xmlstarlet'
+        : 'echo not installing xmlstarlet as not running with OIDC'),
+
+      InitCommand.shellCommand(oidcFederateProps.runWithOidc
+        ? 'xmlstarlet ed -L -d /hudson/authorizationStrategy'
+          + ' -s /hudson -t elem -n authorizationStrategy -v " "'
+          + ' -i //authorizationStrategy -t attr -n "class" -v "com.michelin.cio.hudson.plugins.rolestrategy.RoleBasedAuthorizationStrategy"'
+          + ' -s /hudson/authorizationStrategy -t elem -n roleMap'
+          + ' -i /hudson/authorizationStrategy/roleMap -t attr -n "type" -v "projectRoles"'
+          + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
+          + ' -i /hudson/authorizationStrategy/roleMap[2] -t attr -n "type" -v "globalRoles"'
+          + ' -s /hudson/authorizationStrategy/roleMap[2] -t elem -n role -v " "'
+          + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "name" -v "admin"'
+          + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "pattern" -v ".*"'
+          + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n permissions -v " "'
+          // eslint-disable-next-line max-len
+          + `${JenkinsMainNodeConfig.rolePermissions().map((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/permissions -t elem -n "permission" -v ${e}`).join(' ')}`
+          + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n "assignedSIDs" -v " " '
+          // eslint-disable-next-line max-len
+          + `${this.admins(oidcFederateProps.adminUsers).map(((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/assignedSIDs -t elem -n "sid" -v ${e}`)).join(' ')}`
+          + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
+          + ' -i /hudson/authorizationStrategy/roleMap[3] -t attr -n "type" -v "slaveRolesRoles"'
+          + ' /var/lib/jenkins/config.xml'
+          + ` && java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`
+          // eslint-disable-next-line max-len
+          + ` && var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` && `
+          + 'xmlstarlet ed -L -d "/hudson/securityRealm"'
+          + ' -s /hudson -t elem -n securityRealm -v " "'
+          + ' -i //securityRealm -t attr -n "class" -v "org.jenkinsci.plugins.oic.OicSecurityRealm"'
+          + ' -i //securityRealm -t attr -n "plugin" -v "oic-auth@1.8"'
+          // eslint-disable-next-line max-len
+          + `${JenkinsMainNodeConfig.oidcConfigFields().map((e) => ` -s /hudson/securityRealm -t elem -n ${e[0]} -v ${e[1] === 'replace' ? `"$(echo $var | jq -r ".${e[0]}")"` : `"${e[1]}"`}`).join(' ')}`
+          + ' /var/lib/jenkins/config.xml'
+          + ` && java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`
+        : 'echo OIDC disabled: Not changing the configuration'),
     ];
   }
 
@@ -415,19 +426,13 @@ export class JenkinsMainNode {
     });
   }
 
-  public static oidcConfigFields() : string[][] {
-    return [['clientId', 'replace'],
-      ['clientSecret', 'replace'],
-      ['wellKnownOpenIDConfigurationUrl', 'replace'],
-      ['tokenServerUrl', 'replace'],
-      ['authorizationServerUrl', 'replace'],
-      ['userInfoServerUrl', 'replace'],
-      ['userNameField', 'sub'],
-      ['scopes', 'openid'],
-      ['disableSslVerification', 'false'],
-      ['logoutFromOpenidProvider', 'true'],
-      ['postLogoutRedirectUrl', ''],
-      ['escapeHatchEnabled', 'false'],
-      ['escapeHatchSecret', 'random']];
+  /** Adds user provided admin users along with default 'admin' */
+  public static admins(additionalAdminUsers?: any) : String[] {
+    const adminUsers = ['admin'];
+    if (additionalAdminUsers) {
+      const addedAdminUsers = adminUsers.concat(additionalAdminUsers);
+      return addedAdminUsers;
+    }
+    return adminUsers;
   }
 }

@@ -16,14 +16,11 @@ describe('JenkinsMainNode Config Elements', () => {
     sslCertPrivateKeyContentsArn: 'ARN:CDE',
     sslCertChainArn: 'ARN:DEF',
     useSsl: true,
-  }, {
-    oidcCredArn: 'ARN:DEF',
-    runWithOidc: false,
   });
 
   // THEN
   test('Config elements expected counts', async () => {
-    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(35);
+    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(32);
     expect(configElements.filter((e) => e.elementType === 'PACKAGE')).toHaveLength(14);
     expect(configElements.filter((e) => e.elementType === 'FILE')).toHaveLength(3);
   });
@@ -33,24 +30,19 @@ describe('JenkinsMainNode Config Elements', () => {
   });
 });
 
-test('Verify config.xml fields for jenkins OIDC', async () => {
-  expect(JenkinsMainNode.oidcConfigFields()).toBeInstanceOf(Array);
+describe('OIDC Config Elements', () => {
+  // WHEN
+  const configOidcElements = JenkinsMainNode.configOidcElements('us-west-2', {
+    oidcCredArn: 'ARN:DEF',
+    runWithOidc: true,
+    adminUsers: ['admin1', 'admin2'],
+  });
 
-  const oidcConfigFields : string[][] = [['clientId', 'replace'],
-    ['clientSecret', 'replace'],
-    ['wellKnownOpenIDConfigurationUrl', 'replace'],
-    ['tokenServerUrl', 'replace'],
-    ['authorizationServerUrl', 'replace'],
-    ['userInfoServerUrl', 'replace'],
-    ['userNameField', 'sub'],
-    ['scopes', 'openid'],
-    ['disableSslVerification', 'false'],
-    ['logoutFromOpenidProvider', 'true'],
-    ['postLogoutRedirectUrl', ''],
-    ['escapeHatchEnabled', 'false'],
-    ['escapeHatchSecret', 'random']];
+  // THEN
 
-  expect(JSON.stringify(JenkinsMainNode.oidcConfigFields()) === JSON.stringify(oidcConfigFields)).toBeTruthy();
+  test('OIDC config elements counts', async () => {
+    expect(configOidcElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(2);
+  });
 });
 
 test('createPluginInstallCommands breaks apart many plugins', async () => {

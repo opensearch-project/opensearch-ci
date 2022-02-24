@@ -35,11 +35,11 @@ export interface CIStackProps extends StackProps {
   readonly envName : string;
   /** Environment the stack is ebing deployed on */
   readonly ecrAccountId: string;
+  /** Users with admin access during initial deployment */
+  adminUsers?: Array<String>;
 }
 
 export class CIStack extends Stack {
-  public readonly mainJenkinsNode : JenkinsMainNode;
-
   constructor(scope: Construct, id: string, props: CIStackProps) {
     super(scope, id, props);
 
@@ -90,7 +90,7 @@ export class CIStack extends Stack {
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
     const agentNodesConfig = new CloudAgentNodeConfig(this);
 
-    this.mainJenkinsNode = new JenkinsMainNode(this, {
+    const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
       sg: securityGroups.mainNodeSG,
       sslCertContentsArn: importedContentsSecretBucketValue.toString(),
@@ -103,6 +103,7 @@ export class CIStack extends Stack {
       failOnCloudInitError: props?.strictMode,
       envName: props.envName,
       ecrAccountId: props.ecrAccountId,
+      adminUsers: props?.adminUsers,
     },
     {
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
@@ -113,11 +114,11 @@ export class CIStack extends Stack {
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,
       sg: securityGroups.externalAccessSG,
-      targetInstance: this.mainJenkinsNode.ec2Instance,
+      targetInstance: mainJenkinsNode.ec2Instance,
       listenerCertificate,
       useSsl,
     });
 
-    const monitoring = new JenkinsMonitoring(this, externalLoadBalancer, this.mainJenkinsNode);
+    const monitoring = new JenkinsMonitoring(this, externalLoadBalancer, mainJenkinsNode);
   }
 }

@@ -7,7 +7,7 @@
  */
 
 import 'source-map-support/register';
-import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { App, RemovalPolicy } from '@aws-cdk/core';
 import { CIStack } from '../lib/ci-stack';
 import { CIConfigStack } from '../lib/ci-config-stack';
 import { DeployAWSAssets } from './DeployAWSAssets';
@@ -23,10 +23,9 @@ const ciStack = new CIStack(app, `OpenSearch-CI-${env}`, {
   ecrAccountId: ciConfigStack.account,
 });
 
-const deployAssets = new DeployAWSAssets(app, `OpenSearch-CI-Deploy-Assets-${env}`, {
+new DeployAWSAssets(app, `OpenSearch-CI-Deploy-Assets-${env}`, {
   removalPolicy: RemovalPolicy.DESTROY,
   envName: env,
   mainNodeAccountNumber: ciStack.account,
+  createRepositories: true,
 });
-
-// deployAssets.addDependency(ciStack);
