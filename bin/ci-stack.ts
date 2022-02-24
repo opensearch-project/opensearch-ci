@@ -25,7 +25,7 @@ const ciStack = new CIStack(app, `OpenSearch-CI-${env}`, {
 new DeployAWSAssets(app, `OpenSearch-CI-Deploy-Assets-${env}`, {
   removalPolicy: RemovalPolicy.DESTROY,
   mainNodeAccountNumber: ciStack.account,
-  createRepositories: true,
+  createEcrRepositories: true,
   envName: env,
   env: {
     // public ECR repositories can only be created in us-east-1

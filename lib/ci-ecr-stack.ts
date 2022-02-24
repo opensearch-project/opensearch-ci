@@ -14,13 +14,13 @@ export interface EcrStackProps extends StackProps {
   /** removal policy for the ECR Repositories */
   readonly removalPolicy?: RemovalPolicy;
   /** should we skip creating ecr  */
-  readonly createRepositories?: boolean;
+  readonly createEcrRepositories?: boolean;
 }
 
 export class CiEcrStack extends NestedStack {
   constructor(scope: Construct, id: string, props: EcrStackProps) {
     super(scope, id, props);
-    if (props.createRepositories ?? false) {
+    if (props.createEcrRepositories ?? false) {
       CiEcrStack.createRepositories(scope, this, props.removalPolicy ?? RemovalPolicy.RETAIN);
     }
     const ecrPolicy = CiEcrStack.createEcrPolicy(this, id);

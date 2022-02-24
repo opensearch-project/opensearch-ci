@@ -4,6 +4,7 @@ import {
 import { CiEcrStack, EcrStackProps } from './ci-ecr-stack';
 
 export interface DeployAssetsProps extends EcrStackProps {
+  /** Environment in which assets are being deployed */
   readonly envName: string;
 }
 
