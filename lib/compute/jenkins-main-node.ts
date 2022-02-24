@@ -353,6 +353,7 @@ export class JenkinsMainNode {
         ? 'amazon-linux-extras install epel -y && yum -y install xmlstarlet'
         : 'echo not installing xmlstarlet as not running with OIDC'),
 
+      // Enabling Role Based Authentication with admin and read-only role
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
         ? 'xmlstarlet ed -L -d /hudson/authorizationStrategy'
           + ' -s /hudson -t elem -n authorizationStrategy -v " "'
@@ -366,17 +367,29 @@ export class JenkinsMainNode {
           + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "pattern" -v ".*"'
           + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n permissions -v " "'
           // eslint-disable-next-line max-len
-          + `${JenkinsMainNodeConfig.rolePermissions().map((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/permissions -t elem -n "permission" -v ${e}`).join(' ')}`
+          + `${JenkinsMainNodeConfig.adminRolePermissions().map((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/permissions -t elem -n "permission" -v ${e}`).join(' ')}`
           + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n "assignedSIDs" -v " " '
           // eslint-disable-next-line max-len
           + `${this.admins(oidcFederateProps.adminUsers).map(((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/assignedSIDs -t elem -n "sid" -v ${e}`)).join(' ')}`
           + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
           + ' -i /hudson/authorizationStrategy/roleMap[3] -t attr -n "type" -v "slaveRolesRoles"'
+          + ' -s /hudson/authorizationStrategy/roleMap[2] -t elem -n role -v " "'
+          + ' -i /hudson/authorizationStrategy/roleMap[2]/role[2] -t attr -n "name" -v "read-only"'
+          + ' -i /hudson/authorizationStrategy/roleMap[2]/role[2] -t attr -n "pattern" -v ".*"'
+          + ' -s /hudson/authorizationStrategy/roleMap[2]/role[2] -t elem -n permissions -v " "'
+          // eslint-disable-next-line max-len
+          + `${JenkinsMainNodeConfig.readOnlyRolePermissions().map((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role[2]/permissions -t elem -n "permission" -v ${e}`).join(' ')}`
+          + ' -s /hudson/authorizationStrategy/roleMap[2]/role[2] -t elem -n "assignedSIDs" -v " "'
+          + ' -s /hudson/authorizationStrategy/roleMap[2]/role[2]/assignedSIDs -t elem -n "sid" -v "anonymous"'
           + ' /var/lib/jenkins/config.xml'
           + ` && java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`
-          // eslint-disable-next-line max-len
-          + ` && var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` && `
-          + 'xmlstarlet ed -L -d "/hudson/securityRealm"'
+        : 'echo OIDC disabled: Not enabling Role Based Authentication'),
+
+      // Enabling OIDC
+      InitCommand.shellCommand(oidcFederateProps.runWithOidc
+        // eslint-disable-next-line max-len
+        ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` && `
+          + ' xmlstarlet ed -L -d "/hudson/securityRealm"'
           + ' -s /hudson -t elem -n securityRealm -v " "'
           + ' -i //securityRealm -t attr -n "class" -v "org.jenkinsci.plugins.oic.OicSecurityRealm"'
           + ' -i //securityRealm -t attr -n "plugin" -v "oic-auth@1.8"'

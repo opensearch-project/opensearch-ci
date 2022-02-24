@@ -6,8 +6,6 @@
  * compatible open source license.
  */
 
-import { JenkinsMainNode } from './jenkins-main-node';
-
 export class JenkinsMainNodeConfig {
   public static oidcConfigFields() : string[][] {
     return [['clientId', 'replace'],
@@ -25,7 +23,7 @@ export class JenkinsMainNodeConfig {
       ['escapeHatchSecret', 'random']];
   }
 
-  public static rolePermissions() : string[] {
+  public static adminRolePermissions() : string[] {
     return ['hudson.model.Hudson.Manage',
       'hudson.model.Computer.Connect',
       'hudson.model.Hudson.UploadPlugins',
@@ -75,5 +73,12 @@ export class JenkinsMainNodeConfig {
       'hudson.model.Run.Artifacts',
       'com.cloudbees.plugins.credentials.CredentialsProvider.UseItem',
       'org.jenkins.plugins.lockableresources.LockableResourcesManager.Reserve'];
+  }
+
+  public static readOnlyRolePermissions(): string[] {
+    return [
+      'hudson.model.Hudson.Read',
+      'hudson.model.Item.Read',
+    ];
   }
 }
