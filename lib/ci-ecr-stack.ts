@@ -1,5 +1,5 @@
 import {
-  Construct, RemovalPolicy, Stack, StackProps,
+  Construct, NestedStack, RemovalPolicy, Stack, StackProps,
 } from '@aws-cdk/core';
 import { Repository, TagMutability } from '@aws-cdk/aws-ecr';
 import {
@@ -17,8 +17,7 @@ export interface EcrStackProps extends StackProps {
   readonly createRepositories?: boolean;
 }
 
-export class CiEcrStack extends Stack {
-
+export class CiEcrStack extends NestedStack {
   constructor(scope: Construct, id: string, envName: string, props: EcrStackProps) {
     super(scope, id, props);
     if (props.createRepositories ?? false) {
@@ -30,7 +29,7 @@ export class CiEcrStack extends Stack {
   }
 
   public static createEcrRole(stack: Stack, ecrPolicy: ManagedPolicy, mainNodeAccountNumber: string, envName: String) : IRole {
-    return new Role(stack, 'ecr-role', {
+    return new Role(stack, 'ecr-stack-role', {
       roleName: `OpenSearch-CI-ECR-${envName}-ecr-role`,
       assumedBy: new ArnPrincipal(`arn:aws:iam::${mainNodeAccountNumber}:role/OpenSearch-CI-${envName}-MainNodeRole`),
       managedPolicies: [

@@ -12,13 +12,13 @@ export class DeployAWSAssets extends Stack {
     super(scope, id, props);
     const deployECRParameter = `${props?.deployECR ?? this.node.tryGetContext('deployEcr')}`;
 
-    new CfnParameter(this, 'runWithOidc', {
+    new CfnParameter(this, 'deployEcr', {
       description: 'Should ECR repositories + roles be created',
       default: deployECRParameter === 'true',
     });
 
     if (deployECRParameter === 'true') {
-      DeployAWSAssets.deployEcrStack(scope, props);
+      DeployAWSAssets.deployEcrStack(this, props);
     }
   }
 

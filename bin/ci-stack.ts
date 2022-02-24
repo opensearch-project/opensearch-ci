@@ -10,7 +10,7 @@ import 'source-map-support/register';
 import { App, RemovalPolicy } from '@aws-cdk/core';
 import { CIStack } from '../lib/ci-stack';
 import { CIConfigStack } from '../lib/ci-config-stack';
-import { DeployAWSAssets } from './DeployAWSAssets';
+import { DeployAWSAssets } from '../lib/DeployAWSAssets';
 
 const app = new App();
 
