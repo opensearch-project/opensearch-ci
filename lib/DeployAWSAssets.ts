@@ -1,7 +1,7 @@
 import {
   CfnParameter, Construct, Stack,
 } from '@aws-cdk/core';
-import { CiEcrStack, EcrStackProps } from '../lib/ci-ecr-stack';
+import { CiEcrStack, EcrStackProps } from './ci-ecr-stack';
 
 export interface DeployAssetsProps extends EcrStackProps {
   readonly envName: string;
@@ -18,13 +18,11 @@ export class DeployAWSAssets extends Stack {
     });
 
     if (deployECRParameter === 'true') {
-      console.log('**deploying ecr **');
       DeployAWSAssets.deployEcrStack(scope, props);
     }
   }
 
   public static deployEcrStack(scope: Construct, props: DeployAssetsProps): void {
-    console.log(`account = ${props.env?.account}`);
     new CiEcrStack(scope, `OpenSearch-CI-ECR-${props.envName}`, props.envName, props);
   }
 }

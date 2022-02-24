@@ -18,19 +18,15 @@ export interface EcrStackProps extends StackProps {
 }
 
 export class CiEcrStack extends Stack {
-  public readonly ecrRoleArn: string;
 
   constructor(scope: Construct, id: string, envName: string, props: EcrStackProps) {
     super(scope, id, props);
-    console.log(`account = ${props.env?.account}`);
     if (props.createRepositories ?? false) {
       CiEcrStack.createRepositories(this, props.removalPolicy ?? RemovalPolicy.RETAIN);
     }
     const ecrPolicy = CiEcrStack.createEcrPolicy(this, id);
 
-    const role = CiEcrStack.createEcrRole(this, ecrPolicy, props.mainNodeAccountNumber, envName);
-
-    this.ecrRoleArn = role.roleArn;
+    CiEcrStack.createEcrRole(this, ecrPolicy, props.mainNodeAccountNumber, envName);
   }
 
   public static createEcrRole(stack: Stack, ecrPolicy: ManagedPolicy, mainNodeAccountNumber: string, envName: String) : IRole {
@@ -72,27 +68,31 @@ export class CiEcrStack extends Stack {
     new Repository(stack, 'ci-runner', {
       repositoryName: 'ci-runner',
       imageTagMutability: TagMutability.IMMUTABLE,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy,
     });
 
     new Repository(stack, 'opensearch', {
       repositoryName: 'opensearch',
       imageTagMutability: TagMutability.IMMUTABLE,
+      removalPolicy,
     });
 
     new Repository(stack, 'data-prepper', {
       repositoryName: 'data-prepper',
       imageTagMutability: TagMutability.IMMUTABLE,
+      removalPolicy,
     });
 
     new Repository(stack, 'logstash-oss-with-opensearch-output-plugin', {
       repositoryName: 'logstash-oss-with-opensearch-output-plugin',
       imageTagMutability: TagMutability.IMMUTABLE,
+      removalPolicy,
     });
 
     new Repository(stack, 'opensearch-dashboards', {
       repositoryName: 'opensearch-dashboards',
       imageTagMutability: TagMutability.IMMUTABLE,
+      removalPolicy,
     });
   }
 }
