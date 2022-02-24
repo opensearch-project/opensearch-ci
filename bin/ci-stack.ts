@@ -19,13 +19,12 @@ const env: string = 'Dev';
 const ciConfigStack = new CIConfigStack(app, `OpenSearch-CI-Config-${env}`, {});
 
 const ciStack = new CIStack(app, `OpenSearch-CI-${env}`, {
-  envName: env,
   ecrAccountId: ciConfigStack.account,
 });
 
 new DeployAWSAssets(app, `OpenSearch-CI-Deploy-Assets-${env}`, {
   removalPolicy: RemovalPolicy.DESTROY,
-  envName: env,
   mainNodeAccountNumber: ciStack.account,
   createRepositories: true,
+  envName: env,
 });

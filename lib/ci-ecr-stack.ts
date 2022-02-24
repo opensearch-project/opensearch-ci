@@ -1,7 +1,7 @@
 import {
   Construct, NestedStack, RemovalPolicy, Stack, StackProps,
 } from '@aws-cdk/core';
-import { Repository, TagMutability } from '@aws-cdk/aws-ecr';
+import { CfnPublicRepository } from '@aws-cdk/aws-ecr';
 import {
   ArnPrincipal, IRole, ManagedPolicy, PolicyStatement, Role,
 } from '@aws-cdk/aws-iam';
@@ -18,20 +18,20 @@ export interface EcrStackProps extends StackProps {
 }
 
 export class CiEcrStack extends NestedStack {
-  constructor(scope: Construct, id: string, envName: string, props: EcrStackProps) {
+  constructor(scope: Construct, id: string, props: EcrStackProps) {
     super(scope, id, props);
     if (props.createRepositories ?? false) {
-      CiEcrStack.createRepositories(this, props.removalPolicy ?? RemovalPolicy.RETAIN);
+      CiEcrStack.createRepositories(scope, this, props.removalPolicy ?? RemovalPolicy.RETAIN);
     }
     const ecrPolicy = CiEcrStack.createEcrPolicy(this, id);
 
-    CiEcrStack.createEcrRole(this, ecrPolicy, props.mainNodeAccountNumber, envName);
+    CiEcrStack.createEcrRole(this, ecrPolicy, props.mainNodeAccountNumber);
   }
 
-  public static createEcrRole(stack: Stack, ecrPolicy: ManagedPolicy, mainNodeAccountNumber: string, envName: String) : IRole {
+  public static createEcrRole(stack: Stack, ecrPolicy: ManagedPolicy, mainNodeAccountNumber: string) : IRole {
     return new Role(stack, 'ecr-stack-role', {
-      roleName: `OpenSearch-CI-ECR-${envName}-ecr-role`,
-      assumedBy: new ArnPrincipal(`arn:aws:iam::${mainNodeAccountNumber}:role/OpenSearch-CI-${envName}-MainNodeRole`),
+      roleName: 'OpenSearch-CI-ECR-ecr-role',
+      assumedBy: new ArnPrincipal(`arn:aws:iam::${mainNodeAccountNumber}:role/OpenSearch-CI-MainNodeRole`),
       managedPolicies: [
         ecrPolicy,
       ],
@@ -63,35 +63,25 @@ export class CiEcrStack extends NestedStack {
       });
   }
 
-  public static createRepositories(stack: Stack, removalPolicy : RemovalPolicy) : void {
-    new Repository(stack, 'ci-runner', {
+  public static createRepositories(scope: Construct, stack: Stack, removalPolicy : RemovalPolicy) : void {
+    new CfnPublicRepository(scope, 'ci-runner', {
       repositoryName: 'ci-runner',
-      imageTagMutability: TagMutability.IMMUTABLE,
-      removalPolicy,
-    });
+    }).applyRemovalPolicy(removalPolicy);
 
-    new Repository(stack, 'opensearch', {
+    new CfnPublicRepository(stack, 'opensearch', {
       repositoryName: 'opensearch',
-      imageTagMutability: TagMutability.IMMUTABLE,
-      removalPolicy,
-    });
+    }).applyRemovalPolicy(removalPolicy);
 
-    new Repository(stack, 'data-prepper', {
+    new CfnPublicRepository(stack, 'data-prepper', {
       repositoryName: 'data-prepper',
-      imageTagMutability: TagMutability.IMMUTABLE,
-      removalPolicy,
-    });
+    }).applyRemovalPolicy(removalPolicy);
 
-    new Repository(stack, 'logstash-oss-with-opensearch-output-plugin', {
+    new CfnPublicRepository(stack, 'logstash-oss-with-opensearch-output-plugin', {
       repositoryName: 'logstash-oss-with-opensearch-output-plugin',
-      imageTagMutability: TagMutability.IMMUTABLE,
-      removalPolicy,
-    });
+    }).applyRemovalPolicy(removalPolicy);
 
-    new Repository(stack, 'opensearch-dashboards', {
+    new CfnPublicRepository(stack, 'opensearch-dashboards', {
       repositoryName: 'opensearch-dashboards',
-      imageTagMutability: TagMutability.IMMUTABLE,
-      removalPolicy,
-    });
+    }).applyRemovalPolicy(removalPolicy);
   }
 }

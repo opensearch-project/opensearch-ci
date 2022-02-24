@@ -44,7 +44,6 @@ export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
   readonly failOnCloudInitError?: boolean;
-  readonly envName: string;
 }
 
 export class JenkinsMainNode {
@@ -90,8 +89,8 @@ export class JenkinsMainNode {
       machineImage: MachineImage.latestAmazonLinux({
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
       }),
-      role: new Role(stack, `OpenSearch-CI-${props.envName}-MainNodeRole`, {
-        roleName: `OpenSearch-CI-${props.envName}-MainNodeRole`,
+      role: new Role(stack, 'OpenSearch-CI-MainNodeRole', {
+        roleName: 'OpenSearch-CI-MainNodeRole',
         assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
       }),
       initOptions: {
@@ -115,12 +114,12 @@ export class JenkinsMainNode {
       }],
     });
 
-    JenkinsMainNode.createPoliciesForMainNode(stack, props, props.envName).map(
+    JenkinsMainNode.createPoliciesForMainNode(stack, props).map(
       (policy) => this.ec2Instance.role.addManagedPolicy(policy),
     );
   }
 
-  public static createPoliciesForMainNode(stack: Stack, ecrStackProps: EcrStackProps, envName: string) : (IManagedPolicy | ManagedPolicy)[] {
+  public static createPoliciesForMainNode(stack: Stack, ecrStackProps: EcrStackProps) : (IManagedPolicy | ManagedPolicy)[] {
     // Policy for SSM management of the host - Removes the need of SSH keys
     const ec2SsmManagementPolicy = ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore');
 
@@ -168,7 +167,7 @@ export class JenkinsMainNode {
       statements: [new PolicyStatement({
         actions: ['sts:AssumeRole'],
         effect: Effect.ALLOW,
-        resources: [`arn:aws:iam::${ecrStackProps.ecrAccountId}:role/OpenSearch-CI-ECR-${envName}-ecr-role`],
+        resources: [`arn:aws:iam::${ecrStackProps.ecrAccountId}:role/OpenSearch-CI-ECR-ecr-role`],
       })],
     });
 

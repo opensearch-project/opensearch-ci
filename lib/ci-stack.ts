@@ -32,8 +32,6 @@ export interface CIStackProps extends StackProps {
   /** Additional verification during deployment and resource startup. */
   strictMode?: boolean;
   /** Environment the stack is ebing deployed on */
-  readonly envName : string;
-  /** Environment the stack is ebing deployed on */
   readonly ecrAccountId: string;
   /** Users with admin access during initial deployment */
   adminUsers?: Array<String>;
@@ -101,7 +99,6 @@ export class CIStack extends Stack {
       useSsl,
       runWithOidc,
       failOnCloudInitError: props?.strictMode,
-      envName: props.envName,
       ecrAccountId: props.ecrAccountId,
       adminUsers: props?.adminUsers,
     },

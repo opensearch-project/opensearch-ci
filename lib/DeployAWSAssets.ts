@@ -23,6 +23,6 @@ export class DeployAWSAssets extends Stack {
   }
 
   public static deployEcrStack(scope: Construct, props: DeployAssetsProps): void {
-    new CiEcrStack(scope, `OpenSearch-CI-ECR-${props.envName}`, props.envName, props);
+    new CiEcrStack(scope, `OpenSearch-CI-ECR-${props.envName}`, props);
   }
 }
