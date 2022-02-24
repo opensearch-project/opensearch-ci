@@ -38,7 +38,6 @@ export class JenkinsPlugins {
       'description-setter',
       'disable-github-multibranch-status',
       'display-url-api',
-      'docker-workflow',
       'docker-commons',
       'docker-custom-build-environment',
       'durable-task',
