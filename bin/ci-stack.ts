@@ -27,4 +27,8 @@ new DeployAWSAssets(app, `OpenSearch-CI-Deploy-Assets-${env}`, {
   mainNodeAccountNumber: ciStack.account,
   createRepositories: true,
   envName: env,
+  env: {
+    // public ECR repositories can only be created in us-east-1
+    region: 'us-east-1',
+  },
 });
