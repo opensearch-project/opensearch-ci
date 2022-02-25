@@ -34,7 +34,7 @@ interface OidcFederateProps {
   readonly adminUsers?: Array<String>;
 }
 
-export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps{
+export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps {
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
   readonly failOnCloudInitError?: boolean;
@@ -347,6 +347,8 @@ export class JenkinsMainNode {
   }
 
   public static configOidcElements(stackRegion: string, oidcFederateProps: OidcFederateProps): InitElement[] {
+    const RELOAD_CONFIG: string = 'java -jar /jenkins-cli.jar -s http://localhost:8080'
+      + ` -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`;
     return [
 
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
@@ -356,47 +358,50 @@ export class JenkinsMainNode {
       // Enabling Role Based Authentication with admin and read-only role
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
         ? 'xmlstarlet ed -L -d /hudson/authorizationStrategy'
-          + ' -s /hudson -t elem -n authorizationStrategy -v " "'
-          + ' -i //authorizationStrategy -t attr -n "class" -v "com.michelin.cio.hudson.plugins.rolestrategy.RoleBasedAuthorizationStrategy"'
-          + ' -s /hudson/authorizationStrategy -t elem -n roleMap'
-          + ' -i /hudson/authorizationStrategy/roleMap -t attr -n "type" -v "projectRoles"'
-          + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
-          + ' -i /hudson/authorizationStrategy/roleMap[2] -t attr -n "type" -v "globalRoles"'
-          + ' -s /hudson/authorizationStrategy/roleMap[2] -t elem -n role -v " "'
-          + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "name" -v "admin"'
-          + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "pattern" -v ".*"'
-          + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n permissions -v " "'
-          // eslint-disable-next-line max-len
-          + `${JenkinsMainNodeConfig.adminRolePermissions().map((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/permissions -t elem -n "permission" -v ${e}`).join(' ')}`
-          + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n "assignedSIDs" -v " " '
-          // eslint-disable-next-line max-len
-          + `${this.admins(oidcFederateProps.adminUsers).map(((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/assignedSIDs -t elem -n "sid" -v ${e}`)).join(' ')}`
-          + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
-          + ' -i /hudson/authorizationStrategy/roleMap[3] -t attr -n "type" -v "slaveRolesRoles"'
-          + ' -s /hudson/authorizationStrategy/roleMap[2] -t elem -n role -v " "'
-          + ' -i /hudson/authorizationStrategy/roleMap[2]/role[2] -t attr -n "name" -v "read-only"'
-          + ' -i /hudson/authorizationStrategy/roleMap[2]/role[2] -t attr -n "pattern" -v ".*"'
-          + ' -s /hudson/authorizationStrategy/roleMap[2]/role[2] -t elem -n permissions -v " "'
-          // eslint-disable-next-line max-len
-          + `${JenkinsMainNodeConfig.readOnlyRolePermissions().map((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role[2]/permissions -t elem -n "permission" -v ${e}`).join(' ')}`
-          + ' -s /hudson/authorizationStrategy/roleMap[2]/role[2] -t elem -n "assignedSIDs" -v " "'
-          + ' -s /hudson/authorizationStrategy/roleMap[2]/role[2]/assignedSIDs -t elem -n "sid" -v "anonymous"'
-          + ' /var/lib/jenkins/config.xml'
-          + ` && java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`
+        + ' -s /hudson -t elem -n authorizationStrategy -v " "'
+        + ' -i //authorizationStrategy -t attr -n "class" -v "com.michelin.cio.hudson.plugins.rolestrategy.RoleBasedAuthorizationStrategy"'
+        + ' -s /hudson/authorizationStrategy -t elem -n roleMap'
+        + ' -i /hudson/authorizationStrategy/roleMap -t attr -n "type" -v "projectRoles"'
+        + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
+        + ' -i /hudson/authorizationStrategy/roleMap[2] -t attr -n "type" -v "globalRoles"'
+        + ' -s /hudson/authorizationStrategy/roleMap[2] -t elem -n role -v " "'
+        + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "name" -v "admin"'
+        + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "pattern" -v ".*"'
+        + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n permissions -v " "'
+        // eslint-disable-next-line max-len
+        + `${JenkinsMainNodeConfig.adminRolePermissions().map((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/permissions -t elem -n "permission" -v ${e}`).join(' ')}`
+        + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n "assignedSIDs" -v " " '
+        // eslint-disable-next-line max-len
+        + `${this.admins(oidcFederateProps.adminUsers).map(((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/assignedSIDs -t elem -n "sid" -v ${e}`)).join(' ')}`
+        + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
+        + ' -i /hudson/authorizationStrategy/roleMap[3] -t attr -n "type" -v "slaveRolesRoles"'
+        + ' -s /hudson/authorizationStrategy/roleMap[2] -t elem -n role -v " "'
+        + ' -i /hudson/authorizationStrategy/roleMap[2]/role[2] -t attr -n "name" -v "read-only"'
+        + ' -i /hudson/authorizationStrategy/roleMap[2]/role[2] -t attr -n "pattern" -v ".*"'
+        + ' -s /hudson/authorizationStrategy/roleMap[2]/role[2] -t elem -n permissions -v " "'
+        // eslint-disable-next-line max-len
+        + `${JenkinsMainNodeConfig.readOnlyRolePermissions().map((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role[2]/permissions -t elem -n "permission" -v ${e}`).join(' ')}`
+        + ' -s /hudson/authorizationStrategy/roleMap[2]/role[2] -t elem -n "assignedSIDs" -v " "'
+        + ' -s /hudson/authorizationStrategy/roleMap[2]/role[2]/assignedSIDs -t elem -n "sid" -v "anonymous"'
+        + ' /var/lib/jenkins/config.xml'
+        + ` && ${RELOAD_CONFIG}`
         : 'echo OIDC disabled: Not enabling Role Based Authentication'),
+
+      // sleep for 30s before editing config.xml again
+      InitCommand.shellCommand('sleep 30'),
 
       // Enabling OIDC
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
         // eslint-disable-next-line max-len
         ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` && `
-          + ' xmlstarlet ed -L -d "/hudson/securityRealm"'
-          + ' -s /hudson -t elem -n securityRealm -v " "'
-          + ' -i //securityRealm -t attr -n "class" -v "org.jenkinsci.plugins.oic.OicSecurityRealm"'
-          + ' -i //securityRealm -t attr -n "plugin" -v "oic-auth@1.8"'
-          // eslint-disable-next-line max-len
-          + `${JenkinsMainNodeConfig.oidcConfigFields().map((e) => ` -s /hudson/securityRealm -t elem -n ${e[0]} -v ${e[1] === 'replace' ? `"$(echo $var | jq -r ".${e[0]}")"` : `"${e[1]}"`}`).join(' ')}`
-          + ' /var/lib/jenkins/config.xml'
-          + ` && java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`
+        + ' xmlstarlet ed -L -d "/hudson/securityRealm"'
+        + ' -s /hudson -t elem -n securityRealm -v " "'
+        + ' -i //securityRealm -t attr -n "class" -v "org.jenkinsci.plugins.oic.OicSecurityRealm"'
+        + ' -i //securityRealm -t attr -n "plugin" -v "oic-auth@1.8"'
+        // eslint-disable-next-line max-len
+        + `${JenkinsMainNodeConfig.oidcConfigFields().map((e) => ` -s /hudson/securityRealm -t elem -n ${e[0]} -v ${e[1] === 'replace' ? `"$(echo $var | jq -r ".${e[0]}")"` : `"${e[1]}"`}`).join(' ')}`
+        + ' /var/lib/jenkins/config.xml'
+        + ` && ${RELOAD_CONFIG}`
         : 'echo OIDC disabled: Not changing the configuration'),
     ];
   }
@@ -418,7 +423,7 @@ export class JenkinsMainNode {
   }
 
   /** Adds user provided admin users along with default 'admin' */
-  public static admins(additionalAdminUsers?: any) : String[] {
+  public static admins(additionalAdminUsers?: any): String[] {
     const adminUsers = ['admin'];
     if (additionalAdminUsers) {
       const addedAdminUsers = adminUsers.concat(additionalAdminUsers);
