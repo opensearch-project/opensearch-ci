@@ -8,7 +8,7 @@ export interface DeployAssetsProps extends EcrStackProps {
   readonly envName: string;
 }
 
-export class DeployAWSAssets extends Stack {
+export class DeployAwsAssets extends Stack {
   constructor(scope: Construct, id: string, props: DeployAssetsProps) {
     super(scope, id, props);
     const deployECRParameter = `${props?.deployECR ?? this.node.tryGetContext('deployEcr')}`;
@@ -19,7 +19,7 @@ export class DeployAWSAssets extends Stack {
     });
 
     if (deployECRParameter === 'true') {
-      DeployAWSAssets.deployEcrStack(this, props);
+      DeployAwsAssets.deployEcrStack(this, props);
     }
   }
 
