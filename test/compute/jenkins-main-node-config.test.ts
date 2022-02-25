@@ -29,8 +29,8 @@ test('Verify config.xml fields for jenkins OIDC', async () => {
   expect(JSON.stringify(JenkinsMainNodeConfig.oidcConfigFields()) === JSON.stringify(oidcConfigFields)).toBeTruthy();
 });
 
-test('Verify config.xml fields for jenkins Role Based Auth', async () => {
-  expect(JenkinsMainNodeConfig.rolePermissions()).toBeInstanceOf(Array);
+test('Verify config.xml fields for jenkins Admin Role', async () => {
+  expect(JenkinsMainNodeConfig.adminRolePermissions()).toBeInstanceOf(Array);
 
   const rolePermissions : string[] = ['hudson.model.Hudson.Manage',
     'hudson.model.Computer.Connect',
@@ -82,7 +82,18 @@ test('Verify config.xml fields for jenkins Role Based Auth', async () => {
     'com.cloudbees.plugins.credentials.CredentialsProvider.UseItem',
     'org.jenkins.plugins.lockableresources.LockableResourcesManager.Reserve'];
 
-  expect(JSON.stringify(JenkinsMainNodeConfig.rolePermissions()) === JSON.stringify(rolePermissions)).toBeTruthy();
+  expect(JSON.stringify(JenkinsMainNodeConfig.adminRolePermissions()) === JSON.stringify(rolePermissions)).toBeTruthy();
+});
+
+test('Verify config.xml fields for jenkins Read-Only Role', async () => {
+  expect(JenkinsMainNodeConfig.readOnlyRolePermissions()).toBeInstanceOf(Array);
+
+  const rolePermissions : string[] = [
+    'hudson.model.Hudson.Read',
+    'hudson.model.Item.Read',
+  ];
+
+  expect(JSON.stringify(JenkinsMainNodeConfig.readOnlyRolePermissions()) === JSON.stringify(rolePermissions)).toBeTruthy();
 });
 
 test('Verify initial admin users for when OIDC is enabled', async () => {

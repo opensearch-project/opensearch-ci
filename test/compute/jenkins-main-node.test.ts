@@ -41,7 +41,7 @@ describe('OIDC Config Elements', () => {
   // THEN
 
   test('OIDC config elements counts', async () => {
-    expect(configOidcElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(2);
+    expect(configOidcElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(4);
   });
 });
 
