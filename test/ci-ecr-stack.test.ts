@@ -13,7 +13,7 @@ import { App, RemovalPolicy } from '@aws-cdk/core';
 import { CiEcrStack } from '../lib/ci-ecr-stack';
 import { DeployAssetsProps, DeployAwsAssets } from '../lib/deploy-aws-assets';
 
-test('ECR Stack Basic Resources', () => {
+test('ECR Stack with Resources', () => {
   const app = new App({
     context: { useSsl: 'true', runWithOidc: 'true' },
   });
@@ -37,6 +37,34 @@ test('ECR Stack Basic Resources', () => {
   // THEN
   expect(ecrStack).to(countResources('AWS::ECR::PublicRepository', 4));
   expect(deployAwsAssetsStack).to(countResources('AWS::ECR::PublicRepository', 1));
+  expect(ecrStack).to(countResources('AWS::IAM::Role', 1));
+  expect(ecrStack).to(countResources('AWS::IAM::ManagedPolicy', 1));
+});
+
+test('ECR Stack No Basic Resources', () => {
+  const app = new App({
+    context: { useSsl: 'true', runWithOidc: 'true' },
+  });
+
+  // WHEN
+  const deployAssetsProps : DeployAssetsProps = {
+    removalPolicy: RemovalPolicy.DESTROY,
+    mainNodeAccountNumber: '99999999',
+    createEcrRepositories: false,
+    envName: 'dev',
+    env: {
+      region: 'us-east-1',
+    },
+    deployECR: false,
+  };
+
+  const deployAwsAssetsStack = new DeployAwsAssets(app, 'TestStack', deployAssetsProps);
+
+  const ecrStack = new CiEcrStack(deployAwsAssetsStack, 'ecrStack', deployAssetsProps);
+
+  // THEN
+  expect(ecrStack).to(countResources('AWS::ECR::PublicRepository', 0));
+  expect(deployAwsAssetsStack).to(countResources('AWS::ECR::PublicRepository', 0));
   expect(ecrStack).to(countResources('AWS::IAM::Role', 1));
   expect(ecrStack).to(countResources('AWS::IAM::ManagedPolicy', 1));
 });
