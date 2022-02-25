@@ -26,15 +26,15 @@ import { CloudAgentNodeConfig } from './compute/agent-node-config';
 
 export interface CIStackProps extends StackProps {
   /** Should the Jenkins use https  */
-  useSsl?: boolean;
+  readonly useSsl?: boolean;
   /** Should an OIDC provider be installed on Jenkins. */
-  runWithOidc?: boolean;
+  readonly runWithOidc?: boolean;
   /** Additional verification during deployment and resource startup. */
-  strictMode?: boolean;
-  /** Environment the stack is ebing deployed on */
+  readonly strictMode?: boolean;
+  /** Account to deploy your ECR Assets on */
   readonly ecrAccountId: string;
   /** Users with admin access during initial deployment */
-  adminUsers?: Array<String>;
+  readonly adminUsers?: Array<String>;
 }
 
 export class CIStack extends Stack {

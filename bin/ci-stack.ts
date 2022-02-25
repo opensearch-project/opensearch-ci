@@ -29,6 +29,7 @@ new DeployAWSAssets(app, `OpenSearch-CI-Deploy-Assets-${env}`, {
   envName: env,
   env: {
     // public ECR repositories can only be created in us-east-1
+    // https://github.com/aws/aws-cli/issues/5917#issuecomment-775564831
     region: 'us-east-1',
   },
 });
