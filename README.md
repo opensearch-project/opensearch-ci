@@ -37,9 +37,7 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
 2. Import the config / ci stacks alongside the other resources
    ```typescript
    new CIConfigStack(app, 'CI-Config-Beta', {});
-   new CIStack(app, 'CI-Beta', ciSettings, {
-    ecrAccountId: account_id,  
-   });
+   new CIStack(app, 'CI-Beta', ciSettings, {});
    ```
 3. Import `DeployAwsAssets` stack to deploy aws assets as per your needs.
 4. We currently support deploying public ECR and is deployed as follows -
@@ -48,6 +46,7 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
       // This will delete the ECR repository once the stack is destroyed. 
       // Default removal policy (if not specified) is RemovalPolicy.DESTROY
       removalPolicy: RemovalPolicy.DESTROY,
+      // account where the main node is deployed
       mainNodeAccountNumber: ciStack.account,
       envName: 'dev',
       env: {

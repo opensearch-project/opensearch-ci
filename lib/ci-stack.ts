@@ -99,7 +99,7 @@ export class CIStack extends Stack {
       useSsl,
       runWithOidc,
       failOnCloudInitError: props?.strictMode,
-      ecrAccountId: props.ecrAccountId ?? process.env.account,
+      ecrAccountId: props.ecrAccountId ?? Stack.of(this).account,
       adminUsers: props?.adminUsers,
     },
     {
