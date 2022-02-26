@@ -32,7 +32,7 @@ export interface CIStackProps extends StackProps {
   /** Additional verification during deployment and resource startup. */
   readonly strictMode?: boolean;
   /** Account to deploy your ECR Assets on */
-  readonly ecrAccountId: string;
+  readonly ecrAccountId?: string;
   /** Users with admin access during initial deployment */
   readonly adminUsers?: Array<String>;
 }
@@ -99,7 +99,7 @@ export class CIStack extends Stack {
       useSsl,
       runWithOidc,
       failOnCloudInitError: props?.strictMode,
-      ecrAccountId: props.ecrAccountId,
+      ecrAccountId: props.ecrAccountId ?? process.env.account,
       adminUsers: props?.adminUsers,
     },
     {

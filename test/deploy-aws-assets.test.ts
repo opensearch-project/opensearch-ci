@@ -21,12 +21,15 @@ test('Deploy Assets resources - deploy ecr stack', () => {
   const stack = new DeployAwsAssets(app, 'TestStack', {
     removalPolicy: RemovalPolicy.DESTROY,
     mainNodeAccountNumber: '99999999',
-    createEcrRepositories: true,
     envName: 'dev',
     env: {
       region: 'us-east-1',
     },
     deployECR: true,
+    repositories: [
+      'opensearch',
+      'opensearch-dashboards',
+    ],
   });
 
   // THEN
@@ -42,11 +45,14 @@ test('Deploy Assets resources - not deploying ecr stack', () => {
   const stack = new DeployAwsAssets(app, 'TestStack', {
     removalPolicy: RemovalPolicy.DESTROY,
     mainNodeAccountNumber: '99999999',
-    createEcrRepositories: true,
     envName: 'dev',
     env: {
       region: 'us-east-1',
     },
+    repositories: [
+      'opensearch',
+      'opensearch-dashboards',
+    ],
   });
 
   // THEN

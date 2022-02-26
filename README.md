@@ -35,12 +35,32 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
 ### CI Deployment
 1. Create another cdk project and depend on this package
 2. Import the config / ci stacks alongside the other resources
-   ```
+   ```typescript
    new CIConfigStack(app, 'CI-Config-Beta', {});
-   new CIStack(app, 'CI-Beta', ciSettings);
+   new CIStack(app, 'CI-Beta', ciSettings, {
+    ecrAccountId: account_id,  
+   });
    ```
-3. Update the `ciSettings` according to the environment needs such as SSL or strict deployment, see [CIStackProps](./lib/ci-stack.ts) for details.
-4. Deploy using the CI system of your choice.
+3. Import `DeployAwsAssets` stack to deploy aws assets as per your needs.
+4. We currently support deploying public ECR and is deployed as follows -
+   ```typescript
+    new DeployAwsAssets(app, `OpenSearch-CI-Deploy-Assets-${defaultEnv}`, {
+      // This will delete the ECR repository once the stack is destroyed. 
+      // Default removal policy (if not specified) is RemovalPolicy.DESTROY
+      removalPolicy: RemovalPolicy.DESTROY,
+      mainNodeAccountNumber: ciStack.account,
+      envName: 'dev',
+      env: {
+          // public ECR repositories can only be created in us-east-1
+          // https://github.com/aws/aws-cli/issues/5917#issuecomment-775564831
+          region: 'us-east-1',
+      },
+      repositories: [
+        'opensearch',
+      ],
+    }); ```
+5. Update the `ciSettings` according to the environment needs such as SSL or strict deployment, see [CIStackProps](./lib/ci-stack.ts) for details.
+6. Deploy using the CI system of your choice.
 
 ### Dev Deployment 
 1. Setup your local machine to credentials to deploy to the AWS Account

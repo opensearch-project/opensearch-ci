@@ -11,6 +11,9 @@ export interface DeployAssetsProps extends EcrStackProps {
 export class DeployAwsAssets extends Stack {
   constructor(scope: Construct, id: string, props: DeployAssetsProps) {
     super(scope, id, props);
+
+    console.log(`***** ${process.env.account}`);
+
     const deployECRParameter = `${props?.deployECR ?? this.node.tryGetContext('deployEcr')}`;
 
     new CfnParameter(this, 'deployEcr', {

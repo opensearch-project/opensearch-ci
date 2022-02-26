@@ -22,12 +22,15 @@ test('ECR Stack with Resources', () => {
   const deployAssetsProps : DeployAssetsProps = {
     removalPolicy: RemovalPolicy.DESTROY,
     mainNodeAccountNumber: '99999999',
-    createEcrRepositories: true,
     envName: 'dev',
     env: {
       region: 'us-east-1',
     },
     deployECR: false,
+    repositories: [
+      'opensearch',
+      'opensearch-dashboards',
+    ],
   };
 
   const deployAwsAssetsStack = new DeployAwsAssets(app, 'TestStack', deployAssetsProps);
@@ -35,13 +38,11 @@ test('ECR Stack with Resources', () => {
   const ecrStack = new CiEcrStack(deployAwsAssetsStack, 'ecrStack', deployAssetsProps);
 
   // THEN
-  expect(ecrStack).to(countResources('AWS::ECR::PublicRepository', 4));
-  expect(deployAwsAssetsStack).to(countResources('AWS::ECR::PublicRepository', 1));
   expect(ecrStack).to(countResources('AWS::IAM::Role', 1));
   expect(ecrStack).to(countResources('AWS::IAM::ManagedPolicy', 1));
 });
 
-test('ECR Stack No Basic Resources', () => {
+test('ECR Stack No ECR Repositories', () => {
   const app = new App({
     context: { useSsl: 'true', runWithOidc: 'true' },
   });
@@ -50,7 +51,6 @@ test('ECR Stack No Basic Resources', () => {
   const deployAssetsProps : DeployAssetsProps = {
     removalPolicy: RemovalPolicy.DESTROY,
     mainNodeAccountNumber: '99999999',
-    createEcrRepositories: false,
     envName: 'dev',
     env: {
       region: 'us-east-1',
@@ -67,49 +67,7 @@ test('ECR Stack No Basic Resources', () => {
   expect(deployAwsAssetsStack).to(countResources('AWS::ECR::PublicRepository', 0));
   expect(ecrStack).to(countResources('AWS::IAM::Role', 1));
   expect(ecrStack).to(countResources('AWS::IAM::ManagedPolicy', 1));
-});
-
-test('Check if all ecr repositories are being created', () => {
-  const app = new App({
-    context: { useSsl: 'true', runWithOidc: 'true' },
-  });
-
-  // WHEN
-  const deployAssetsProps : DeployAssetsProps = {
-    removalPolicy: RemovalPolicy.DESTROY,
-    mainNodeAccountNumber: '99999999',
-    createEcrRepositories: true,
-    envName: 'dev',
-    env: {
-      region: 'us-east-1',
-    },
-    deployECR: false,
-  };
-
-  const deployAwsAssetsStack = new DeployAwsAssets(app, 'TestStack', deployAssetsProps);
-
-  const ecrStack = new CiEcrStack(deployAwsAssetsStack, 'ecrStack', deployAssetsProps);
-
-  // THEN
-  expect(ecrStack).to(haveResourceLike('AWS::ECR::PublicRepository', {
-    RepositoryName: 'opensearch',
-  }));
-
-  expect(ecrStack).to(haveResourceLike('AWS::ECR::PublicRepository', {
-    RepositoryName: 'data-prepper',
-  }));
-
-  expect(ecrStack).to(haveResourceLike('AWS::ECR::PublicRepository', {
-    RepositoryName: 'logstash-oss-with-opensearch-output-plugin',
-  }));
-
-  expect(ecrStack).to(haveResourceLike('AWS::ECR::PublicRepository', {
-    RepositoryName: 'opensearch-dashboards',
-  }));
-
-  expect(deployAwsAssetsStack).to(haveResourceLike('AWS::ECR::PublicRepository', {
-    RepositoryName: 'ci-runner',
-  }));
+  expect(deployAwsAssetsStack).to(countResources('AWS::CloudFormation::Stack', 1));
 });
 
 test('Test ecr role', () => {
@@ -121,7 +79,7 @@ test('Test ecr role', () => {
   const deployAssetsProps : DeployAssetsProps = {
     removalPolicy: RemovalPolicy.DESTROY,
     mainNodeAccountNumber: '99999999',
-    createEcrRepositories: true,
+
     envName: 'dev',
     env: {
       region: 'us-east-1',
@@ -165,7 +123,7 @@ test('Test ECR Policy', () => {
   const deployAssetsProps : DeployAssetsProps = {
     removalPolicy: RemovalPolicy.DESTROY,
     mainNodeAccountNumber: '99999999',
-    createEcrRepositories: true,
+
     envName: 'dev',
     env: {
       region: 'us-east-1',

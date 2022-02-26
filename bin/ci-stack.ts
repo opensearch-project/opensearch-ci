@@ -14,22 +14,24 @@ import { DeployAwsAssets } from '../lib/deploy-aws-assets';
 
 const app = new App();
 
-const env: string = 'Dev';
+const defaultEnv: string = 'Dev';
 
-const ciConfigStack = new CIConfigStack(app, `OpenSearch-CI-Config-${env}`, {});
+const ciConfigStack = new CIConfigStack(app, `OpenSearch-CI-Config-${defaultEnv}`, {});
 
-const ciStack = new CIStack(app, `OpenSearch-CI-${env}`, {
-  ecrAccountId: ciConfigStack.account,
-});
+const ciStack = new CIStack(app, `OpenSearch-CI-${defaultEnv}`, {});
 
-new DeployAwsAssets(app, `OpenSearch-CI-Deploy-Assets-${env}`, {
+new DeployAwsAssets(app, `OpenSearch-CI-Deploy-Assets-${defaultEnv}`, {
+  /* This will delete the ECR repository once the stack is destroyed.
+   * Default removal policy (if not specified) is RemovalPolicy.DESTROY */
   removalPolicy: RemovalPolicy.DESTROY,
   mainNodeAccountNumber: ciStack.account,
-  createEcrRepositories: true,
-  envName: env,
+  envName: defaultEnv,
   env: {
     // public ECR repositories can only be created in us-east-1
     // https://github.com/aws/aws-cli/issues/5917#issuecomment-775564831
     region: 'us-east-1',
   },
+  repositories: [
+    'opensearch',
+  ],
 });

@@ -40,6 +40,7 @@ export class JenkinsPlugins {
       'display-url-api',
       'docker-commons',
       'docker-custom-build-environment',
+      'docker-workflow',
       'durable-task',
       'ec2',
       'echarts-api',
