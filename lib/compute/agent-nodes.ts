@@ -35,7 +35,8 @@ export class AgentNode {
 
   public readonly InitScript: string = 'sudo mkdir -p /var/jenkins/ && sudo chown -R ec2-user:ec2-user /var/jenkins '
     + '&& sudo yum install -y java-1.8.0-openjdk cmake python3 python3-pip && sudo yum groupinstall -y \'Development Tools\' '
-    + '&& sudo ln -sfn `which pip3` /usr/bin/pip && pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin';
+    + '&& sudo ln -sfn `which pip3` /usr/bin/pip && pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin '
+    + '&& sudo amazon-linux-extras install -y docker && sudo service docker start && sudo systemctl enable docker && sudo chmod 666 /var/run/docker.sock ';
 
   constructor(stack: Stack) {
     const key = new KeyPair(stack, 'AgentNode-KeyPair', {
