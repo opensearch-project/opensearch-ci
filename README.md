@@ -39,48 +39,45 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
    new CIConfigStack(app, 'CI-Config-Beta', {});
    new CIStack(app, 'CI-Beta', ciSettings, {});
    ```
-3. Import `DeployAwsAssets` stack to deploy aws assets as per your needs.
-4. We currently support deploying public ECR and is deployed as follows -
+3. Update the `ciSettings` according to the environment needs such as SSL or strict deployment, see [CIStackProps](./lib/ci-stack.ts) for details.
+4. Import `DeployAwsAssets` stack to deploy aws assets as per your needs.
+5. We currently support deploying public ECR and is deployed as follows -
    ```typescript
-    new DeployAwsAssets(app, `OpenSearch-CI-Deploy-Assets-${defaultEnv}`, {
-      // This will delete the ECR repository once the stack is destroyed. 
-      // Default removal policy (if not specified) is RemovalPolicy.DESTROY
-      removalPolicy: RemovalPolicy.DESTROY,
-      // account where the main node is deployed
-      mainNodeAccountNumber: ciStack.account,
-      envName: 'dev',
-      env: {
-          // public ECR repositories can only be created in us-east-1
-          // https://github.com/aws/aws-cli/issues/5917#issuecomment-775564831
-          region: 'us-east-1',
-      },
-      repositories: [
-        'opensearch',
-      ],
-    }); ```
-5. Update the `ciSettings` according to the environment needs such as SSL or strict deployment, see [CIStackProps](./lib/ci-stack.ts) for details.
-6. Deploy using the CI system of your choice.
+    new DeployAwsAssets(app, `OpenSearch-CI-Deploy-Assets`, {props); ```
+6. Update the `assetsSettings` according to the environment needs such as SSL or strict deployment, see [deployAwsAssetProps](./lib/ci-stack.ts) for details.
+7. Deploy using the CI system of your choice.
 
 ### Dev Deployment 
 1. Setup your local machine to credentials to deploy to the AWS Account
-1. Deploy the bootstrap stack by running following command that sets up required resources to create the stacks. [More info](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
+1. Deploy the bootstrap stack by running the following command that sets up required resources to create the stacks. [More info](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
    
    `npm run cdk bootstrap -- -c useSsl=false -c runWithOidc=false`
    
-1. Deploy the ci-config-stack using the with one of the following (takes ~1 minute to deploy) - 
+1. Deploy the ci-config-stack using the following (takes ~1 minute to deploy) - 
    
-   `npm run cdk deploy CI-Config-Dev -- -c useSsl=false -c runWithOidc=false`
+   `npm run cdk deploy OpenSearch-CI-Config-Dev -- -c useSsl=false -c runWithOidc=false`
    
 1. [Optional](#ssl-configuration) Configure the elements of the config stack for SSL configuration
 1. [Optional](#setup-openid-connect-oidc-via-federate) Configure the elements setting up oidc via federate
 1. Deploy the ci-stack, takes ~10 minutes to deploy (parameter values depend on step 2 and step 3)
    
-   `npm run cdk deploy CI-Dev -- -c useSsl=false -c runWithOidc=false`
-   
+   `npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false`
+ 
 1. Log onto the AWS Console of the account, navigate to [cloud watch](https://console.aws.amazon.com/cloudwatch/home), open log groups, looking for `JenkinsMainNode/var/log/jenkins/jenkins.log`
 1. Search the logs for `Jenkins initial setup is required. An admin user has been created and a password generated.` After that entry the password for the jenkins instance will be in the cloudwatch logs.
-1. Go to the `CI-Dev.JenkinsExternalLoadBalancerDns` url returned by CDK output to access the jenkins host.
+1. Go to the `OpenSearch-CI-Dev.JenkinsExternalLoadBalancerDns` url returned by CDK output to access the jenkins host.
 1. If you want to destroy the stack make sure you delete the agent nodes manually (via jenkins UI or AWS console) so that shared resources (like vpc, security groups, etc) can be deleted.
+
+### Deploying AWS assets
+1. Setup your local machine to credentials to deploy to the AWS Account
+2. Deploy the bootstrap stack by running following command that sets up required resources to create the stacks. [More info](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
+
+   `npm run cdk bootstrap -- -c useSsl=false -c runWithOidc=false`
+3. Deploy `deployAwsAssets` stack using the following (takes ~1 minute to deploy) -
+   1. To deploy with ECR (default `false`)
+   
+      `npm run cdk deploy OpenSearch-CI-Deploy-Assets-Dev -- -c deployEcr=true`
+
 
 ### Executing Optional Tasks
 #### SSL Configuration
