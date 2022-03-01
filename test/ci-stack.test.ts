@@ -18,7 +18,9 @@ test('CI Stack Basic Resources', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'TestStack', {});
+  const stack = new CIStack(app, 'TestStack', {
+    ecrAccountId: '999999999',
+  });
 
   // THEN
   expect(stack).to(countResources('AWS::EC2::Instance', 1));
@@ -37,7 +39,9 @@ test('External security group is open', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'MyTestStack');
+  const stack = new CIStack(app, 'MyTestStack', {
+    ecrAccountId: '999999999',
+  });
 
   // THEN
   expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
@@ -65,7 +69,9 @@ test('MainNode', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'MyTestStack');
+  const stack = new CIStack(app, 'MyTestStack', {
+    ecrAccountId: '999999999',
+  });
 
   // THEN
   expect(stack).to(haveResourceLike('AWS::EC2::Instance', {
@@ -93,7 +99,9 @@ test('LoadBalancer', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'MyTestStack');
+  const stack = new CIStack(app, 'MyTestStack', {
+    ecrAccountId: '999999999',
+  });
 
   // THEN
   expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {

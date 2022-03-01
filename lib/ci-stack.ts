@@ -26,17 +26,19 @@ import { CloudAgentNodeConfig } from './compute/agent-node-config';
 
 export interface CIStackProps extends StackProps {
   /** Should the Jenkins use https  */
-  useSsl?: boolean;
+  readonly useSsl?: boolean;
   /** Should an OIDC provider be installed on Jenkins. */
-  runWithOidc?: boolean;
+  readonly runWithOidc?: boolean;
   /** Additional verification during deployment and resource startup. */
-  strictMode?: boolean;
+  readonly strictMode?: boolean;
+  /** Account to deploy your ECR Assets on */
+  readonly ecrAccountId?: string;
   /** Users with admin access during initial deployment */
-  adminUsers?: Array<String>;
+  readonly adminUsers?: Array<String>;
 }
 
 export class CIStack extends Stack {
-  constructor(scope: Construct, id: string, props?: CIStackProps) {
+  constructor(scope: Construct, id: string, props: CIStackProps) {
     super(scope, id, props);
 
     const auditloggingS3Bucket = new CiAuditLogging(this);
@@ -97,6 +99,7 @@ export class CIStack extends Stack {
       useSsl,
       runWithOidc,
       failOnCloudInitError: props?.strictMode,
+      ecrAccountId: props.ecrAccountId ?? Stack.of(this).account,
       adminUsers: props?.adminUsers,
     },
     {

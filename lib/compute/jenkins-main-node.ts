@@ -11,7 +11,9 @@ import {
   AmazonLinuxGeneration, BlockDeviceVolume, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage, Instance,
   InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc,
 } from '@aws-cdk/aws-ec2';
-import { ManagedPolicy, PolicyStatement } from '@aws-cdk/aws-iam';
+import {
+  Effect, IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
+} from '@aws-cdk/aws-iam';
 import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
 import { join } from 'path';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
@@ -34,7 +36,11 @@ interface OidcFederateProps {
   readonly adminUsers?: Array<String>;
 }
 
-export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps {
+interface EcrStackProps {
+  readonly ecrAccountId: string
+}
+
+export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, EcrStackProps {
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
   readonly failOnCloudInitError?: boolean;
@@ -76,11 +82,52 @@ export class JenkinsMainNode {
       }),
     };
 
+    const agentNode = new AgentNode(stack);
+    this.ec2Instance = new Instance(stack, 'MainNode', {
+
+      instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4),
+      machineImage: MachineImage.latestAmazonLinux({
+        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+      }),
+      role: new Role(stack, 'OpenSearch-CI-MainNodeRole', {
+        roleName: 'OpenSearch-CI-MainNodeRole',
+        assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+      }),
+      initOptions: {
+        timeout: Duration.minutes(20),
+        ignoreFailures: props.failOnCloudInitError ?? true,
+      },
+      vpc: props.vpc,
+      vpcSubnets: {
+        subnetType: SubnetType.PRIVATE_WITH_NAT,
+      },
+      securityGroup: props.sg,
+      init: CloudFormationInit.fromElements(...JenkinsMainNode.configElements(
+        stack.stackName,
+        stack.region,
+        props,
+      ), ...agentNode.configElements(stack.region, agentNodeProps, agentNodeConfig.AL2_X64, agentNodeConfig.AL2_ARM64),
+      ...JenkinsMainNode.configOidcElements(stack.region, props)),
+      blockDevices: [{
+        deviceName: '/dev/xvda',
+        volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),
+      }],
+    });
+
+    JenkinsMainNode.createPoliciesForMainNode(stack, props).map(
+      (policy) => this.ec2Instance.role.addManagedPolicy(policy),
+    );
+  }
+
+  public static createPoliciesForMainNode(stack: Stack, ecrStackProps: EcrStackProps) : (IManagedPolicy | ManagedPolicy)[] {
+    const policies: (IManagedPolicy | ManagedPolicy)[] = [];
+
     // Policy for SSM management of the host - Removes the need of SSH keys
     const ec2SsmManagementPolicy = ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore');
 
     // Policy for EC2 instance to publish logs and metrics to cloudwatch
     const cloudwatchEventPublishingPolicy = ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentServerPolicy');
+
     const accessPolicy = ManagedPolicy.fromAwsManagedPolicyName('SecretsManagerReadWrite');
 
     // Main jenkins node will start/stop agent ec2 instances to run build jobs
@@ -117,37 +164,17 @@ export class JenkinsMainNode {
           resources: ['*'],
         })],
       });
-    const agentNode = new AgentNode(stack);
-    this.ec2Instance = new Instance(stack, 'MainNode', {
 
-      instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4),
-      machineImage: MachineImage.latestAmazonLinux({
-        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
-      }),
-      initOptions: {
-        timeout: Duration.minutes(20),
-        ignoreFailures: props.failOnCloudInitError ?? true,
-      },
-      vpc: props.vpc,
-      vpcSubnets: {
-        subnetType: SubnetType.PRIVATE_WITH_NAT,
-      },
-      securityGroup: props.sg,
-      init: CloudFormationInit.fromElements(...JenkinsMainNode.configElements(
-        stack.stackName,
-        stack.region,
-        props,
-      ), ...agentNode.configElements(stack.region, agentNodeProps, agentNodeConfig.AL2_X64, agentNodeConfig.AL2_ARM64),
-      ...JenkinsMainNode.configOidcElements(stack.region, props)),
-      blockDevices: [{
-        deviceName: '/dev/xvda',
-        volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),
-      }],
+    const ecrPolicy = new ManagedPolicy(stack, 'ecr-policy-main-node', {
+      description: 'Policy for ECR to assume role',
+      statements: [new PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        effect: Effect.ALLOW,
+        resources: [`arn:aws:iam::${ecrStackProps.ecrAccountId}:role/OpenSearch-CI-ECR-ecr-role`],
+      })],
     });
-    this.ec2Instance.role.addManagedPolicy(ec2SsmManagementPolicy);
-    this.ec2Instance.role.addManagedPolicy(cloudwatchEventPublishingPolicy);
-    this.ec2Instance.role.addManagedPolicy(mainJenkinsNodePolicy);
-    this.ec2Instance.role.addManagedPolicy(accessPolicy);
+
+    return [ec2SsmManagementPolicy, cloudwatchEventPublishingPolicy, accessPolicy, mainJenkinsNodePolicy, ecrPolicy];
   }
 
   public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps): InitElement[] {

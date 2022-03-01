@@ -37,6 +37,7 @@
     "eslint-plugin-import": "^2.24.2",
     "npm-check-updates": "^11.8.5",
     "set-value": ">=4.0.1",
-    "source-map-support": "^0.5.16"
+    "source-map-support": "^0.5.16",
+    "@aws-cdk/aws-ecr": "1.127.0"
   }
 }
