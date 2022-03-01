@@ -37,7 +37,7 @@ interface OidcFederateProps {
 }
 
 interface EcrStackProps {
-  readonly ecrAccountId?: string
+  readonly ecrAccountId: string
 }
 
 export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, EcrStackProps {
@@ -124,14 +124,11 @@ export class JenkinsMainNode {
 
     // Policy for SSM management of the host - Removes the need of SSH keys
     const ec2SsmManagementPolicy = ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore');
-    policies.push(ec2SsmManagementPolicy);
 
     // Policy for EC2 instance to publish logs and metrics to cloudwatch
     const cloudwatchEventPublishingPolicy = ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentServerPolicy');
-    policies.push(cloudwatchEventPublishingPolicy);
 
     const accessPolicy = ManagedPolicy.fromAwsManagedPolicyName('SecretsManagerReadWrite');
-    policies.push(accessPolicy);
 
     // Main jenkins node will start/stop agent ec2 instances to run build jobs
     const mainJenkinsNodePolicy = new ManagedPolicy(stack, 'MainJenkinsNodePolicy',
@@ -167,21 +164,17 @@ export class JenkinsMainNode {
           resources: ['*'],
         })],
       });
-    policies.push(mainJenkinsNodePolicy);
 
-    if (ecrStackProps.ecrAccountId ?? false) {
-      const ecrPolicy = new ManagedPolicy(stack, 'ecr-policy-main-node', {
-        description: 'Policy for ECR to assume role',
-        statements: [new PolicyStatement({
-          actions: ['sts:AssumeRole'],
-          effect: Effect.ALLOW,
-          resources: [`arn:aws:iam::${ecrStackProps.ecrAccountId}:role/OpenSearch-CI-ECR-ecr-role`],
-        })],
-      });
-      policies.push(ecrPolicy);
-    }
+    const ecrPolicy = new ManagedPolicy(stack, 'ecr-policy-main-node', {
+      description: 'Policy for ECR to assume role',
+      statements: [new PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        effect: Effect.ALLOW,
+        resources: [`arn:aws:iam::${ecrStackProps.ecrAccountId}:role/OpenSearch-CI-ECR-ecr-role`],
+      })],
+    });
 
-    return policies;
+    return [ec2SsmManagementPolicy, cloudwatchEventPublishingPolicy, accessPolicy, mainJenkinsNodePolicy, ecrPolicy];
   }
 
   public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps): InitElement[] {
