@@ -93,6 +93,7 @@ export class JenkinsPlugins {
     'ownership:0.13.0',
     'pam-auth:1.6.1',
     'parameterized-scheduler:1.0',
+    'pipeline-aws:1.43',
     'pipeline-build-step:2.16',
     'pipeline-github-lib:1.0',
     'pipeline-graph-analysis:1.11',
