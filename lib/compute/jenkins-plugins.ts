@@ -84,7 +84,6 @@ export class JenkinsPlugins {
     'maven-plugin:3.8.1',
     'momentjs:1.1.1',
     'multi-branch-project-plugin:0.7',
-    'multiple-scms:0.6',
     'node-iterator-api:1.5.1',
     'nodelabelparameter:1.9.2',
     'nvm-wrapper:0.1.7',
@@ -150,6 +149,6 @@ export class JenkinsPlugins {
     'workflow-step-api:622.vb_8e7c15b_c95a_',
     'workflow-support:3.8',
     'ws-cleanup:0.40',
-    'xml-job-to-job-dsl:0.1.13'
-    ];
+    'xml-job-to-job-dsl:0.1.13',
+  ];
 }
