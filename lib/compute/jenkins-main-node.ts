@@ -350,7 +350,7 @@ export class JenkinsMainNode {
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 60 seconds to wait for jenkins to start
       // This allows jenkins to generate the secrets files used for auth in jenkins-cli APIs
-      InitCommand.shellCommand('sleep 65'),
+      InitCommand.shellCommand('sleep 60'),
 
       // creating a default  user:password file to use to authenticate the jenkins-cli
       // eslint-disable-next-line max-len
