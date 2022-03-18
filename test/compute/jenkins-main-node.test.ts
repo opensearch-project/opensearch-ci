@@ -16,11 +16,14 @@ describe('JenkinsMainNode Config Elements', () => {
     sslCertPrivateKeyContentsArn: 'ARN:CDE',
     sslCertChainArn: 'ARN:DEF',
     useSsl: true,
-  });
+  }, {
+    oidcCredArn: 'ABC:EFG',
+    runWithOidc: true,
+  }, 'test/jenkins.yaml');
 
   // THEN
   test('Config elements expected counts', async () => {
-    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(33);
+    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(36);
     expect(configElements.filter((e) => e.elementType === 'PACKAGE')).toHaveLength(14);
     expect(configElements.filter((e) => e.elementType === 'FILE')).toHaveLength(3);
   });
@@ -30,20 +33,20 @@ describe('JenkinsMainNode Config Elements', () => {
   });
 });
 
-describe('OIDC Config Elements', () => {
-  // WHEN
-  const configOidcElements = JenkinsMainNode.configOidcElements('us-west-2', {
-    oidcCredArn: 'ARN:DEF',
-    runWithOidc: true,
-    adminUsers: ['admin1', 'admin2'],
-  });
+// describe('OIDC Config Elements', () => {
+//   // WHEN
+//   const configOidcElements = JenkinsMainNode.configOidcElements('us-west-2', {
+//     oidcCredArn: 'ARN:DEF',
+//     runWithOidc: true,
+//     adminUsers: ['admin1', 'admin2'],
+//   });
 
-  // THEN
+//   // THEN
 
-  test('OIDC config elements counts', async () => {
-    expect(configOidcElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(4);
-  });
-});
+//   test('OIDC config elements counts', async () => {
+//     expect(configOidcElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(4);
+//   });
+// });
 
 test('createPluginInstallCommands breaks apart many plugins', async () => {
   const plugins = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `${n}`);

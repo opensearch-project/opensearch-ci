@@ -14,7 +14,7 @@ import { DeployAwsAssets } from '../lib/deploy-aws-assets';
 
 const app = new App();
 
-const defaultEnv: string = 'Dev';
+const defaultEnv: string = 'lol';
 
 const ciConfigStack = new CIConfigStack(app, `OpenSearch-CI-Config-${defaultEnv}`, {});
 

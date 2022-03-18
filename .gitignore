@@ -3,6 +3,8 @@
 !jest.config.js
 *.d.ts
 node_modules
+resources/jenkins.yaml
+test/jenkins.yaml
 
 # CDK asset staging directory
 .cdk.staging

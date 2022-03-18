@@ -34,7 +34,7 @@ export interface CIStackProps extends StackProps {
   /** Account to deploy your ECR Assets on */
   readonly ecrAccountId?: string;
   /** Users with admin access during initial deployment */
-  readonly adminUsers?: Array<String>;
+  readonly adminUsers?: string[];
 }
 
 export class CIStack extends Stack {
@@ -100,7 +100,8 @@ export class CIStack extends Stack {
       runWithOidc,
       failOnCloudInitError: props?.strictMode,
       ecrAccountId: props.ecrAccountId ?? Stack.of(this).account,
-      adminUsers: props?.adminUsers,
+      // adminUsers: props?.adminUsers,
+      adminUsers: ['sayali', 'choco'],
     },
     {
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
