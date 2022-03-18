@@ -20,7 +20,6 @@ import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { JenkinsPlugins } from './jenkins-plugins';
 import { AgentNode, AgentNodeProps } from './agent-nodes';
 import { CloudAgentNodeConfig } from './agent-node-config';
-import { JenkinsMainNodeConfig } from './jenkins-main-node-config';
 import { OidcConfig } from './oidc-config';
 
 interface HttpConfigProps {
