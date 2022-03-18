@@ -100,8 +100,7 @@ export class CIStack extends Stack {
       runWithOidc,
       failOnCloudInitError: props?.strictMode,
       ecrAccountId: props.ecrAccountId ?? Stack.of(this).account,
-      // adminUsers: props?.adminUsers,
-      adminUsers: ['sayali', 'choco'],
+      adminUsers: props?.adminUsers,
     },
     {
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
