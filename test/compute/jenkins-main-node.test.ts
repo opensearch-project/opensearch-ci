@@ -33,21 +33,6 @@ describe('JenkinsMainNode Config Elements', () => {
   });
 });
 
-// describe('OIDC Config Elements', () => {
-//   // WHEN
-//   const configOidcElements = JenkinsMainNode.configOidcElements('us-west-2', {
-//     oidcCredArn: 'ARN:DEF',
-//     runWithOidc: true,
-//     adminUsers: ['admin1', 'admin2'],
-//   });
-
-//   // THEN
-
-//   test('OIDC config elements counts', async () => {
-//     expect(configOidcElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(4);
-//   });
-// });
-
 test('createPluginInstallCommands breaks apart many plugins', async () => {
   const plugins = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `${n}`);
   const commands = JenkinsMainNode.createPluginInstallCommands(plugins);
