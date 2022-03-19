@@ -12,7 +12,7 @@ import { OidcConfig } from '../../lib/compute/oidc-config';
 
 describe('JenkinsMainNode Config Elements', () => {
   // WHEN
-  const testYaml = 'test/jenkins.yaml';
+  const testYaml = 'test/data/jenkins.yaml';
 
   const oidcConfig = {
     authorizationServerUrl: 'http://localhost',

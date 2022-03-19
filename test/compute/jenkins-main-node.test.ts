@@ -19,7 +19,7 @@ describe('JenkinsMainNode Config Elements', () => {
   }, {
     oidcCredArn: 'ABC:EFG',
     runWithOidc: true,
-  }, 'test/jenkins.yaml');
+  }, 'test/data/jenkins.yaml');
 
   // THEN
   test('Config elements expected counts', async () => {
