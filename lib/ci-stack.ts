@@ -34,7 +34,7 @@ export interface CIStackProps extends StackProps {
   /** Account to deploy your ECR Assets on */
   readonly ecrAccountId?: string;
   /** Users with admin access during initial deployment */
-  readonly adminUsers?: Array<String>;
+  readonly adminUsers?: string[];
 }
 
 export class CIStack extends Stack {

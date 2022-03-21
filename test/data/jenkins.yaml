@@ -1,0 +1,179 @@
+jenkins:
+  authorizationStrategy:
+    roleBased:
+      roles:
+        global:
+          - assignments:
+              - admin
+              - admin1
+              - admin2
+            name: admin
+            pattern: .*
+            permissions:
+              - Overall/Administer
+              - Overall/Read
+              - Job/Move
+              - Job/Build
+              - Job/Read
+              - Job/Delete
+              - Job/Create
+              - Job/Discover
+              - Job/Cancel
+              - Job/Configure
+              - Job Config History/DeleteEntry
+              - Job/Workspace
+              - Lockable Resources/View
+              - Lockable Resources/Unlock
+              - Lockable Resources/Reserve
+              - Credentials/Delete
+              - Credentials/ManageDomains
+              - Credentials/Update
+              - Credentials/View
+              - Credentials/Create
+              - Manage ownership/Nodes
+              - Manage ownership/Jobs
+              - Agent/Configure
+              - Agent/Create
+              - Agent/Build
+              - Agent/Provision
+              - Agent/Connect
+              - Agent/Delete
+              - Agent/Disconnect
+              - Run/Replay
+              - Run/Delete
+              - Run/Update
+              - View/Delete
+              - View/Read
+              - View/Create
+              - View/Configure
+              - SCM/Tag
+          - assignments:
+              - anyonomous
+            name: read
+            pattern: .*
+            permissions:
+              - Overall/Read
+              - Job/Read
+  securityRealm:
+    oic:
+      authorizationServerUrl: http://localhost
+      clientId: clientId
+      disableSslVerification: true
+      emailFieldName: emailFieldName
+      escapeHatchEnabled: true
+      escapeHatchGroup: escapeHatchGroup
+      escapeHatchUsername: escapeHatchUsername
+      fullNameFieldName: fullNameFieldName
+      groupsFieldName: groupsFieldName
+      logoutFromOpenidProvider: true
+      scopes: scopes
+      tokenServerUrl: http://localhost
+      userNameField: userNameField
+security:
+  apiToken:
+    creationOfLegacyTokenEnabled: false
+    tokenGenerationOnCreationEnabled: false
+    usageStatisticsEnabled: true
+  copyartifact:
+    mode: PRODUCTION
+  globalJobDslSecurityConfiguration:
+    useScriptSecurity: true
+  sSHD:
+    port: -1
+unclassified:
+  audit-trail:
+    logBuildCause: true
+    pattern: >-
+      .*/(?:configSubmit|doDelete|postBuildResult|enable|disable|cancelQueue|stop|toggleLogKeep|doWipeOutWorkspace|createItem|createView|toggleOffline|cancelQuietDown|quietDown|restart|exit|safeExit)/?.*
+  buildDiscarders:
+    configuredBuildDiscarders:
+      - jobBuildDiscarder
+  buildStepOperation:
+    enabled: false
+  buildTimestamp:
+    enableBuildTimestamp: true
+    pattern: yyyy-MM-dd HH:mm:ss z
+    timezone: UTC
+  descriptionSetterWrapper:
+    disableTokens: false
+  email-ext:
+    adminRequiredForTemplateTesting: false
+    allowUnregisteredEnabled: false
+    charset: UTF-8
+    debugMode: false
+    defaultBody: |-
+      $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:
+
+      Check console output at $BUILD_URL to view the results.
+    defaultSubject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!'
+    defaultTriggerIds:
+      - hudson.plugins.emailext.plugins.trigger.FailureTrigger
+    maxAttachmentSize: -1
+    maxAttachmentSizeMb: -1
+    precedenceBulk: false
+    watchingEnabled: false
+  fingerprints:
+    fingerprintCleanupDisabled: false
+    storage: file
+  ghprbTrigger:
+    autoCloseFailedPullRequests: false
+    cron: H/5 * * * *
+    extensions:
+      - ghprbSimpleStatus:
+          addTestResults: false
+          showMatrixStatus: false
+    githubAuth:
+      - description: Anonymous connection
+        id: fe7046c5-29a0-4370-b32d-47aead7c5945
+        serverAPIUrl: https://api.github.com
+    manageWebhooks: true
+    okToTestPhrase: .*ok\W+to\W+test.*
+    retestPhrase: .*test\W+this\W+please.*
+    skipBuildPhrase: .*\[skip\W+ci\].*
+    useComments: false
+    useDetailedComments: false
+    whitelistPhrase: .*add\W+to\W+whitelist.*
+  gitHubConfiguration:
+    apiRateLimitChecker: ThrottleForNormalize
+  gitHubPluginConfig:
+    hookUrl: >-
+      http://ci-de-jenki-18z6t74yxghfp-1257712944.us-east-1.elb.amazonaws.com/github-webhook/
+  gitSCM:
+    addGitTagAction: false
+    allowSecondFetch: false
+    createAccountBasedOnEmail: false
+    disableGitToolChooser: false
+    hideCredentials: false
+    showEntireCommitSummaryInChanges: false
+    useExistingAccountWithSameEmail: false
+  ivyBuildTrigger:
+    extendedVersionMatching: false
+  junitTestResultStorage:
+    storage: file
+  location:
+    adminAddress: address not configured yet <nobody@nowhere>
+  login-theme-plugin:
+    useDefaultTheme: true
+  mailer:
+    charset: UTF-8
+    useSsl: false
+    useTls: false
+  mavenModuleSet:
+    localRepository: default
+  pollSCM:
+    pollingThreadCount: 10
+  timestamper:
+    allPipelines: false
+    elapsedTimeFormat: '''<b>''HH:mm:ss.S''</b> '''
+    systemTimeFormat: '''<b>''HH:mm:ss''</b> '''
+  upstream:
+    globalUpstreamFilterStrategy: UseOldest
+  whitelist:
+    enabled: false
+tool:
+  powerShellInstallation:
+    installations:
+      - home: powershell.exe
+        name: DefaultWindows
+      - home: pwsh
+        name: DefaultLinux

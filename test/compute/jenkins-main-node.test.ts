@@ -16,32 +16,20 @@ describe('JenkinsMainNode Config Elements', () => {
     sslCertPrivateKeyContentsArn: 'ARN:CDE',
     sslCertChainArn: 'ARN:DEF',
     useSsl: true,
-  });
+  }, {
+    oidcCredArn: 'ABC:EFG',
+    runWithOidc: true,
+  }, 'test/data/jenkins.yaml');
 
   // THEN
   test('Config elements expected counts', async () => {
-    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(33);
+    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(36);
     expect(configElements.filter((e) => e.elementType === 'PACKAGE')).toHaveLength(14);
     expect(configElements.filter((e) => e.elementType === 'FILE')).toHaveLength(3);
   });
 
   test('Does not use service in config elements', async () => {
     expect(configElements.filter((e) => e.elementType === 'SERVICE')).toHaveLength(0);
-  });
-});
-
-describe('OIDC Config Elements', () => {
-  // WHEN
-  const configOidcElements = JenkinsMainNode.configOidcElements('us-west-2', {
-    oidcCredArn: 'ARN:DEF',
-    runWithOidc: true,
-    adminUsers: ['admin1', 'admin2'],
-  });
-
-  // THEN
-
-  test('OIDC config elements counts', async () => {
-    expect(configOidcElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(4);
   });
 });
 

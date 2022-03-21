@@ -20,7 +20,7 @@ import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { JenkinsPlugins } from './jenkins-plugins';
 import { AgentNode, AgentNodeProps } from './agent-nodes';
 import { CloudAgentNodeConfig } from './agent-node-config';
-import { JenkinsMainNodeConfig } from './jenkins-main-node-config';
+import { OidcConfig } from './oidc-config';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -33,7 +33,7 @@ interface HttpConfigProps {
 interface OidcFederateProps {
   readonly oidcCredArn: string;
   readonly runWithOidc: boolean;
-  readonly adminUsers?: Array<String>;
+  readonly adminUsers?: string[];
 }
 
 interface EcrStackProps {
@@ -47,6 +47,10 @@ export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps
 }
 
 export class JenkinsMainNode {
+  static readonly BASE_JENKINS_YAML_PATH: string = join(__dirname, '../../resources/baseJenkins.yaml');
+
+  static readonly NEW_JENKINS_YAML_PATH: string = join(__dirname, '../../resources/jenkins.yaml');
+
   static readonly CERTIFICATE_FILE_PATH: String = '/etc/ssl/certs/test-jenkins.opensearch.org.crt';
 
   static readonly CERTIFICATE_CHAIN_FILE_PATH: String = '/etc/ssl/certs/test-jenkins.opensearch.org.pem';
@@ -83,6 +87,7 @@ export class JenkinsMainNode {
     };
 
     const agentNode = new AgentNode(stack);
+    const jenkinsyaml = JenkinsMainNode.addConfigtoJenkinsYaml(stack, props);
     this.ec2Instance = new Instance(stack, 'MainNode', {
 
       instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4),
@@ -106,8 +111,9 @@ export class JenkinsMainNode {
         stack.stackName,
         stack.region,
         props,
-      ), ...agentNode.configElements(stack.region, agentNodeProps, agentNodeConfig.AL2_X64, agentNodeConfig.AL2_ARM64),
-      ...JenkinsMainNode.configOidcElements(stack.region, props)),
+        props,
+        jenkinsyaml,
+      )),
       blockDevices: [{
         deviceName: '/dev/xvda',
         volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),
@@ -119,7 +125,7 @@ export class JenkinsMainNode {
     );
   }
 
-  public static createPoliciesForMainNode(stack: Stack, ecrStackProps: EcrStackProps) : (IManagedPolicy | ManagedPolicy)[] {
+  public static createPoliciesForMainNode(stack: Stack, ecrStackProps: EcrStackProps): (IManagedPolicy | ManagedPolicy)[] {
     const policies: (IManagedPolicy | ManagedPolicy)[] = [];
 
     // Policy for SSM management of the host - Removes the need of SSH keys
@@ -177,7 +183,8 @@ export class JenkinsMainNode {
     return [ec2SsmManagementPolicy, cloudwatchEventPublishingPolicy, accessPolicy, mainJenkinsNodePolicy, ecrPolicy];
   }
 
-  public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps): InitElement[] {
+  public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps,
+    oidcFederateProps: OidcFederateProps, jenkinsyaml: string): InitElement[] {
     return [
       InitPackage.yum('curl'),
       InitPackage.yum('wget'),
@@ -191,6 +198,8 @@ export class JenkinsMainNode {
       InitPackage.yum('java-1.8.0-openjdk-devel'),
       InitPackage.yum('openssl'),
       InitPackage.yum('mod_ssl'),
+      // eslint-disable-next-line max-len
+      InitCommand.shellCommand('sudo wget -nv https://github.com/mikefarah/yq/releases/download/v4.22.1/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq'),
 
       //  Jenkins install is done with yum by adding a new repo
       InitCommand.shellCommand('wget -O /etc/yum.repos.d/jenkins-stable.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo'),
@@ -350,7 +359,7 @@ export class JenkinsMainNode {
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 60 seconds to wait for jenkins to start
       // This allows jenkins to generate the secrets files used for auth in jenkins-cli APIs
-      InitCommand.shellCommand('sleep 60'),
+      InitCommand.shellCommand('sleep 65'),
 
       // creating a default  user:password file to use to authenticate the jenkins-cli
       // eslint-disable-next-line max-len
@@ -368,69 +377,29 @@ export class JenkinsMainNode {
       // Therefore, sleep 60 seconds to wait for plugins to install and jenkins to start which is required for the next step
       InitCommand.shellCommand('sleep 60'),
 
-      InitFile.fromFileInline('/var/lib/jenkins/jenkins.yaml', join(__dirname, '../../resources/jenkins.yaml')),
+      InitFile.fromFileInline('/var/lib/jenkins/jenkins.yaml', jenkinsyaml),
+
+      InitCommand.shellCommand(oidcFederateProps.runWithOidc
+        // eslint-disable-next-line max-len
+        ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` && `
+        + ' varkeys=`echo $var | yq \'keys\' | cut -d "-" -f2 | cut -d " " -f2` &&'
+        // eslint-disable-next-line max-len
+        + ' for i in $varkeys; do newvalue=`echo $var | yq .$i` && myenv=$newvalue i=$i yq -i \'.jenkins.securityRealm.oic.[env(i)]=env(myenv)\' /var/lib/jenkins/jenkins.yaml ; done'
+        : 'echo OIDC disabled: Not changing the configuration'),
+
+      // Reload configuration via Jenkins.yaml.
+      // eslint-disable-next-line max-len
+      InitCommand.shellCommand('java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault reload-jcasc-configuration'),
 
     ];
   }
 
-  public static configOidcElements(stackRegion: string, oidcFederateProps: OidcFederateProps): InitElement[] {
-    const RELOAD_CONFIG: string = 'java -jar /jenkins-cli.jar -s http://localhost:8080'
-      + ` -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} reload-configuration`;
-    return [
-
-      InitCommand.shellCommand(oidcFederateProps.runWithOidc
-        ? 'amazon-linux-extras install epel -y && yum -y install xmlstarlet'
-        : 'echo not installing xmlstarlet as not running with OIDC'),
-
-      // Enabling Role Based Authentication with admin and read-only role
-      InitCommand.shellCommand(oidcFederateProps.runWithOidc
-        ? 'xmlstarlet ed -L -d /hudson/authorizationStrategy'
-        + ' -s /hudson -t elem -n authorizationStrategy -v " "'
-        + ' -i //authorizationStrategy -t attr -n "class" -v "com.michelin.cio.hudson.plugins.rolestrategy.RoleBasedAuthorizationStrategy"'
-        + ' -s /hudson/authorizationStrategy -t elem -n roleMap'
-        + ' -i /hudson/authorizationStrategy/roleMap -t attr -n "type" -v "projectRoles"'
-        + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
-        + ' -i /hudson/authorizationStrategy/roleMap[2] -t attr -n "type" -v "globalRoles"'
-        + ' -s /hudson/authorizationStrategy/roleMap[2] -t elem -n role -v " "'
-        + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "name" -v "admin"'
-        + ' -i /hudson/authorizationStrategy/roleMap[2]/role -t attr -n "pattern" -v ".*"'
-        + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n permissions -v " "'
-        // eslint-disable-next-line max-len
-        + `${JenkinsMainNodeConfig.adminRolePermissions().map((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/permissions -t elem -n "permission" -v ${e}`).join(' ')}`
-        + ' -s /hudson/authorizationStrategy/roleMap[2]/role -t elem -n "assignedSIDs" -v " " '
-        // eslint-disable-next-line max-len
-        + `${this.admins(oidcFederateProps.adminUsers).map(((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role/assignedSIDs -t elem -n "sid" -v ${e}`)).join(' ')}`
-        + ' -s /hudson/authorizationStrategy --type elem -n roleMap'
-        + ' -i /hudson/authorizationStrategy/roleMap[3] -t attr -n "type" -v "slaveRolesRoles"'
-        + ' -s /hudson/authorizationStrategy/roleMap[2] -t elem -n role -v " "'
-        + ' -i /hudson/authorizationStrategy/roleMap[2]/role[2] -t attr -n "name" -v "read-only"'
-        + ' -i /hudson/authorizationStrategy/roleMap[2]/role[2] -t attr -n "pattern" -v ".*"'
-        + ' -s /hudson/authorizationStrategy/roleMap[2]/role[2] -t elem -n permissions -v " "'
-        // eslint-disable-next-line max-len
-        + `${JenkinsMainNodeConfig.readOnlyRolePermissions().map((e) => ` -s /hudson/authorizationStrategy/roleMap[2]/role[2]/permissions -t elem -n "permission" -v ${e}`).join(' ')}`
-        + ' -s /hudson/authorizationStrategy/roleMap[2]/role[2] -t elem -n "assignedSIDs" -v " "'
-        + ' -s /hudson/authorizationStrategy/roleMap[2]/role[2]/assignedSIDs -t elem -n "sid" -v "anonymous"'
-        + ' /var/lib/jenkins/config.xml'
-        + ` && ${RELOAD_CONFIG}`
-        : 'echo OIDC disabled: Not enabling Role Based Authentication'),
-
-      // sleep for 30s before editing config.xml again
-      InitCommand.shellCommand('sleep 30'),
-
-      // Enabling OIDC
-      InitCommand.shellCommand(oidcFederateProps.runWithOidc
-        // eslint-disable-next-line max-len
-        ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` && `
-        + ' xmlstarlet ed -L -d "/hudson/securityRealm"'
-        + ' -s /hudson -t elem -n securityRealm -v " "'
-        + ' -i //securityRealm -t attr -n "class" -v "org.jenkinsci.plugins.oic.OicSecurityRealm"'
-        + ' -i //securityRealm -t attr -n "plugin" -v "oic-auth@1.8"'
-        // eslint-disable-next-line max-len
-        + `${JenkinsMainNodeConfig.oidcConfigFields().map((e) => ` -s /hudson/securityRealm -t elem -n ${e[0]} -v ${e[1] === 'replace' ? `"$(echo $var | jq -r ".${e[0]}")"` : `"${e[1]}"`}`).join(' ')}`
-        + ' /var/lib/jenkins/config.xml'
-        + ` && ${RELOAD_CONFIG}`
-        : 'echo OIDC disabled: Not changing the configuration'),
-    ];
+  public static addConfigtoJenkinsYaml(stack: Stack, oidcProps: OidcFederateProps): string {
+    if (oidcProps.runWithOidc) {
+      OidcConfig.addOidcConfigToJenkinsYaml(this.NEW_JENKINS_YAML_PATH, oidcProps.adminUsers);
+      return this.NEW_JENKINS_YAML_PATH;
+    }
+    return this.BASE_JENKINS_YAML_PATH;
   }
 
   /** Creates the commands to install plugins, typically done in blocks */
@@ -447,15 +416,5 @@ export class JenkinsMainNode {
       const extraCommand = (index === pluginListSlices.length - 1) ? `&& ${jenkinsCliCommand} restart` : '';
       return InitCommand.shellCommand(`${jenkinsCliCommand} install-plugin ${slice} ${extraCommand}`);
     });
-  }
-
-  /** Adds user provided admin users along with default 'admin' */
-  public static admins(additionalAdminUsers?: any): String[] {
-    const adminUsers = ['admin'];
-    if (additionalAdminUsers) {
-      const addedAdminUsers = adminUsers.concat(additionalAdminUsers);
-      return addedAdminUsers;
-    }
-    return adminUsers;
   }
 }

@@ -3,6 +3,9 @@
 !jest.config.js
 *.d.ts
 node_modules
+# We do not want to track this file as it is generated only if user provides certain params.
+resources/jenkins.yaml
+
 
 # CDK asset staging directory
 .cdk.staging
