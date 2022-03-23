@@ -14,3 +14,4 @@ cdk.out
 # excluding intellij Idea files
 *.iml
 .idea/
+.vscode/

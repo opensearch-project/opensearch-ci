@@ -16,11 +16,12 @@ import {
 } from '@aws-cdk/aws-iam';
 import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
 import { join } from 'path';
+import { dump } from 'js-yaml';
+import { writeFileSync } from 'fs';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { JenkinsPlugins } from './jenkins-plugins';
-import { AgentNode, AgentNodeProps } from './agent-nodes';
-import { CloudAgentNodeConfig } from './agent-node-config';
 import { OidcConfig } from './oidc-config';
+import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -40,7 +41,7 @@ interface EcrStackProps {
   readonly ecrAccountId: string
 }
 
-export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, EcrStackProps {
+export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, EcrStackProps, AgentNodeNetworkProps {
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
   readonly failOnCloudInitError?: boolean;
@@ -69,8 +70,7 @@ export class JenkinsMainNode {
 
   constructor(stack: Stack,
     props: JenkinsMainNodeProps,
-    agentNodeProps: AgentNodeProps,
-    agentNodeConfig: CloudAgentNodeConfig) {
+    agentNode: AgentNodeProps[]) {
     this.ec2InstanceMetrics = {
       cpuTime: new Metric({
         metricName: 'procstat_cpu_usage',
@@ -86,8 +86,8 @@ export class JenkinsMainNode {
       }),
     };
 
-    const agentNode = new AgentNode(stack);
-    const jenkinsyaml = JenkinsMainNode.addConfigtoJenkinsYaml(stack, props);
+    const agentNodeConfig = new AgentNodeConfig(stack);
+    const jenkinsyaml = JenkinsMainNode.addConfigtoJenkinsYaml(stack, props, agentNodeConfig, props, agentNode);
     this.ec2Instance = new Instance(stack, 'MainNode', {
 
       instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4),
@@ -359,7 +359,7 @@ export class JenkinsMainNode {
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 60 seconds to wait for jenkins to start
       // This allows jenkins to generate the secrets files used for auth in jenkins-cli APIs
-      InitCommand.shellCommand('sleep 65'),
+      InitCommand.shellCommand('sleep 60'),
 
       // creating a default  user:password file to use to authenticate the jenkins-cli
       // eslint-disable-next-line max-len
@@ -394,12 +394,15 @@ export class JenkinsMainNode {
     ];
   }
 
-  public static addConfigtoJenkinsYaml(stack: Stack, oidcProps: OidcFederateProps): string {
+  public static addConfigtoJenkinsYaml(stack: Stack, oidcProps: OidcFederateProps, agentNodeObject: AgentNodeConfig,
+    props: AgentNodeNetworkProps, agentNode: AgentNodeProps[]): string {
+    let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(agentNode, props);
     if (oidcProps.runWithOidc) {
-      OidcConfig.addOidcConfigToJenkinsYaml(this.NEW_JENKINS_YAML_PATH, oidcProps.adminUsers);
-      return this.NEW_JENKINS_YAML_PATH;
+      updatedConfig = OidcConfig.addOidcConfigToJenkinsYaml(updatedConfig, oidcProps.adminUsers);
     }
-    return this.BASE_JENKINS_YAML_PATH;
+    const newConfig = dump(updatedConfig);
+    writeFileSync(JenkinsMainNode.NEW_JENKINS_YAML_PATH, newConfig, 'utf-8');
+    return JenkinsMainNode.NEW_JENKINS_YAML_PATH;
   }
 
   /** Creates the commands to install plugins, typically done in blocks */
