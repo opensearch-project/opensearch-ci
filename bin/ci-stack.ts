@@ -6,7 +6,6 @@
  * compatible open source license.
  */
 
-import 'source-map-support/register';
 import { App, RemovalPolicy } from '@aws-cdk/core';
 import { CIStack } from '../lib/ci-stack';
 import { CIConfigStack } from '../lib/ci-config-stack';

@@ -22,7 +22,8 @@ import { JenkinsMonitoring } from './monitoring/ci-alarms';
 import { JenkinsExternalLoadBalancer } from './network/ci-external-load-balancer';
 import { JenkinsSecurityGroups } from './security/ci-security-groups';
 import { CiAuditLogging } from './auditing/ci-audit-logging';
-import { CloudAgentNodeConfig } from './compute/agent-node-config';
+import { AgentNodeProps } from './compute/agent-node-config';
+import { AgentNodes } from './compute/agent-nodes';
 
 export interface CIStackProps extends StackProps {
   /** Should the Jenkins use https  */
@@ -86,7 +87,8 @@ export class CIStack extends Stack {
     const importedOidcConfigValuesSecretBucketValue = Fn.importValue(`${CIConfigStack.OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE}`);
     const certificateArn = Secret.fromSecretCompleteArn(this, 'certificateArn', importedArnSecretBucketValue.toString());
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
-    const agentNodesConfig = new CloudAgentNodeConfig(this);
+    const agentNode = new AgentNodes(this);
+    const agentNodes: AgentNodeProps[] = [agentNode.AL2_X64, agentNode.AL2_ARM64];
 
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
@@ -101,12 +103,9 @@ export class CIStack extends Stack {
       failOnCloudInitError: props?.strictMode,
       ecrAccountId: props.ecrAccountId ?? Stack.of(this).account,
       adminUsers: props?.adminUsers,
-    },
-    {
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
       subnetId: vpc.publicSubnets[0].subnetId,
-    },
-    agentNodesConfig);
+    }, agentNodes);
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,

@@ -6,39 +6,108 @@
  * compatible open source license.
  */
 
-import {
-  AmazonLinuxCpuType, AmazonLinuxGeneration, InstanceClass, InstanceSize, InstanceType, MachineImage,
-} from '@aws-cdk/aws-ec2';
-import { Stack } from '@aws-cdk/core';
-import { AgentNodeConfig } from './agent-nodes';
+import { CfnInstanceProfile, ServicePrincipal, Role } from '@aws-cdk/aws-iam';
+import { Fn, Stack, Tags } from '@aws-cdk/core';
+import { KeyPair } from 'cdk-ec2-key-pair';
+import { readFileSync } from 'fs';
+import { load } from 'js-yaml';
+import { JenkinsMainNode } from './jenkins-main-node';
 
-export class CloudAgentNodeConfig {
-  readonly AL2_X64: AgentNodeConfig;
+export interface AgentNodeProps {
+  amiId: string;
+  instanceType: string;
+  workerLabelString: string;
+  remoteUser: string;
+  initScript: string
+}
 
-  readonly AL2_ARM64: AgentNodeConfig;
+export interface AgentNodeNetworkProps {
+  readonly agentNodeSecurityGroup: string;
+  readonly subnetId: string;
+}
+
+export class AgentNodeConfig {
+  public readonly AgentNodeInstanceProfileArn: string;
+
+  public readonly STACKREGION: string;
+
+  public readonly SSHEC2KeySecretId: string;
 
   constructor(stack: Stack) {
-    this.AL2_X64 = {
-      ec2CloudName: 'AL2-X64',
-      instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4).toString(),
-      workerLabelString: 'AL2-X64',
-      numberOfExecutors: '2',
-      remoteUser: 'ec2-user',
-      amiId: MachineImage.latestAmazonLinux({
-        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
-        cpuType: AmazonLinuxCpuType.X86_64,
-      }).getImage(stack).imageId.toString(),
-    };
-    this.AL2_ARM64 = {
-      ec2CloudName: 'AL2-ARM64',
-      instanceType: InstanceType.of(InstanceClass.C6G, InstanceSize.XLARGE4).toString(),
-      workerLabelString: 'AL2-ARM64',
-      numberOfExecutors: '2',
-      remoteUser: 'ec2-user',
-      amiId: MachineImage.latestAmazonLinux({
-        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
-        cpuType: AmazonLinuxCpuType.ARM_64,
-      }).getImage(stack).imageId.toString(),
+    this.STACKREGION = stack.region;
+    const key = new KeyPair(stack, 'AgentNode-KeyPair', {
+      name: 'AgentNodeKeyPair',
+      description: 'KeyPair used by Jenkins Main Node to SSH into Agent Nodes',
+    });
+    Tags.of(key)
+      .add('jenkins:credentials:type', 'sshUserPrivateKey');
+    const AgentNodeRole = new Role(stack, 'JenkinsAgentNodeRole', {
+      assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+    });
+    const AgentNodeInstanceProfile = new CfnInstanceProfile(stack, 'JenkinsAgentNodeInstanceProfile', { roles: [AgentNodeRole.roleName] });
+    this.AgentNodeInstanceProfileArn = AgentNodeInstanceProfile.attrArn.toString();
+    this.SSHEC2KeySecretId = Fn.join('/', ['ec2-ssh-key', key.keyPairName.toString(), 'private']);
+  }
+
+  public addAgentConfigToJenkinsYaml(templates: AgentNodeProps[], props: AgentNodeNetworkProps): any {
+    const jenkinsYaml: any = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
+    const configTemplates: any = [];
+
+    templates.forEach((element) => {
+      configTemplates.push(this.getTemplate(element, props));
+    });
+
+    const agentNodeYamlConfig = [{
+      amazonEC2: {
+        cloudName: 'Amazon_ec2_cloud',
+        region: this.STACKREGION,
+        sshKeysCredentialsId: this.SSHEC2KeySecretId,
+        templates: configTemplates,
+        useInstanceProfileForCredentials: true,
+      },
+    }];
+    jenkinsYaml.jenkins.clouds = agentNodeYamlConfig;
+    return jenkinsYaml;
+  }
+
+  private getTemplate(config: AgentNodeProps, props: AgentNodeNetworkProps): { [x: string]: any; } {
+    return {
+      ami: config.amiId,
+      amiType:
+        { unixData: { sshPort: '22' } },
+      associatePublicIp: false,
+      connectBySSHProcess: false,
+      connectionStrategy: 'PRIVATE_IP',
+      customDeviceMapping: '/dev/xvda=:100:true:::encrypted',
+      deleteRootOnTermination: true,
+      description: `jenkinsAgentNode-${config.workerLabelString}`,
+      ebsEncryptRootVolume: 'ENCRYPTED',
+      ebsOptimized: false,
+      hostKeyVerificationStrategy: 'OFF',
+      iamInstanceProfile: this.AgentNodeInstanceProfileArn,
+      idleTerminationMinutes: '30',
+      initScript: config.initScript,
+      labelString: config.workerLabelString,
+      launchTimeoutStr: '300',
+      maxTotalUses: -1,
+      minimumNumberOfInstances: 0,
+      minimumNumberOfSpareInstances: 1,
+      mode: 'EXCLUSIVE',
+      monitoring: true,
+      numExecutors: 1,
+      remoteAdmin: config.remoteUser,
+      remoteFS: '/var/jenkins',
+      securityGroups: props.agentNodeSecurityGroup,
+      stopOnTerminate: false,
+      subnetId: props.subnetId,
+      t2Unlimited: false,
+      tags: [{
+        name: 'Name',
+        value: `jenkinsAgentNode-${config.workerLabelString}`,
+      }],
+      tenancy: 'Default',
+      type: config.instanceType,
+      useEphemeralDevices: false,
     };
   }
 }

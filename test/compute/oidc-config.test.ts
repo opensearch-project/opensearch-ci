@@ -8,6 +8,7 @@
 
 import { readFileSync } from 'fs';
 import { load } from 'js-yaml';
+import { JenkinsMainNode } from '../../lib/compute/jenkins-main-node';
 import { OidcConfig } from '../../lib/compute/oidc-config';
 
 describe('JenkinsMainNode Config Elements', () => {
@@ -30,7 +31,8 @@ describe('JenkinsMainNode Config Elements', () => {
     userNameField: 'userNameField',
   };
   const admins = ['admin1', 'admin2'];
-  OidcConfig.addOidcConfigToJenkinsYaml(testYaml, admins);
+  const jenkinsYaml = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
+  OidcConfig.addOidcConfigToJenkinsYaml(jenkinsYaml, admins);
   const yml: any = load(readFileSync(testYaml, 'utf-8'));
 
   // THEN

@@ -5,9 +5,6 @@
  * this file be licensed under the Apache-2.0 license or a
  * compatible open source license.
  */
-import { readFileSync, writeFileSync } from 'fs';
-import { load, dump } from 'js-yaml';
-import { JenkinsMainNode } from './jenkins-main-node';
 
 export class OidcConfig {
     public static readonly adminRolePermissions: string[] = [
@@ -55,8 +52,8 @@ export class OidcConfig {
       'Job/Read',
     ];
 
-    public static addOidcConfigToJenkinsYaml(newYamlPath: string, admins?: string[]): void {
-      const jenkinsYaml: any = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
+    public static addOidcConfigToJenkinsYaml(yamlObject: any, admins?: string[]): any {
+      const jenkinsYaml: any = yamlObject;
       let adminUsers: string[] = ['admin'];
       const readOnlyUsers: string[] = ['anyonomous'];
 
@@ -82,33 +79,29 @@ export class OidcConfig {
         },
       };
       const rolesAndPermissions: { [x: string]: any; } = {
-        authorizationStrategy: {
-          roleBased: {
-            roles: {
-              global: [{
-                assignments: adminUsers,
-                name: 'admin',
-                pattern: '.*',
-                permissions: OidcConfig.adminRolePermissions
-                ,
-              },
-              {
-                assignments: readOnlyUsers,
-                name: 'read',
-                pattern: '.*',
-                permissions: OidcConfig.readOnlyRolePermissions,
-              },
-
-              ],
+        roleBased: {
+          roles: {
+            global: [{
+              assignments: adminUsers,
+              name: 'admin',
+              pattern: '.*',
+              permissions: OidcConfig.adminRolePermissions
+              ,
             },
+            {
+              assignments: readOnlyUsers,
+              name: 'read',
+              pattern: '.*',
+              permissions: OidcConfig.readOnlyRolePermissions,
+            },
+
+            ],
           },
         },
       };
-      delete jenkinsYaml.jenkins.securityRealm.local;
-      delete jenkinsYaml.jenkins.authorizationStrategy;
-      jenkinsYaml.jenkins = rolesAndPermissions;
+
+      jenkinsYaml.jenkins.authorizationStrategy = rolesAndPermissions;
       jenkinsYaml.jenkins.securityRealm = oidcConfig;
-      const newyaml = dump(jenkinsYaml);
-      writeFileSync(newYamlPath, newyaml, 'utf-8');
+      return jenkinsYaml;
     }
 }
