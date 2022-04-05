@@ -377,19 +377,20 @@ export class JenkinsMainNode {
       // Therefore, sleep 60 seconds to wait for plugins to install and jenkins to start which is required for the next step
       InitCommand.shellCommand('sleep 60'),
 
-      InitFile.fromFileInline('/var/lib/jenkins/jenkins.yaml', jenkinsyaml),
+      InitFile.fromFileInline('/var/lib/jenkins/initial_jenkins.yaml', jenkinsyaml),
 
+      // Make any changes to initial jenkins.yaml
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
         // eslint-disable-next-line max-len
         ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` && `
         + ' varkeys=`echo $var | yq \'keys\' | cut -d "-" -f2 | cut -d " " -f2` &&'
         // eslint-disable-next-line max-len
-        + ' for i in $varkeys; do newvalue=`echo $var | yq .$i` && myenv=$newvalue i=$i yq -i \'.jenkins.securityRealm.oic.[env(i)]=env(myenv)\' /var/lib/jenkins/jenkins.yaml ; done'
-        : 'echo OIDC disabled: Not changing the configuration'),
+        + ' for i in $varkeys; do newvalue=`echo $var | yq .$i` && myenv=$newvalue i=$i yq -i \'.jenkins.securityRealm.oic.[env(i)]=env(myenv)\' /var/lib/jenkins/initial_jenkins.yaml ; done'
+        : 'echo No changes made to initial_jenkins.yaml'),
 
-      // Reload configuration via Jenkins.yaml.
-      // eslint-disable-next-line max-len
-      InitCommand.shellCommand('java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault reload-jcasc-configuration'),
+      // Reload configuration via Jenkins.yaml
+      InitCommand.shellCommand('cp /var/lib/jenkins/initial_jenkins.yaml /var/lib/jenkins/jenkins.yaml &&'
+      + ' java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault reload-jcasc-configuration'),
 
     ];
   }
