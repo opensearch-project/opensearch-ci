@@ -55,7 +55,7 @@ export class OidcConfig {
     public static addOidcConfigToJenkinsYaml(yamlObject: any, admins?: string[]): any {
       const jenkinsYaml: any = yamlObject;
       let adminUsers: string[] = ['admin'];
-      const readOnlyUsers: string[] = ['anyonomous'];
+      const readOnlyUsers: string[] = ['anonymous'];
 
       if (admins) {
         adminUsers = adminUsers.concat(admins);
@@ -70,11 +70,8 @@ export class OidcConfig {
           tokenServerUrl: 'tokenServerUrl',
           userInfoServerUrl: 'userInfoServerUrl',
           disableSslVerification: false,
-          userNameField: 'userNameField',
-          fullNameFieldName: 'fullNameFieldName',
+          userNameField: 'sub',
           escapeHatchEnabled: false,
-          escapeHatchGroup: 'escapeHatchGroup',
-          escapeHatchUsername: 'escapeHatchUsername',
           logoutFromOpenidProvider: true,
           postLogoutRedirectUrl: '',
           scopes: 'openid',
