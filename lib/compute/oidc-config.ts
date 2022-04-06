@@ -63,22 +63,22 @@ export class OidcConfig {
 
       const oidcConfig: { [x: string]: any; } = {
         oic: {
-          authorizationServerUrl: 'http://localhost',
           clientId: 'clientId',
           clientSecret: 'clientSecret',
+          authorizationServerUrl: 'http://localhost',
           wellKnownOpenIDConfigurationUrl: 'wellKnownOpenIDConfigurationUrl',
+          tokenServerUrl: 'http://localhost',
           userInfoServerUrl: 'userInfoServerUrl',
-          disableSslVerification: true,
-          emailFieldName: 'emailFieldName',
-          escapeHatchEnabled: true,
+          disableSslVerification: false,
+          userNameField: 'userNameField',
+          fullNameFieldName: 'fullNameFieldName',
+          escapeHatchEnabled: false,
           escapeHatchGroup: 'escapeHatchGroup',
           escapeHatchUsername: 'escapeHatchUsername',
-          fullNameFieldName: 'fullNameFieldName',
-          groupsFieldName: 'groupsFieldName',
           logoutFromOpenidProvider: true,
-          scopes: 'scopes',
-          tokenServerUrl: 'http://localhost',
-          userNameField: 'userNameField',
+          postLogoutRedirectUrl: '',
+          scopes: 'openid',
+          escapeHatchSecret: 'random'
         },
       };
       const rolesAndPermissions: { [x: string]: any; } = {
