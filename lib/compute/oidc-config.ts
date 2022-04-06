@@ -67,7 +67,7 @@ export class OidcConfig {
           clientSecret: 'clientSecret',
           authorizationServerUrl: 'http://localhost',
           wellKnownOpenIDConfigurationUrl: 'wellKnownOpenIDConfigurationUrl',
-          tokenServerUrl: 'http://localhost',
+          tokenServerUrl: 'tokenServerUrl',
           userInfoServerUrl: 'userInfoServerUrl',
           disableSslVerification: false,
           userNameField: 'userNameField',
