@@ -375,7 +375,7 @@ export class JenkinsMainNode {
 
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 60 seconds to wait for plugins to install and jenkins to start which is required for the next step
-      InitCommand.shellCommand('sleep 60'),
+      InitCommand.shellCommand('sleep 65'),
 
       InitFile.fromFileInline('/var/lib/jenkins/initial_jenkins.yaml', jenkinsyaml),
 
