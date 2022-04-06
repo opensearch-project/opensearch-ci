@@ -65,6 +65,9 @@ export class OidcConfig {
         oic: {
           authorizationServerUrl: 'http://localhost',
           clientId: 'clientId',
+          clientSecret: 'clientSecret',
+          wellKnownOpenIDConfigurationUrl: 'wellKnownOpenIDConfigurationUrl',
+          userInfoServerUrl: 'userInfoServerUrl',
           disableSslVerification: true,
           emailFieldName: 'emailFieldName',
           escapeHatchEnabled: true,
