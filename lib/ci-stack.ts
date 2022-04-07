@@ -31,7 +31,7 @@ export interface CIStackProps extends StackProps {
   /** Should an OIDC provider be installed on Jenkins. */
   readonly runWithOidc?: boolean;
   /** Additional verification during deployment and resource startup. */
-  readonly strictMode?: boolean;
+  readonly ignoreResourcesFailures?: boolean;
   /** Account to deploy your ECR Assets on */
   readonly ecrAccountId?: string;
   /** Users with admin access during initial deployment */
@@ -100,7 +100,7 @@ export class CIStack extends Stack {
       oidcCredArn: importedOidcConfigValuesSecretBucketValue.toString(),
       useSsl,
       runWithOidc,
-      failOnCloudInitError: props?.strictMode,
+      failOnCloudInitError: props?.ignoreResourcesFailures,
       ecrAccountId: props.ecrAccountId ?? Stack.of(this).account,
       adminUsers: props?.adminUsers,
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
