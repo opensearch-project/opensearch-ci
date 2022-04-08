@@ -75,7 +75,7 @@ export class OidcConfig {
           logoutFromOpenidProvider: true,
           postLogoutRedirectUrl: '',
           scopes: 'openid',
-          escapeHatchSecret: 'random'
+          escapeHatchSecret: 'random',
         },
       };
       const rolesAndPermissions: { [x: string]: any; } = {

@@ -190,7 +190,6 @@ export class JenkinsMainNode {
       InitPackage.yum('wget'),
       InitPackage.yum('unzip'),
       InitPackage.yum('tar'),
-      InitPackage.yum('jq'),
       InitPackage.yum('python3'),
       InitPackage.yum('python3-pip.noarch'),
       InitPackage.yum('git'),
