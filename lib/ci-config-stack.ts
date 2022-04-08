@@ -12,6 +12,7 @@ import {
 
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 
+
 export class CIConfigStack extends Stack {
     static readonly CERTIFICATE_ARN_SECRET_EXPORT_VALUE: string = 'certificateArnSecret';
 

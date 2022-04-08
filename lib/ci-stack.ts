@@ -6,15 +6,9 @@
  * compatible open source license.
  */
 
-import {
-  FlowLogDestination,
-  FlowLogTrafficType,
-  Vpc,
-} from '@aws-cdk/aws-ec2';
+import { FlowLogDestination, FlowLogTrafficType, Vpc, } from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
-import {
-  CfnParameter, Construct, Fn, Stack, StackProps,
-} from '@aws-cdk/core';
+import { CfnParameter, Construct, Fn, Stack, StackProps, } from '@aws-cdk/core';
 import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { CIConfigStack } from './ci-config-stack';
 import { JenkinsMainNode } from './compute/jenkins-main-node';
@@ -24,6 +18,7 @@ import { JenkinsSecurityGroups } from './security/ci-security-groups';
 import { CiAuditLogging } from './auditing/ci-audit-logging';
 import { AgentNodeProps } from './compute/agent-node-config';
 import { AgentNodes } from './compute/agent-nodes';
+import { FileSystem, ThroughputMode } from '@aws-cdk/aws-efs';
 
 export interface CIStackProps extends StackProps {
   /** Should the Jenkins use https  */
@@ -36,6 +31,10 @@ export interface CIStackProps extends StackProps {
   readonly ecrAccountId?: string;
   /** Users with admin access during initial deployment */
   readonly adminUsers?: string[];
+  /** dataRentention */
+  readonly startDataRentention?: boolean;
+  /** Load data from given EFS */
+  readonly retainDataFrom?: string;
 }
 
 export class CIStack extends Stack {
@@ -66,7 +65,7 @@ export class CIStack extends Stack {
 
     const runWithOidc = runWithOidcParameter === 'true';
 
-    // Setting CfnParameters to recorded the value in cloudFormation
+    // Setting CfnParameters to record the value in cloudFormation
     new CfnParameter(this, 'runWithOidc', {
       description: 'If the jenkins instance should use OIDC + federate',
       default: runWithOidc,
@@ -78,6 +77,13 @@ export class CIStack extends Stack {
       default: useSsl,
     });
 
+    if (props?.startDataRentention) {
+      const efs = new FileSystem(this, 'EFSfilesystem', {
+        vpc,
+        throughputMode: ThroughputMode.BURSTING,
+        encrypted: true,
+      });
+    }
     const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl);
     const importedContentsSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE}`);
     const importedContentsChainBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CHAIN_SECRET_EXPORT_VALUE}`);
