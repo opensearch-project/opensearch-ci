@@ -16,6 +16,8 @@ export class JenkinsSecurityGroups {
 
   public readonly agentNodeSG: SecurityGroup;
 
+  public readonly efsSG: SecurityGroup;
+
   constructor(stack: Stack, vpc: Vpc, useSsl: boolean) {
     this.externalAccessSG = new SecurityGroup(stack, 'ExternalAccessSG', {
       vpc,
@@ -38,5 +40,11 @@ export class JenkinsSecurityGroups {
       description: 'Agent Node of Jenkins',
     });
     this.agentNodeSG.addIngressRule(this.mainNodeSG, Port.tcp(22), 'Main node SSH Access into agent nodes');
+
+    this.efsSG = new SecurityGroup(stack, 'efsSG', {
+      vpc,
+      description: 'Jenkins EFS',
+    });
+    this.efsSG.addIngressRule(this.mainNodeSG, Port.allTraffic(), 'Main node Access to EFS');
   }
 }

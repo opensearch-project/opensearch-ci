@@ -6,10 +6,13 @@
  * compatible open source license.
  */
 
-import { FlowLogDestination, FlowLogTrafficType, Vpc, } from '@aws-cdk/aws-ec2';
+import { FlowLogDestination, FlowLogTrafficType, Vpc } from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
-import { CfnParameter, Construct, Fn, Stack, StackProps, } from '@aws-cdk/core';
+import {
+  CfnParameter, Construct, Fn, RemovalPolicy, Stack, StackProps,
+} from '@aws-cdk/core';
 import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { FileSystem } from '@aws-cdk/aws-efs';
 import { CIConfigStack } from './ci-config-stack';
 import { JenkinsMainNode } from './compute/jenkins-main-node';
 import { JenkinsMonitoring } from './monitoring/ci-alarms';
@@ -18,7 +21,6 @@ import { JenkinsSecurityGroups } from './security/ci-security-groups';
 import { CiAuditLogging } from './auditing/ci-audit-logging';
 import { AgentNodeProps } from './compute/agent-node-config';
 import { AgentNodes } from './compute/agent-nodes';
-import { FileSystem, ThroughputMode } from '@aws-cdk/aws-efs';
 
 export interface CIStackProps extends StackProps {
   /** Should the Jenkins use https  */
@@ -31,10 +33,8 @@ export interface CIStackProps extends StackProps {
   readonly ecrAccountId?: string;
   /** Users with admin access during initial deployment */
   readonly adminUsers?: string[];
-  /** dataRentention */
-  readonly startDataRentention?: boolean;
-  /** Load data from given EFS */
-  readonly retainDataFrom?: string;
+  /** Do you want to retain jenkins jobs and build history */
+  readonly dataRetention?: boolean;
 }
 
 export class CIStack extends Stack {
@@ -77,13 +77,6 @@ export class CIStack extends Stack {
       default: useSsl,
     });
 
-    if (props?.startDataRentention) {
-      const efs = new FileSystem(this, 'EFSfilesystem', {
-        vpc,
-        throughputMode: ThroughputMode.BURSTING,
-        encrypted: true,
-      });
-    }
     const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl);
     const importedContentsSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE}`);
     const importedContentsChainBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CHAIN_SECRET_EXPORT_VALUE}`);
@@ -99,6 +92,8 @@ export class CIStack extends Stack {
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
       sg: securityGroups.mainNodeSG,
+      efsSG: securityGroups.efsSG,
+      dataRetention: props.dataRetention ?? false,
       sslCertContentsArn: importedContentsSecretBucketValue.toString(),
       sslCertChainArn: importedContentsChainBucketValue.toString(),
       sslCertPrivateKeyContentsArn: importedCertSecretBucketValue.toString(),

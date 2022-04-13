@@ -13,11 +13,12 @@ import { DeployAwsAssets } from '../lib/deploy-aws-assets';
 
 const app = new App();
 
-const defaultEnv: string = 'lol';
+const defaultEnv: string = 'Dev';
 
 const ciConfigStack = new CIConfigStack(app, `OpenSearch-CI-Config-${defaultEnv}`, {});
 
-const ciStack = new CIStack(app, `OpenSearch-CI-${defaultEnv}`, {});
+const ciStack = new CIStack(app, `OpenSearch-CI-${defaultEnv}`, {
+});
 
 new DeployAwsAssets(app, `OpenSearch-CI-Deploy-Assets-${defaultEnv}`, {
   /* This will delete the ECR repository once the stack is destroyed.
