@@ -24,6 +24,7 @@ import { JenkinsSecurityGroups } from './security/ci-security-groups';
 import { CiAuditLogging } from './auditing/ci-audit-logging';
 import { AgentNodeProps } from './compute/agent-node-config';
 import { AgentNodes } from './compute/agent-nodes';
+import { RunAdditionalCommands } from './compute/run-additional-commands';
 
 export interface CIStackProps extends StackProps {
   /** Should the Jenkins use https  */
@@ -36,6 +37,10 @@ export interface CIStackProps extends StackProps {
   readonly ecrAccountId?: string;
   /** Users with admin access during initial deployment */
   readonly adminUsers?: string[];
+  /** Additional logic that needs to be run on Master Node. The value has to be path to a file */
+  readonly additionalCommands?: string;
+  /** Optional additional parameters required for the command passed */
+  readonly additionalCommandParams?: string;
 }
 
 export class CIStack extends Stack {
@@ -54,17 +59,21 @@ export class CIStack extends Stack {
 
     const useSslParameter = `${props?.useSsl ?? this.node.tryGetContext('useSsl')}`;
     if (useSslParameter !== 'true' && useSslParameter !== 'false') {
-      throw new Error('useSsl parameter is required to be set as - true or false');
+      throw new Error('useSsl parameter is required to be set as - true or false. Please pass the value');
     }
 
     const useSsl = useSslParameter === 'true';
 
     const runWithOidcParameter = `${props?.runWithOidc ?? this.node.tryGetContext('runWithOidc')}`;
     if (runWithOidcParameter !== 'true' && runWithOidcParameter !== 'false') {
-      throw new Error('runWithOidc parameter is required to be set as - true or false');
+      throw new Error('runWithOidc parameter is required to be set as - true or false. Pass the damn value');
     }
 
     const runWithOidc = runWithOidcParameter === 'true';
+
+    const additionalCommandsContext = `${props?.additionalCommands ?? this.node.tryGetContext('additionalCommands')}`;
+
+    const additionalCommandParams = `${props?.additionalCommandParams ?? this.node.tryGetContext('additionalCommandParams')}`;
 
     // Setting CfnParameters to recorded the value in cloudFormation
     new CfnParameter(this, 'runWithOidc', {
@@ -116,5 +125,11 @@ export class CIStack extends Stack {
     });
 
     const monitoring = new JenkinsMonitoring(this, externalLoadBalancer, mainJenkinsNode);
+
+    if (additionalCommandsContext.toString() === 'undefined') {
+      console.log('No additional commands passed. Nothing to do.');
+    } else {
+      new RunAdditionalCommands(this, additionalCommandsContext.toString(), additionalCommandParams.toString());
+    }
   }
 }
