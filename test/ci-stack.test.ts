@@ -19,18 +19,20 @@ test('CI Stack Basic Resources', () => {
 
   // WHEN
   const stack = new CIStack(app, 'TestStack', {
+    dataRetention: true,
     ecrAccountId: '999999999',
   });
 
   // THEN
   expect(stack).to(countResources('AWS::EC2::Instance', 1));
   expect(stack).to(countResources('AWS::ElasticLoadBalancingV2::LoadBalancer', 1));
-  expect(stack).to(countResources('AWS::EC2::SecurityGroup', 3));
+  expect(stack).to(countResources('AWS::EC2::SecurityGroup', 4));
   expect(stack).to(countResources('AWS::IAM::Policy', 1));
   expect(stack).to(countResources('AWS::IAM::Role', 3));
   expect(stack).to(countResources('AWS::S3::Bucket', 1));
   expect(stack).to(countResources('Custom::EC2-Key-Pair', 1));
   expect(stack).to(countResources('AWS::IAM::InstanceProfile', 2));
+  expect(stack).to(countResources('AWS::EFS::FileSystem', 1));
 });
 
 test('External security group is open', () => {
