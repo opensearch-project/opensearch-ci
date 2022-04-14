@@ -14,7 +14,7 @@ import { CIStack } from '../lib/ci-stack';
 
 test('CI Stack Basic Resources', () => {
   const app = new App({
-    context: { useSsl: 'true', runWithOidc: 'true', additionalCommands: './resources/hello-world.py' },
+    context: { useSsl: 'true', runWithOidc: 'true', additionalCommands: './test/data/hello-world.py' },
   });
 
   // WHEN

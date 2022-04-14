@@ -66,14 +66,12 @@ export class CIStack extends Stack {
 
     const runWithOidcParameter = `${props?.runWithOidc ?? this.node.tryGetContext('runWithOidc')}`;
     if (runWithOidcParameter !== 'true' && runWithOidcParameter !== 'false') {
-      throw new Error('runWithOidc parameter is required to be set as - true or false. Pass the damn value');
+      throw new Error('runWithOidc parameter is required to be set as - true or false. Please Pass the value');
     }
 
     const runWithOidc = runWithOidcParameter === 'true';
 
     const additionalCommandsContext = `${props?.additionalCommands ?? this.node.tryGetContext('additionalCommands')}`;
-
-    const additionalCommandParams = `${props?.additionalCommandParams ?? this.node.tryGetContext('additionalCommandParams')}`;
 
     // Setting CfnParameters to recorded the value in cloudFormation
     new CfnParameter(this, 'runWithOidc', {
@@ -126,10 +124,8 @@ export class CIStack extends Stack {
 
     const monitoring = new JenkinsMonitoring(this, externalLoadBalancer, mainJenkinsNode);
 
-    if (additionalCommandsContext.toString() === 'undefined') {
-      console.log('No additional commands passed. Nothing to do.');
-    } else {
-      new RunAdditionalCommands(this, additionalCommandsContext.toString(), additionalCommandParams.toString());
+    if (additionalCommandsContext.toString() !== 'undefined') {
+      new RunAdditionalCommands(this, additionalCommandsContext.toString());
     }
   }
 }
