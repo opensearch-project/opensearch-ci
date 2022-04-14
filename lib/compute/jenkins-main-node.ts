@@ -24,7 +24,9 @@ import {
   SubnetType,
   Vpc,
 } from '@aws-cdk/aws-ec2';
-import { Effect, IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, } from '@aws-cdk/aws-iam';
+import {
+  Effect, IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
+} from '@aws-cdk/aws-iam';
 import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
 import { join } from 'path';
 import { dump } from 'js-yaml';
@@ -77,7 +79,7 @@ export class JenkinsMainNode {
 
   static readonly JENKINS_DEFAULT_ID_PASS_PATH: String = '/var/lib/jenkins/secrets/myIdPassDefault';
 
-  public readonly EFS_ID: string;
+  private readonly EFS_ID: string;
 
   public readonly ec2Instance: Instance;
 
@@ -87,9 +89,7 @@ export class JenkinsMainNode {
     foundJenkinsProcessCount: Metric
   }
 
-  constructor(stack: Stack,
-    props: JenkinsMainNodeProps,
-    agentNode: AgentNodeProps[]) {
+  constructor(stack: Stack, props: JenkinsMainNodeProps, agentNode: AgentNodeProps[]) {
     this.ec2InstanceMetrics = {
       cpuTime: new Metric({
         metricName: 'procstat_cpu_usage',
