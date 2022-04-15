@@ -8,6 +8,7 @@
   - [Executing Optional Tasks](#executing-optional-tasks)
     - [SSL Configuration](#ssl-configuration)
     - [Setup OpenId Connect (OIDC) via Federate](#setup-openid-connect-oidc-via-federate)
+    - [Data Retention](#Data Retention)
   - [Troubleshooting](#troubleshooting)
     - [Main Node](#main-node)
   - [Useful commands](#useful-commands)
@@ -122,6 +123,33 @@ $aws secretsmanager put-secret-value \
    1. `npm run cdk deploy OpenSearch-CI-Dev -- -c runWithOidc=true -c useSsl=true` or,
    1. `cdk deploy OpenSearch-CI-Dev -c runWithOidc=true -c useSsl=true`
 1. Continue with [next steps](#dev-deployment)
+
+#### Data Retention
+Change in any EC2 config (specially init config) leads to replacement of EC2. The jenkins configuration is managed via code using configuration as code plugin. [More details](https://plugins.jenkins.io/configuration-as-code/).
+See inital [jenkins.yaml](./resources/baseJenkins.yaml)
+If you want to retain all the jobs and its build history, 
+1. Update the `dataRetention` property in `ciSettings` to true (defaults to false) see [CIStackProps](./lib/ci-stack.ts) for details.
+This will create an EFS (Elastic File System) and mount it on `/var/lib/jenkins/jobs` which will retain all jobs and its build history.
+
+#### Runnning additional commands
+In cases where you need to run additional logic/commands, such as adding a cron to emit ssl cert expiry metric, you can pass the commands as a script using `additionalCommands` context parameter.
+Below sample will write the python script to $HOME/hello-world path on jenkins master node and then execute it once the jenkins master node has been brought up. 
+```
+cat << EOF > $HOME/hello-world && chmod 755 $HOME/hello-world && $HOME/hello-world
+#!/usr/bin/env python3
+def print_hello():
+    print("Hello World")
+
+
+if __name__ == "__main__":
+    print_hello()
+EOF
+```
+To use above example, you need to write the contents of the script to a file, say example.txt and pass the path of example.txt to `additionalCommands` paramter.   
+Usage:
+```
+npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false -c additionalCommands='./example.txt'
+```
 
 ### Troubleshooting
 #### Main Node

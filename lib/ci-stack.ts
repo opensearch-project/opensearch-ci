@@ -6,16 +6,13 @@
  * compatible open source license.
  */
 
-import {
-  FlowLogDestination,
-  FlowLogTrafficType,
-  Vpc,
-} from '@aws-cdk/aws-ec2';
+import { FlowLogDestination, FlowLogTrafficType, Vpc } from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import {
-  CfnParameter, Construct, Fn, Stack, StackProps,
+  CfnParameter, Construct, Fn, RemovalPolicy, Stack, StackProps,
 } from '@aws-cdk/core';
 import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { FileSystem } from '@aws-cdk/aws-efs';
 import { CIConfigStack } from './ci-config-stack';
 import { JenkinsMainNode } from './compute/jenkins-main-node';
 import { JenkinsMonitoring } from './monitoring/ci-alarms';
@@ -39,8 +36,8 @@ export interface CIStackProps extends StackProps {
   readonly adminUsers?: string[];
   /** Additional logic that needs to be run on Master Node. The value has to be path to a file */
   readonly additionalCommands?: string;
-  /** Optional additional parameters required for the command passed */
-  readonly additionalCommandParams?: string;
+  /** Do you want to retain jenkins jobs and build history */
+  readonly dataRetention?: boolean;
 }
 
 export class CIStack extends Stack {
@@ -59,21 +56,21 @@ export class CIStack extends Stack {
 
     const useSslParameter = `${props?.useSsl ?? this.node.tryGetContext('useSsl')}`;
     if (useSslParameter !== 'true' && useSslParameter !== 'false') {
-      throw new Error('useSsl parameter is required to be set as - true or false. Please pass the value');
+      throw new Error('useSsl parameter is required to be set as - true or false');
     }
 
     const useSsl = useSslParameter === 'true';
 
     const runWithOidcParameter = `${props?.runWithOidc ?? this.node.tryGetContext('runWithOidc')}`;
     if (runWithOidcParameter !== 'true' && runWithOidcParameter !== 'false') {
-      throw new Error('runWithOidc parameter is required to be set as - true or false. Please Pass the value');
+      throw new Error('runWithOidc parameter is required to be set as - true or false');
     }
 
     const runWithOidc = runWithOidcParameter === 'true';
 
     const additionalCommandsContext = `${props?.additionalCommands ?? this.node.tryGetContext('additionalCommands')}`;
 
-    // Setting CfnParameters to recorded the value in cloudFormation
+    // Setting CfnParameters to record the value in cloudFormation
     new CfnParameter(this, 'runWithOidc', {
       description: 'If the jenkins instance should use OIDC + federate',
       default: runWithOidc,
@@ -100,6 +97,8 @@ export class CIStack extends Stack {
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
       sg: securityGroups.mainNodeSG,
+      efsSG: securityGroups.efsSG,
+      dataRetention: props.dataRetention ?? false,
       sslCertContentsArn: importedContentsSecretBucketValue.toString(),
       sslCertChainArn: importedContentsChainBucketValue.toString(),
       sslCertPrivateKeyContentsArn: importedCertSecretBucketValue.toString(),

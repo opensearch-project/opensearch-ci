@@ -6,10 +6,23 @@
  * compatible open source license.
  */
 
-import { Duration, Stack } from '@aws-cdk/core';
+import { Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
 import {
-  AmazonLinuxGeneration, BlockDeviceVolume, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage, Instance,
-  InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc,
+  AmazonLinuxGeneration,
+  BlockDeviceVolume,
+  CloudFormationInit,
+  InitCommand,
+  InitElement,
+  InitFile,
+  InitPackage,
+  Instance,
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  MachineImage,
+  SecurityGroup,
+  SubnetType,
+  Vpc,
 } from '@aws-cdk/aws-ec2';
 import {
   Effect, IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
@@ -18,6 +31,7 @@ import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
 import { join } from 'path';
 import { dump } from 'js-yaml';
 import { writeFileSync } from 'fs';
+import { FileSystem, PerformanceMode, ThroughputMode } from '@aws-cdk/aws-efs';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { JenkinsPlugins } from './jenkins-plugins';
 import { OidcConfig } from './oidc-config';
@@ -41,11 +55,15 @@ interface EcrStackProps {
   readonly ecrAccountId: string
 }
 
-export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, EcrStackProps, AgentNodeNetworkProps {
+interface DataRetentionProps {
+  readonly dataRetention?: boolean;
+  readonly efsSG?: SecurityGroup;
+}
+
+export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, EcrStackProps, AgentNodeNetworkProps, DataRetentionProps{
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
   readonly failOnCloudInitError?: boolean;
-  readonly runCustomCron?: boolean;
 }
 
 export class JenkinsMainNode {
@@ -61,6 +79,8 @@ export class JenkinsMainNode {
 
   static readonly JENKINS_DEFAULT_ID_PASS_PATH: String = '/var/lib/jenkins/secrets/myIdPassDefault';
 
+  private readonly EFS_ID: string;
+
   public readonly ec2Instance: Instance;
 
   public readonly ec2InstanceMetrics: {
@@ -69,9 +89,7 @@ export class JenkinsMainNode {
     foundJenkinsProcessCount: Metric
   }
 
-  constructor(stack: Stack,
-    props: JenkinsMainNodeProps,
-    agentNode: AgentNodeProps[]) {
+  constructor(stack: Stack, props: JenkinsMainNodeProps, agentNode: AgentNodeProps[]) {
     this.ec2InstanceMetrics = {
       cpuTime: new Metric({
         metricName: 'procstat_cpu_usage',
@@ -89,8 +107,18 @@ export class JenkinsMainNode {
 
     const agentNodeConfig = new AgentNodeConfig(stack);
     const jenkinsyaml = JenkinsMainNode.addConfigtoJenkinsYaml(stack, props, agentNodeConfig, props, agentNode);
+    if (props.dataRetention) {
+      const efs = new FileSystem(stack, 'EFSfilesystem', {
+        vpc: props.vpc,
+        encrypted: true,
+        enableAutomaticBackups: true,
+        performanceMode: PerformanceMode.GENERAL_PURPOSE,
+        throughputMode: ThroughputMode.BURSTING,
+        securityGroup: props.efsSG,
+      });
+      this.EFS_ID = efs.fileSystemId;
+    }
     this.ec2Instance = new Instance(stack, 'MainNode', {
-
       instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4),
       machineImage: MachineImage.latestAmazonLinux({
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
@@ -113,7 +141,9 @@ export class JenkinsMainNode {
         stack.region,
         props,
         props,
+        props,
         jenkinsyaml,
+        this.EFS_ID,
       )),
       blockDevices: [{
         deviceName: '/dev/xvda',
@@ -185,7 +215,7 @@ export class JenkinsMainNode {
   }
 
   public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps,
-    oidcFederateProps: OidcFederateProps, jenkinsyaml: string): InitElement[] {
+    oidcFederateProps: OidcFederateProps, dataRetentionProps : DataRetentionProps, jenkinsyaml: string, efsId?: string): InitElement[] {
     return [
       InitPackage.yum('curl'),
       InitPackage.yum('wget'),
@@ -198,6 +228,7 @@ export class JenkinsMainNode {
       InitPackage.yum('java-1.8.0-openjdk-devel'),
       InitPackage.yum('openssl'),
       InitPackage.yum('mod_ssl'),
+      InitPackage.yum('amazon-efs-utils'),
       // eslint-disable-next-line max-len
       InitCommand.shellCommand('sudo wget -nv https://github.com/mikefarah/yq/releases/download/v4.22.1/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq'),
       InitCommand.shellCommand('python3 -m pip install --upgrade pip && python3 -m pip install cryptography boto3 requests-aws4auth'),
@@ -361,6 +392,10 @@ export class JenkinsMainNode {
       // Therefore, sleep 60 seconds to wait for jenkins to start
       // This allows jenkins to generate the secrets files used for auth in jenkins-cli APIs
       InitCommand.shellCommand('sleep 60'),
+
+      InitCommand.shellCommand(dataRetentionProps.dataRetention
+        ? `mount -t efs ${efsId} /var/lib/jenkins/jobs && chown -R jenkins:jenkins /var/lib/jenkins/jobs`
+        : 'echo Data rentention is disabled, not mounting efs'),
 
       // creating a default  user:password file to use to authenticate the jenkins-cli
       // eslint-disable-next-line max-len

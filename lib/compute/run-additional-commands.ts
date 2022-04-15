@@ -11,11 +11,11 @@ import { CfnAssociation, CfnAssociationProps, CfnDocument } from '@aws-cdk/aws-s
 import { readFileSync } from 'fs';
 
 export class RunAdditionalCommands {
-  constructor(stack: Stack, filePath: string, additionalParams: string) {
+  constructor(stack: Stack, filePath: string) {
     const additionalCommands = readFileSync(filePath.toString()).toString('utf-8');
 
     const ssmDocument = new CfnDocument(stack, 'additionalCommandSsmDoc', {
-      name: 'additionalCommandDocumentv1',
+      name: 'additionalCommandDocument',
       documentType: 'Command',
       content: {
         schemaVersion: '2.2',
