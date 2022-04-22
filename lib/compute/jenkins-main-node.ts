@@ -34,6 +34,7 @@ import { writeFileSync } from 'fs';
 import { FileSystem, PerformanceMode, ThroughputMode } from '@aws-cdk/aws-efs';
 import { OidcConfig } from './oidc-config';
 import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
+import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -302,6 +303,52 @@ export class JenkinsMainNode {
         : 'echo Not altering the ProxyPassReverse url'),
 
       InitCommand.shellCommand('systemctl start httpd'),
+
+      InitPackage.yum('amazon-cloudwatch-agent'),
+
+      CloudwatchAgent.asInitFile('/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json', {
+        agent: {
+          metrics_collection_interval: 60, // seconds between collections
+          logfile: '/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log',
+          omit_hostname: true,
+          debug: false,
+        },
+        metrics: {
+          namespace: `${stackName}/JenkinsMainNode`,
+          append_dimensions: {
+            // eslint-disable-next-line no-template-curly-in-string
+            InstanceId: '${aws:InstanceId}',
+          },
+          aggregation_dimensions: [[]], // Create rollups without instance id
+          metrics_collected: {
+            procstat: [
+              {
+                pattern: 'jenkins',
+                measurement: [
+                  'cpu_usage',
+                  'cpu_time_system',
+                  'cpu_time_user',
+                  'read_bytes',
+                  'write_bytes',
+                  'pid_count',
+                ],
+                metrics_collection_interval: 10,
+              },
+            ],
+            mem: {
+              measurement: [
+                { name: 'available_percent', unit: Unit.PERCENT },
+                { name: 'used_percent', unit: Unit.PERCENT },
+                { name: 'mem_total', unit: Unit.BYTES },
+              ],
+              metrics_collection_interval: 1, // capture every second
+            },
+          },
+        },
+      }),
+      InitCommand.shellCommand('/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a stop'),
+      // eslint-disable-next-line max-len
+      InitCommand.shellCommand('/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s'),
 
       InitCommand.shellCommand(dataRetentionProps.dataRetention
         ? `mkdir /var/lib/jenkins && mount -t efs ${efsId} /var/lib/jenkins`
