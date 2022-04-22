@@ -6,7 +6,7 @@
  * compatible open source license.
  */
 
-import { Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import {
   AmazonLinuxGeneration,
   BlockDeviceVolume,
@@ -32,8 +32,6 @@ import { join } from 'path';
 import { dump } from 'js-yaml';
 import { writeFileSync } from 'fs';
 import { FileSystem, PerformanceMode, ThroughputMode } from '@aws-cdk/aws-efs';
-import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
-import { JenkinsPlugins } from './jenkins-plugins';
 import { OidcConfig } from './oidc-config';
 import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
 
@@ -124,7 +122,7 @@ export class JenkinsMainNode {
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
       }),
       role: new Role(stack, 'OpenSearch-CI-MainNodeRole', {
-        // roleName: 'OpenSearch-CI-MainNodeRole',
+        roleName: 'OpenSearch-CI-MainNodeRole',
         assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
       }),
       initOptions: {
