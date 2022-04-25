@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  jenkins:
+    image: opensearchstaging/jenkins:latest
+    privileged: true
+    user: root
+    ports:
+      - 8080:8080
+      - 50000:50000
+    container_name: jenkins
+    volumes:
+      - /var/lib/jenkins:/var/jenkins_home
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: JenkinsMainNode/jenkins.log
+        awslogs-stream: jenkins.log
+        awslogs-create-group: 'true'
+        awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%f%z'

@@ -2,15 +2,12 @@ jenkins:
   agentProtocols:
   - "JNLP4-connect"
   - "Ping"
-  authorizationStrategy:
-    loggedInUsersCanDoAnything:
-      allowAnonymousRead: false
   crumbIssuer:
     standard:
       excludeClientIPFromCrumb: false
   disableRememberMe: false
   labelAtoms:
-  - name: "master"
+  - name: "built-in"
   markupFormatter: "plainText"
   mode: NORMAL
   myViewsTabBar: "standard"
@@ -23,21 +20,7 @@ jenkins:
   remotingSecurity:
     enabled: true
   scmCheckoutRetryCount: 0
-  securityRealm:
-    local:
-      allowsSignup: false
-      enableCaptcha: false
-      users:
-      - id: "admin"
-        name: "admin"
-        properties:
-        - "apiToken"
-        - "timezone"
-        - "mailer"
-        - preferredProvider:
-            providerId: "default"
-        - "loginDetailsProperty"
-  slaveAgentPort: -1
+  slaveAgentPort: 50000
   updateCenter:
     sites:
     - id: "default"
@@ -46,6 +29,10 @@ jenkins:
   - all:
       name: "all"
   viewsTabBar: "standard"
+globalCredentialsConfiguration:
+  configuration:
+    providerFilter: "none"
+    typeFilter: "none"
 security:
   apiToken:
     creationOfLegacyTokenEnabled: false
@@ -69,7 +56,7 @@ unclassified:
   buildTimestamp:
     enableBuildTimestamp: true
     pattern: "yyyy-MM-dd HH:mm:ss z"
-    timezone: "UTC"
+    timezone: "Etc/UTC"
   descriptionSetterWrapper:
     disableTokens: false
   email-ext:
@@ -100,7 +87,7 @@ unclassified:
         showMatrixStatus: false
     githubAuth:
     - description: "Anonymous connection"
-      id: "fe7046c5-29a0-4370-b32d-47aead7c5945"
+      id: "d4456c70-9c5e-4b40-bee4-e1ebb693153b"
       serverAPIUrl: "https://api.github.com"
     manageWebhooks: true
     okToTestPhrase: ".*ok\\W+to\\W+test.*"
@@ -112,7 +99,7 @@ unclassified:
   gitHubConfiguration:
     apiRateLimitChecker: ThrottleForNormalize
   gitHubPluginConfig:
-    hookUrl: "http://ci-de-jenki-18z6t74yxghfp-1257712944.us-east-1.elb.amazonaws.com/github-webhook/"
+    hookUrl: "http://localhost:8080/github-webhook/"
   gitSCM:
     addGitTagAction: false
     allowSecondFetch: false
@@ -135,6 +122,8 @@ unclassified:
     useTls: false
   mavenModuleSet:
     localRepository: "default"
+  pluginImpl:
+    enableCredentialsFromNode: false
   pollSCM:
     pollingThreadCount: 10
   timestamper:
@@ -146,10 +135,16 @@ unclassified:
   whitelist:
     enabled: false
 tool:
+  git:
+    installations:
+    - home: "git"
+      name: "Default"
+  mavenGlobalConfig:
+    globalSettingsProvider: "standard"
+    settingsProvider: "standard"
   powerShellInstallation:
     installations:
     - home: "powershell.exe"
       name: "DefaultWindows"
     - home: "pwsh"
       name: "DefaultLinux"
-

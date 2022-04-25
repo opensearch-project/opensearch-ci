@@ -64,8 +64,7 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
    
    `npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false`
  
-1. Log onto the AWS Console of the account, navigate to [cloud watch](https://console.aws.amazon.com/cloudwatch/home), open log groups, looking for `JenkinsMainNode/var/log/jenkins/jenkins.log`
-1. Search the logs for `Jenkins initial setup is required. An admin user has been created and a password generated.` After that entry the password for the jenkins instance will be in the cloudwatch logs.
+1. Jenkins logs in directly as admin. You do need any credentials to log into.
 1. Go to the `OpenSearch-CI-Dev.JenkinsExternalLoadBalancerDns` url returned by CDK output to access the jenkins host.
 1. If you want to destroy the stack make sure you delete the agent nodes manually (via jenkins UI or AWS console) so that shared resources (like vpc, security groups, etc) can be deleted.
 
