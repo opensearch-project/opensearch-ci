@@ -21,6 +21,7 @@ import { JenkinsSecurityGroups } from './security/ci-security-groups';
 import { CiAuditLogging } from './auditing/ci-audit-logging';
 import { AgentNodeProps } from './compute/agent-node-config';
 import { AgentNodes } from './compute/agent-nodes';
+import { RunAdditionalCommands } from './compute/run-additional-commands';
 
 export interface CIStackProps extends StackProps {
   /** Should the Jenkins use https  */
@@ -33,6 +34,8 @@ export interface CIStackProps extends StackProps {
   readonly ecrAccountId?: string;
   /** Users with admin access during initial deployment */
   readonly adminUsers?: string[];
+  /** Additional logic that needs to be run on Master Node. The value has to be path to a file */
+  readonly additionalCommands?: string;
   /** Do you want to retain jenkins jobs and build history */
   readonly dataRetention?: boolean;
 }
@@ -64,6 +67,8 @@ export class CIStack extends Stack {
     }
 
     const runWithOidc = runWithOidcParameter === 'true';
+
+    const additionalCommandsContext = `${props?.additionalCommands ?? this.node.tryGetContext('additionalCommands')}`;
 
     // Setting CfnParameters to record the value in cloudFormation
     new CfnParameter(this, 'runWithOidc', {
@@ -117,5 +122,9 @@ export class CIStack extends Stack {
     });
 
     const monitoring = new JenkinsMonitoring(this, externalLoadBalancer, mainJenkinsNode);
+
+    if (additionalCommandsContext.toString() !== 'undefined') {
+      new RunAdditionalCommands(this, additionalCommandsContext.toString());
+    }
   }
 }
