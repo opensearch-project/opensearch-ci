@@ -64,7 +64,7 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
    
    `npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false`
  
-1. Jenkins logs in directly as admin. You do need any credentials to log into.
+1. When OIDC is disabled, this set up will enforce the user to secure jenkins by adding first admin user on deployment. Create admin user and password, fill in all other details like name and email id to start using jenkins.
 1. Go to the `OpenSearch-CI-Dev.JenkinsExternalLoadBalancerDns` url returned by CDK output to access the jenkins host.
 1. If you want to destroy the stack make sure you delete the agent nodes manually (via jenkins UI or AWS console) so that shared resources (like vpc, security groups, etc) can be deleted.
 
