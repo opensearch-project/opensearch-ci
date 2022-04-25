@@ -228,6 +228,7 @@ export class JenkinsMainNode {
       InitCommand.shellCommand('pip3 install botocore'),
       // eslint-disable-next-line max-len
       InitCommand.shellCommand('sudo wget -nv https://github.com/mikefarah/yq/releases/download/v4.22.1/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq'),
+      InitCommand.shellCommand('python3 -m pip install --upgrade pip && python3 -m pip install cryptography boto3 requests-aws4auth'),
 
       InitCommand.shellCommand(httpConfigProps.useSsl
         // eslint-disable-next-line max-len

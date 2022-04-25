@@ -14,7 +14,7 @@ import { CIStack } from '../lib/ci-stack';
 
 test('CI Stack Basic Resources', () => {
   const app = new App({
-    context: { useSsl: 'true', runWithOidc: 'true' },
+    context: { useSsl: 'true', runWithOidc: 'true', additionalCommands: './test/data/hello-world.py' },
   });
 
   // WHEN
@@ -32,6 +32,8 @@ test('CI Stack Basic Resources', () => {
   expect(stack).to(countResources('AWS::S3::Bucket', 1));
   expect(stack).to(countResources('Custom::EC2-Key-Pair', 1));
   expect(stack).to(countResources('AWS::IAM::InstanceProfile', 2));
+  expect(stack).to(countResources('AWS::SSM::Document', 1));
+  expect(stack).to(countResources('AWS::SSM::Association', 1));
   expect(stack).to(countResources('AWS::EFS::FileSystem', 1));
 });
 
