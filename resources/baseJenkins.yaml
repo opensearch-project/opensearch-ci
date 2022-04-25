@@ -20,6 +20,18 @@ jenkins:
   remotingSecurity:
     enabled: true
   scmCheckoutRetryCount: 0
+  securityRealm:
+    local:
+      allowsSignup: false
+      enableCaptcha: false
+      users:
+      - id: "admin"
+        name: "admin"
+        properties:
+        - "apiToken"
+        - preferredProvider:
+            providerId: "default"
+        - "loginDetailsProperty"
   slaveAgentPort: 50000
   updateCenter:
     sites:
