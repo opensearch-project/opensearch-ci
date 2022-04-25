@@ -225,6 +225,7 @@ export class JenkinsMainNode {
       InitPackage.yum('python3'),
       InitPackage.yum('python3-pip.noarch'),
       InitCommand.shellCommand('pip3 install docker-compose && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose'),
+      InitCommand.shellCommand('pip3 install botocore'),
       // eslint-disable-next-line max-len
       InitCommand.shellCommand('sudo wget -nv https://github.com/mikefarah/yq/releases/download/v4.22.1/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq'),
 
@@ -358,8 +359,8 @@ export class JenkinsMainNode {
       InitCommand.shellCommand('systemctl start docker && docker-compose up -d'),
 
       // Commands are fired one after the other but it does not wait for the command to complete.
-      // Therefore, sleep 60 seconds to wait for jenkins to start
-      InitCommand.shellCommand('sleep 60'),
+      // Therefore, sleep 90 seconds to wait for jenkins to start
+      InitCommand.shellCommand('sleep 90'),
 
       // Download jenkins-cli from the local machine
       InitCommand.shellCommand('wget -O "jenkins-cli.jar" http://localhost:8080/jnlpJars/jenkins-cli.jar'),
