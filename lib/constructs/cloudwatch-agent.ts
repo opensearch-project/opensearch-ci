@@ -14,7 +14,6 @@ import { CloudwatchMetricsSection } from './cloudwatch/metrics-section';
 export interface CloudwatchAgentConfig {
   agent: CloudwatchAgentSection;
   metrics: CloudwatchMetricsSection;
-  logs: CloudwatchLogsSection;
 }
 
 export class CloudwatchAgent {

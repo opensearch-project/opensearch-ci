@@ -6,7 +6,7 @@
  * compatible open source license.
  */
 
-import { Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import {
   AmazonLinuxGeneration,
   BlockDeviceVolume,
@@ -32,10 +32,9 @@ import { join } from 'path';
 import { dump } from 'js-yaml';
 import { writeFileSync } from 'fs';
 import { FileSystem, PerformanceMode, ThroughputMode } from '@aws-cdk/aws-efs';
-import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
-import { JenkinsPlugins } from './jenkins-plugins';
 import { OidcConfig } from './oidc-config';
 import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
+import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -217,31 +216,17 @@ export class JenkinsMainNode {
   public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps,
     oidcFederateProps: OidcFederateProps, dataRetentionProps : DataRetentionProps, jenkinsyaml: string, efsId?: string): InitElement[] {
     return [
-      InitPackage.yum('curl'),
       InitPackage.yum('wget'),
-      InitPackage.yum('unzip'),
-      InitPackage.yum('tar'),
-      InitPackage.yum('python3'),
-      InitPackage.yum('python3-pip.noarch'),
-      InitPackage.yum('git'),
-      InitPackage.yum('java-1.8.0-openjdk'),
-      InitPackage.yum('java-1.8.0-openjdk-devel'),
       InitPackage.yum('openssl'),
       InitPackage.yum('mod_ssl'),
       InitPackage.yum('amazon-efs-utils'),
+      InitPackage.yum('java-1.8.0-openjdk'),
+      InitPackage.yum('docker'),
+      InitPackage.yum('python3'),
+      InitPackage.yum('python3-pip.noarch'),
+      InitCommand.shellCommand('pip3 install docker-compose && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose'),
       // eslint-disable-next-line max-len
       InitCommand.shellCommand('sudo wget -nv https://github.com/mikefarah/yq/releases/download/v4.22.1/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq'),
-
-      //  Jenkins install is done with yum by adding a new repo
-      InitCommand.shellCommand('wget -O /etc/yum.repos.d/jenkins-stable.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo'),
-      InitCommand.shellCommand('rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key'),
-      //  The yum install must be triggered via shell command to ensure the order of execution
-      InitCommand.shellCommand('yum install -y jenkins-2.263.4'),
-
-      InitCommand.shellCommand('sleep 60'),
-
-      // Jenkins needs to be accessible for httpd proxy
-      InitCommand.shellCommand('sed -i \'s@JENKINS_LISTEN_ADDRESS=""@JENKINS_LISTEN_ADDRESS="127.0.0.1"@g\' /etc/sysconfig/jenkins'),
 
       InitCommand.shellCommand(httpConfigProps.useSsl
         // eslint-disable-next-line max-len
@@ -360,59 +345,26 @@ export class JenkinsMainNode {
             },
           },
         },
-        logs: {
-          logs_collected: {
-            files: {
-              collect_list: [
-                {
-                  file_path: '/var/log/jenkins/jenkins.log',
-                  log_group_name: 'JenkinsMainNode/var/log/jenkins/jenkins.log',
-                  auto_removal: true,
-                  log_stream_name: 'jenkins.log',
-                  //  2021-07-20 16:15:55.319+0000 [id=868]   INFO    jenkins.InitReactorRunner$1#onAttained: Completed initialization
-                  timestamp_format: '%Y-%m-%d %H:%M:%S.%f%z',
-                },
-              ],
-            },
-          },
-          force_flush_interval: 15,
-        },
       }),
-
       InitCommand.shellCommand('/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a stop'),
       // eslint-disable-next-line max-len
       InitCommand.shellCommand('/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s'),
 
-      // start jenkins service to generate all the default files and folders of jenkins
-      // Does not use InitService.enable() because it initialises the service after the instance is launched
-      InitCommand.shellCommand('systemctl start jenkins'),
+      InitCommand.shellCommand(dataRetentionProps.dataRetention
+        ? `mkdir /var/lib/jenkins && mount -t efs ${efsId} /var/lib/jenkins`
+        : 'echo Data rentention is disabled, not mounting efs'),
+
+      InitFile.fromFileInline('/docker-compose.yml', join(__dirname, '../../resources/docker-compose.yml')),
+      InitCommand.shellCommand('systemctl start docker && docker-compose up -d'),
 
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 60 seconds to wait for jenkins to start
-      // This allows jenkins to generate the secrets files used for auth in jenkins-cli APIs
       InitCommand.shellCommand('sleep 60'),
-
-      InitCommand.shellCommand(dataRetentionProps.dataRetention
-        ? `mount -t efs ${efsId} /var/lib/jenkins/jobs && chown -R jenkins:jenkins /var/lib/jenkins/jobs`
-        : 'echo Data rentention is disabled, not mounting efs'),
-
-      // creating a default  user:password file to use to authenticate the jenkins-cli
-      // eslint-disable-next-line max-len
-      InitCommand.shellCommand(`echo -n "admin:" > ${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH} && cat /var/lib/jenkins/secrets/initialAdminPassword >> ${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH}`),
 
       // Download jenkins-cli from the local machine
       InitCommand.shellCommand('wget -O "jenkins-cli.jar" http://localhost:8080/jnlpJars/jenkins-cli.jar'),
 
-      // install all the list of plugins from the list and restart (done in same command as restart is to be done after completion of install-plugin)
-      // eslint-disable-next-line max-len
-      ...JenkinsMainNode.createPluginInstallCommands(JenkinsPlugins.plugins),
-      // Warning : any commands after this may be executed before the above command is complete
-
-      // Commands are fired one after the other but it does not wait for the command to complete.
-      // Therefore, sleep 60 seconds to wait for plugins to install and jenkins to start which is required for the next step
-      InitCommand.shellCommand('sleep 65'),
-
-      InitFile.fromFileInline('/var/lib/jenkins/initial_jenkins.yaml', jenkinsyaml),
+      InitFile.fromFileInline('/initial_jenkins.yaml', jenkinsyaml),
 
       // Make any changes to initial jenkins.yaml
       InitCommand.shellCommand(oidcFederateProps.runWithOidc
@@ -420,12 +372,12 @@ export class JenkinsMainNode {
         ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` && `
         + ' varkeys=`echo $var | yq \'keys\' | cut -d "-" -f2 | cut -d " " -f2` &&'
         // eslint-disable-next-line max-len
-        + ' for i in $varkeys; do newvalue=`echo $var | yq .$i` && myenv=$newvalue i=$i yq -i \'.jenkins.securityRealm.oic.[env(i)]=env(myenv)\' /var/lib/jenkins/initial_jenkins.yaml ; done'
-        : 'echo No changes made to initial_jenkins.yaml'),
+        + ' for i in $varkeys; do newvalue=`echo $var | yq .$i` && myenv=$newvalue i=$i yq -i \'.jenkins.securityRealm.oic.[env(i)]=env(myenv)\' /initial_jenkins.yaml ; done'
+        : 'echo No changes made to initial_jenkins.yaml with respect to OIDC'),
 
       // Reload configuration via Jenkins.yaml
-      InitCommand.shellCommand('cp /var/lib/jenkins/initial_jenkins.yaml /var/lib/jenkins/jenkins.yaml &&'
-      + ' java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @/var/lib/jenkins/secrets/myIdPassDefault reload-jcasc-configuration'),
+      InitCommand.shellCommand('cp /initial_jenkins.yaml /var/lib/jenkins/jenkins.yaml &&'
+      + ' java -jar /jenkins-cli.jar -s http://localhost:8080 reload-jcasc-configuration'),
 
     ];
   }
@@ -439,21 +391,5 @@ export class JenkinsMainNode {
     const newConfig = dump(updatedConfig);
     writeFileSync(JenkinsMainNode.NEW_JENKINS_YAML_PATH, newConfig, 'utf-8');
     return JenkinsMainNode.NEW_JENKINS_YAML_PATH;
-  }
-
-  /** Creates the commands to install plugins, typically done in blocks */
-  public static createPluginInstallCommands(pluginList: string[]): InitCommand[] {
-    const pluginInstallBlockSize = 10;
-    const jenkinsCliCommand = `java -jar /jenkins-cli.jar -s http://localhost:8080 -auth @${JenkinsMainNode.JENKINS_DEFAULT_ID_PASS_PATH}`;
-    const pluginListCopy = Object.assign([], pluginList);
-    const pluginListSlices: String[] = [];
-    do {
-      pluginListSlices.push(pluginListCopy.splice(0, pluginInstallBlockSize).join(' '));
-    } while (pluginListCopy.length !== 0);
-
-    return pluginListSlices.map((slice, index) => {
-      const extraCommand = (index === pluginListSlices.length - 1) ? `&& ${jenkinsCliCommand} restart` : '';
-      return InitCommand.shellCommand(`${jenkinsCliCommand} install-plugin ${slice} ${extraCommand}`);
-    });
   }
 }
