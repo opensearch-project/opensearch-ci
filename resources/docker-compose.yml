@@ -3,6 +3,7 @@ services:
   jenkins:
     image: opensearchstaging/jenkins:latest
     privileged: true
+    tty: true
     user: root
     ports:
       - 8080:8080
