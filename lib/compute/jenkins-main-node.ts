@@ -196,6 +196,9 @@ export class JenkinsMainNode {
             'secretsmanager:GetSecretValue',
             'secretsmanager:ListSecrets',
             'sts:AssumeRole',
+            'elasticfilesystem:DescribeFileSystems',
+            'elasticfilesystem:DescribeMountTargets',
+            'ec2:DescribeAvailabilityZones',
           ],
           resources: ['*'],
         })],
@@ -364,7 +367,8 @@ export class JenkinsMainNode {
       InitCommand.shellCommand('sleep 90'),
 
       // Download jenkins-cli from the local machine
-      InitCommand.shellCommand('wget -O "jenkins-cli.jar" http://localhost:8080/jnlpJars/jenkins-cli.jar'),
+      InitCommand.shellCommand('until $(curl --output /dev/null --silent --head --fail http://localhost:8080); do sleep 5; done &&'
+      +' wget -O "jenkins-cli.jar" http://localhost:8080/jnlpJars/jenkins-cli.jar'),
 
       InitFile.fromFileInline('/initial_jenkins.yaml', jenkinsyaml),
 
@@ -376,6 +380,8 @@ export class JenkinsMainNode {
         // eslint-disable-next-line max-len
         + ' for i in $varkeys; do newvalue=`echo $var | yq .$i` && myenv=$newvalue i=$i yq -i \'.jenkins.securityRealm.oic.[env(i)]=env(myenv)\' /initial_jenkins.yaml ; done'
         : 'echo No changes made to initial_jenkins.yaml with respect to OIDC'),
+
+      InitCommand.shellCommand('sleep 30'),
 
       // Reload configuration via Jenkins.yaml
       InitCommand.shellCommand('cp /initial_jenkins.yaml /var/lib/jenkins/jenkins.yaml &&'
