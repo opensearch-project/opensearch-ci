@@ -8,7 +8,7 @@
   - [Executing Optional Tasks](#executing-optional-tasks)
     - [SSL Configuration](#ssl-configuration)
     - [Setup OpenId Connect (OIDC) via Federate](#setup-openid-connect-oidc-via-federate)
-    - [Data Retention](#Data Retention)
+    - [Data Retention](#data-retention)
   - [Troubleshooting](#troubleshooting)
     - [Main Node](#main-node)
   - [Useful commands](#useful-commands)
@@ -125,10 +125,11 @@ $aws secretsmanager put-secret-value \
 
 #### Data Retention
 Change in any EC2 config (specially init config) leads to replacement of EC2. The jenkins configuration is managed via code using configuration as code plugin. [More details](https://plugins.jenkins.io/configuration-as-code/).
-See inital [jenkins.yaml](./resources/baseJenkins.yaml)
+See inital [jenkins.yaml](./resources/baseJenkins.yaml).
+
 If you want to retain all the jobs and its build history, 
 1. Update the `dataRetention` property in `ciSettings` to true (defaults to false) see [CIStackProps](./lib/ci-stack.ts) for details.
-This will create an EFS (Elastic File System) and mount it on `/var/lib/jenkins/jobs` which will retain all jobs and its build history.
+This will create an EFS (Elastic File System) and mount it on `/var/lib/jenkins` which will retain all jobs and its build history.
 
 #### Runnning additional commands
 In cases where you need to run additional logic/commands, such as adding a cron to emit ssl cert expiry metric, you can pass the commands as a script using `additionalCommands` context parameter.
