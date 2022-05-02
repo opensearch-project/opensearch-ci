@@ -41,6 +41,8 @@ export interface CIStackProps extends StackProps {
 }
 
 export class CIStack extends Stack {
+  public readonly monitoring: JenkinsMonitoring;
+
   constructor(scope: Construct, id: string, props: CIStackProps) {
     super(scope, id, props);
 
@@ -121,7 +123,7 @@ export class CIStack extends Stack {
       useSsl,
     });
 
-    const monitoring = new JenkinsMonitoring(this, externalLoadBalancer, mainJenkinsNode);
+    this.monitoring = new JenkinsMonitoring(this, externalLoadBalancer, mainJenkinsNode);
 
     if (additionalCommandsContext.toString() !== 'undefined') {
       new RunAdditionalCommands(this, additionalCommandsContext.toString());
