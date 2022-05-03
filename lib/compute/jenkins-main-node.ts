@@ -368,7 +368,7 @@ export class JenkinsMainNode {
 
       // Download jenkins-cli from the local machine
       InitCommand.shellCommand('until $(curl --output /dev/null --silent --head --fail http://localhost:8080); do sleep 5; done &&'
-      +' wget -O "jenkins-cli.jar" http://localhost:8080/jnlpJars/jenkins-cli.jar'),
+      + ' wget -O "jenkins-cli.jar" http://localhost:8080/jnlpJars/jenkins-cli.jar'),
 
       InitFile.fromFileInline('/initial_jenkins.yaml', jenkinsyaml),
 

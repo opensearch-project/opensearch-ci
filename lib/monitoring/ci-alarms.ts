@@ -14,11 +14,12 @@ import { JenkinsExternalLoadBalancer } from '../network/ci-external-load-balance
 import { JenkinsMainNode } from '../compute/jenkins-main-node';
 
 export class JenkinsMonitoring {
+  public readonly alarms: Alarm[] = [];
+
   constructor(stack: Stack, externalLoadBalancer: JenkinsExternalLoadBalancer, mainNode: JenkinsMainNode) {
     const dashboard = new Dashboard(stack, 'AlarmDashboard');
 
-    const alarms: Alarm[] = [];
-    alarms.push(new Alarm(stack, 'ExternalLoadBalancerUnhealthyHosts', {
+    this.alarms.push(new Alarm(stack, 'ExternalLoadBalancerUnhealthyHosts', {
       alarmDescription: 'If any hosts behind the load balancer are unhealthy',
       metric: externalLoadBalancer.targetGroup.metricUnhealthyHostCount(),
       evaluationPeriods: 3,
@@ -27,7 +28,7 @@ export class JenkinsMonitoring {
       treatMissingData: TreatMissingData.BREACHING,
     }));
 
-    alarms.push(new Alarm(stack, 'MainNodeTooManyJenkinsProcessesFound', {
+    this.alarms.push(new Alarm(stack, 'MainNodeTooManyJenkinsProcessesFound', {
       alarmDescription: 'Only one jenkins process should run at any given time on the main node, there might be a cloudwatch configuration issue',
       metric: mainNode.ec2InstanceMetrics.foundJenkinsProcessCount.with({ statistic: 'max' }),
       evaluationPeriods: 3,
@@ -36,7 +37,7 @@ export class JenkinsMonitoring {
       treatMissingData: TreatMissingData.IGNORE,
     }));
 
-    alarms.push(new Alarm(stack, 'MainNodeHighCpuUtilization', {
+    this.alarms.push(new Alarm(stack, 'MainNodeHighCpuUtilization', {
       alarmDescription: 'The jenkins process is using much more CPU that expected, it should be investigated for a stuck process/job',
       metric: mainNode.ec2InstanceMetrics.cpuTime.with({ statistic: 'max' }),
       evaluationPeriods: 5,
@@ -45,7 +46,7 @@ export class JenkinsMonitoring {
       treatMissingData: TreatMissingData.IGNORE,
     }));
 
-    alarms.push(new Alarm(stack, 'MainNodeHighMemoryUtilization', {
+    this.alarms.push(new Alarm(stack, 'MainNodeHighMemoryUtilization', {
       alarmDescription: 'The jenkins process is using more memory than expected, it should be investigated for a large number of jobs or heavy weight jobs',
       metric: mainNode.ec2InstanceMetrics.memUsed.with({ statistic: 'max' }),
       evaluationPeriods: 5,
@@ -54,7 +55,7 @@ export class JenkinsMonitoring {
       treatMissingData: TreatMissingData.IGNORE,
     }));
 
-    alarms.push(new Alarm(stack, 'MainNodeCloudwatchEvents', {
+    this.alarms.push(new Alarm(stack, 'MainNodeCloudwatchEvents', {
       alarmDescription: `Cloudwatch events have stopped being received from the main node.
 Use session manager to exam the host and the /opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log`,
       metric: mainNode.ec2InstanceMetrics.memUsed.with({ statistic: 'n' }),
@@ -69,7 +70,7 @@ Use session manager to exam the host and the /opt/aws/amazon-cloudwatch-agent/lo
       treatMissingData: TreatMissingData.MISSING,
     }));
 
-    alarms
+    this.alarms
       .map((alarm) => new AlarmWidget({ alarm }))
       .forEach((widget) => dashboard.addWidgets(widget));
   }
