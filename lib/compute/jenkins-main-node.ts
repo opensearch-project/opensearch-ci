@@ -25,7 +25,7 @@ import {
   Vpc,
 } from '@aws-cdk/aws-ec2';
 import {
-  Effect, IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
+   IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal
 } from '@aws-cdk/aws-iam';
 import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
 import { join } from 'path';
@@ -50,16 +50,12 @@ interface OidcFederateProps {
   readonly adminUsers?: string[];
 }
 
-interface EcrStackProps {
-  readonly ecrAccountId: string
-}
-
 interface DataRetentionProps {
   readonly dataRetention?: boolean;
   readonly efsSG?: SecurityGroup;
 }
 
-export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, EcrStackProps, AgentNodeNetworkProps, DataRetentionProps{
+export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, AgentNodeNetworkProps, DataRetentionProps{
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
   readonly failOnCloudInitError?: boolean;
@@ -79,6 +75,10 @@ export class JenkinsMainNode {
   static readonly JENKINS_DEFAULT_ID_PASS_PATH: String = '/var/lib/jenkins/secrets/myIdPassDefault';
 
   private readonly EFS_ID: string;
+
+  private static ACCOUNT: string;
+
+  private static STACKREGION: string
 
   public readonly ec2Instance: Instance;
 
@@ -150,14 +150,15 @@ export class JenkinsMainNode {
       }],
     });
 
-    JenkinsMainNode.createPoliciesForMainNode(stack, props).map(
+    JenkinsMainNode.createPoliciesForMainNode(stack).map(
       (policy) => this.ec2Instance.role.addManagedPolicy(policy),
     );
   }
 
-  public static createPoliciesForMainNode(stack: Stack, ecrStackProps: EcrStackProps): (IManagedPolicy | ManagedPolicy)[] {
-    const policies: (IManagedPolicy | ManagedPolicy)[] = [];
-
+  public static createPoliciesForMainNode(stack: Stack): (IManagedPolicy | ManagedPolicy)[] {
+    this.STACKREGION = stack.region;
+    this.ACCOUNT = stack.account;
+    
     // Policy for SSM management of the host - Removes the need of SSH keys
     const ec2SsmManagementPolicy = ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore');
 
@@ -201,19 +202,16 @@ export class JenkinsMainNode {
             'ec2:DescribeAvailabilityZones',
           ],
           resources: ['*'],
+          conditions: {
+            'ForAllValues:StringEquals': {
+              'aws:RequestedRegion': this.STACKREGION,
+              'aws:PrincipalAccount': this.ACCOUNT,
+           },
+          },
         })],
       });
 
-    const ecrPolicy = new ManagedPolicy(stack, 'ecr-policy-main-node', {
-      description: 'Policy for ECR to assume role',
-      statements: [new PolicyStatement({
-        actions: ['sts:AssumeRole'],
-        effect: Effect.ALLOW,
-        resources: [`arn:aws:iam::${ecrStackProps.ecrAccountId}:role/OpenSearch-CI-ECR-ecr-role`],
-      })],
-    });
-
-    return [ec2SsmManagementPolicy, cloudwatchEventPublishingPolicy, accessPolicy, mainJenkinsNodePolicy, ecrPolicy];
+    return [ec2SsmManagementPolicy, cloudwatchEventPublishingPolicy, accessPolicy, mainJenkinsNodePolicy];
   }
 
   public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps,

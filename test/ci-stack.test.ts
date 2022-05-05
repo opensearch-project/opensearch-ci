@@ -20,7 +20,6 @@ test('CI Stack Basic Resources', () => {
   // WHEN
   const stack = new CIStack(app, 'TestStack', {
     dataRetention: true,
-    ecrAccountId: '999999999',
   });
 
   // THEN
@@ -44,7 +43,6 @@ test('External security group is open', () => {
 
   // WHEN
   const stack = new CIStack(app, 'MyTestStack', {
-    ecrAccountId: '999999999',
   });
 
   // THEN
@@ -74,7 +72,6 @@ test('MainNode', () => {
 
   // WHEN
   const stack = new CIStack(app, 'MyTestStack', {
-    ecrAccountId: '999999999',
   });
 
   // THEN
@@ -104,7 +101,6 @@ test('LoadBalancer', () => {
 
   // WHEN
   const stack = new CIStack(app, 'MyTestStack', {
-    ecrAccountId: '999999999',
   });
 
   // THEN
