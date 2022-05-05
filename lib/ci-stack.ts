@@ -9,10 +9,12 @@
 import { FlowLogDestination, FlowLogTrafficType, Vpc } from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import {
+  CfnOutput,
   CfnParameter, Construct, Fn, RemovalPolicy, Stack, StackProps,
 } from '@aws-cdk/core';
 import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { FileSystem } from '@aws-cdk/aws-efs';
+import { Bucket } from '@aws-cdk/aws-s3';
 import { CIConfigStack } from './ci-config-stack';
 import { JenkinsMainNode } from './compute/jenkins-main-node';
 import { JenkinsMonitoring } from './monitoring/ci-alarms';
@@ -30,14 +32,18 @@ export interface CIStackProps extends StackProps {
   readonly runWithOidc?: boolean;
   /** Additional verification during deployment and resource startup. */
   readonly ignoreResourcesFailures?: boolean;
-  /** Account to deploy your ECR Assets on */
-  readonly ecrAccountId?: string;
   /** Users with admin access during initial deployment */
   readonly adminUsers?: string[];
   /** Additional logic that needs to be run on Master Node. The value has to be path to a file */
   readonly additionalCommands?: string;
   /** Do you want to retain jenkins jobs and build history */
   readonly dataRetention?: boolean;
+  /** Policy for agent node role to assume a cross-account role */
+  readonly agentAssumeRole?: string;
+  /** File path containing global environment variables to be added to jenkins enviornment */
+  readonly envVarsFilePath?: string;
+  /** Add Mac agent to jenkins */
+  readonly macAgent?: boolean;
 }
 
 export class CIStack extends Stack {
@@ -55,6 +61,9 @@ export class CIStack extends Stack {
         },
       },
     });
+
+    const agentAssumeRoleContext = `${props?.agentAssumeRole ?? this.node.tryGetContext('agentAssumeRole')}`;
+    const macAgentParameter = `${props?.macAgent ?? this.node.tryGetContext('macAgent')}`;
 
     const useSslParameter = `${props?.useSsl ?? this.node.tryGetContext('useSsl')}`;
     if (useSslParameter !== 'true' && useSslParameter !== 'false') {
@@ -92,15 +101,19 @@ export class CIStack extends Stack {
     const importedRedirectUrlSecretBucketValue = Fn.importValue(`${CIConfigStack.REDIRECT_URL_SECRET_EXPORT_VALUE}`);
     const importedOidcConfigValuesSecretBucketValue = Fn.importValue(`${CIConfigStack.OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE}`);
     const certificateArn = Secret.fromSecretCompleteArn(this, 'certificateArn', importedArnSecretBucketValue.toString());
+    const importedReloadPasswordSecretsArn = Fn.importValue(`${CIConfigStack.CASC_RELOAD_TOKEN_SECRET_EXPORT_VALUE}`);
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
-    const agentNode = new AgentNodes(this);
-    const agentNodes: AgentNodeProps[] = [agentNode.AL2_X64, agentNode.AL2_ARM64];
+    const agentNode = new AgentNodes();
+    const agentNodes: AgentNodeProps[] = [agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_HOST, agentNode.AL2_X64_DOCKER_HOST_PERF_TEST,
+      agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_HOST, agentNode.UBUNTU_X64, agentNode.UBUNTU_X64_DOCKER_BUILDER];
 
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
       sg: securityGroups.mainNodeSG,
       efsSG: securityGroups.efsSG,
       dataRetention: props.dataRetention ?? false,
+      envVarsFilePath: props.envVarsFilePath ?? '',
+      reloadPasswordSecretsArn: importedReloadPasswordSecretsArn.toString(),
       sslCertContentsArn: importedContentsSecretBucketValue.toString(),
       sslCertChainArn: importedContentsChainBucketValue.toString(),
       sslCertPrivateKeyContentsArn: importedCertSecretBucketValue.toString(),
@@ -109,11 +122,10 @@ export class CIStack extends Stack {
       useSsl,
       runWithOidc,
       failOnCloudInitError: props?.ignoreResourcesFailures,
-      ecrAccountId: props.ecrAccountId ?? Stack.of(this).account,
       adminUsers: props?.adminUsers,
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
       subnetId: vpc.publicSubnets[0].subnetId,
-    }, agentNodes);
+    }, agentNodes, agentAssumeRoleContext.toString(), macAgentParameter.toString());
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,
@@ -123,10 +135,17 @@ export class CIStack extends Stack {
       useSsl,
     });
 
+    const artifactBucket = new Bucket(this, 'BuildBucket');
+
     this.monitoring = new JenkinsMonitoring(this, externalLoadBalancer, mainJenkinsNode);
 
     if (additionalCommandsContext.toString() !== 'undefined') {
       new RunAdditionalCommands(this, additionalCommandsContext.toString());
     }
+
+    new CfnOutput(this, 'Artifact Bucket Arn', {
+      value: artifactBucket.bucketArn.toString(),
+      exportName: 'buildBucketArn',
+    });
   }
 }

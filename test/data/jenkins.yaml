@@ -1,4 +1,50 @@
 jenkins:
+  clouds:
+  - amazonEC2:
+      cloudName: "Amazon_ec2_cloud"
+      region: "us-east-1"
+      sshKeysCredentialsId: "jenkins-staging-agent-node-ssh-key"
+      templates:
+      - ami: "ami-0379811a08268a97e"
+        amiType:
+          macData:
+            sshPort: "22"
+        associatePublicIp: false
+        connectBySSHProcess: false
+        connectionStrategy: PRIVATE_IP
+        customDeviceMapping: "/dev/sda1=:300:true:gp3::encrypted"
+        deleteRootOnTermination: true
+        description: "Jenkins-Agent-Mac-M1-Single-Host"
+        ebsEncryptRootVolume: DEFAULT
+        ebsOptimized: true
+        hostKeyVerificationStrategy: 'OFF'
+        iamInstanceProfile: "arn:aws:iam::1234567890:instance-profile/JenkinsStack-AgentNodeInstanceRole"
+        labelString: 'Jenkins-Agent-MacOS-x64-Mac1Metal-Multi-Host'
+        maxTotalUses: -1
+        minimumNumberOfInstances: 1
+        minimumNumberOfSpareInstances: 0
+        mode: EXCLUSIVE
+        monitoring: false
+        nodeProperties:
+        - envVars:
+            env:
+            - key: "Path"
+              value: "/usr/local/opt/python@3.7/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/Cellar/python@3.7/3.7.13_1/Frameworks/Python.framework/Versions/3.7/bin"
+        numExecutors: 5
+        remoteAdmin: "ec2-user"
+        remoteFS: "/var/jenkins"
+        securityGroups: "jenkins-agent-node"
+        stopOnTerminate: false
+        subnetId: "subnet-1234567890"
+        t2Unlimited: false
+        tags:
+        - name: "Name"
+          value: "Jenkins-Agent-Mac-M1-Single-Host"
+        tenancy: Host
+        type: Mac1Metal
+        useEphemeralDevices: false
+        zone: "us-east-1a"
+      useInstanceProfileForCredentials: true
   authorizationStrategy:
     roleBased:
       roles:

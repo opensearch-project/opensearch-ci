@@ -7,7 +7,7 @@
  */
 
 export class OidcConfig {
-    public static readonly adminRolePermissions: string[] = [
+    private static readonly adminRolePermissions: string[] = [
       'Overall/Administer',
       'Overall/Read',
       'Job/Move',
@@ -20,9 +20,6 @@ export class OidcConfig {
       'Job/Configure',
       'Job Config History/DeleteEntry',
       'Job/Workspace',
-      'Lockable Resources/View',
-      'Lockable Resources/Unlock',
-      'Lockable Resources/Reserve',
       'Credentials/Delete',
       'Credentials/ManageDomains',
       'Credentials/Update',
@@ -47,7 +44,7 @@ export class OidcConfig {
       'SCM/Tag',
     ];
 
-    public static readonly readOnlyRolePermissions: string[] = [
+    private static readonly readOnlyRolePermissions: string[] = [
       'Overall/Read',
       'Job/Read',
     ];

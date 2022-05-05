@@ -6,10 +6,10 @@
  * compatible open source license.
  */
 
-import { App, RemovalPolicy } from '@aws-cdk/core';
+import { App } from '@aws-cdk/core';
 import { CIStack } from '../lib/ci-stack';
 import { CIConfigStack } from '../lib/ci-config-stack';
-import { DeployAwsAssets } from '../lib/deploy-aws-assets';
+import { CiCdnStack } from '../lib/ci-cdn-stack';
 
 const app = new App();
 
@@ -19,18 +19,5 @@ const ciConfigStack = new CIConfigStack(app, `OpenSearch-CI-Config-${defaultEnv}
 
 const ciStack = new CIStack(app, `OpenSearch-CI-${defaultEnv}`, {});
 
-new DeployAwsAssets(app, `OpenSearch-CI-Deploy-Assets-${defaultEnv}`, {
-  /* This will delete the ECR repository once the stack is destroyed.
-   * Default removal policy (if not specified) is RemovalPolicy.DESTROY */
-  removalPolicy: RemovalPolicy.DESTROY,
-  mainNodeAccountNumber: ciStack.account,
-  envName: defaultEnv,
-  env: {
-    // public ECR repositories can only be created in us-east-1
-    // https://github.com/aws/aws-cli/issues/5917#issuecomment-775564831
-    region: 'us-east-1',
-  },
-  repositories: [
-    'opensearch',
-  ],
-});
+const ciCdnStack = new CiCdnStack(app, `OpenSearch-CI-Cdn-${defaultEnv}`, {});
+ciCdnStack.addDependency(ciStack);

@@ -6,7 +6,7 @@
  * compatible open source license.
  */
 
-import { Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import {
   AmazonLinuxGeneration,
   BlockDeviceVolume,
@@ -25,7 +25,7 @@ import {
   Vpc,
 } from '@aws-cdk/aws-ec2';
 import {
-  Effect, IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
+  IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
 import { join } from 'path';
@@ -35,6 +35,7 @@ import { FileSystem, PerformanceMode, ThroughputMode } from '@aws-cdk/aws-efs';
 import { OidcConfig } from './oidc-config';
 import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
+import { EnvConfig } from './env-config';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -50,18 +51,16 @@ interface OidcFederateProps {
   readonly adminUsers?: string[];
 }
 
-interface EcrStackProps {
-  readonly ecrAccountId: string
-}
-
 interface DataRetentionProps {
   readonly dataRetention?: boolean;
   readonly efsSG?: SecurityGroup;
 }
 
-export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, EcrStackProps, AgentNodeNetworkProps, DataRetentionProps{
+export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, AgentNodeNetworkProps, DataRetentionProps{
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
+  readonly envVarsFilePath: string;
+  readonly reloadPasswordSecretsArn: string;
   readonly failOnCloudInitError?: boolean;
 }
 
@@ -80,6 +79,10 @@ export class JenkinsMainNode {
 
   private readonly EFS_ID: string;
 
+  private static ACCOUNT: string;
+
+  private static STACKREGION: string
+
   public readonly ec2Instance: Instance;
 
   public readonly ec2InstanceMetrics: {
@@ -88,7 +91,7 @@ export class JenkinsMainNode {
     foundJenkinsProcessCount: Metric
   }
 
-  constructor(stack: Stack, props: JenkinsMainNodeProps, agentNode: AgentNodeProps[]) {
+  constructor(stack: Stack, props: JenkinsMainNodeProps, agentNode: AgentNodeProps[], assumeRole: string, macAgent: string) {
     this.ec2InstanceMetrics = {
       cpuTime: new Metric({
         metricName: 'procstat_cpu_usage',
@@ -104,8 +107,8 @@ export class JenkinsMainNode {
       }),
     };
 
-    const agentNodeConfig = new AgentNodeConfig(stack);
-    const jenkinsyaml = JenkinsMainNode.addConfigtoJenkinsYaml(stack, props, agentNodeConfig, props, agentNode);
+    const agentNodeConfig = new AgentNodeConfig(stack, assumeRole);
+    const jenkinsyaml = JenkinsMainNode.addConfigtoJenkinsYaml(stack, props, props, agentNodeConfig, props, agentNode, macAgent);
     if (props.dataRetention) {
       const efs = new FileSystem(stack, 'EFSfilesystem', {
         vpc: props.vpc,
@@ -142,6 +145,7 @@ export class JenkinsMainNode {
         props,
         props,
         jenkinsyaml,
+        props.reloadPasswordSecretsArn,
         this.EFS_ID,
       )),
       blockDevices: [{
@@ -150,13 +154,19 @@ export class JenkinsMainNode {
       }],
     });
 
-    JenkinsMainNode.createPoliciesForMainNode(stack, props).map(
+    JenkinsMainNode.createPoliciesForMainNode(stack).map(
       (policy) => this.ec2Instance.role.addManagedPolicy(policy),
     );
+
+    new CfnOutput(stack, 'Jenkins Main Node Role Arn', {
+      value: this.ec2Instance.role.roleArn,
+      exportName: 'mainNodeRoleArn',
+    });
   }
 
-  public static createPoliciesForMainNode(stack: Stack, ecrStackProps: EcrStackProps): (IManagedPolicy | ManagedPolicy)[] {
-    const policies: (IManagedPolicy | ManagedPolicy)[] = [];
+  public static createPoliciesForMainNode(stack: Stack): (IManagedPolicy | ManagedPolicy)[] {
+    this.STACKREGION = stack.region;
+    this.ACCOUNT = stack.account;
 
     // Policy for SSM management of the host - Removes the need of SSH keys
     const ec2SsmManagementPolicy = ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore');
@@ -201,23 +211,21 @@ export class JenkinsMainNode {
             'ec2:DescribeAvailabilityZones',
           ],
           resources: ['*'],
+          conditions: {
+            'ForAllValues:StringEquals': {
+              'aws:RequestedRegion': this.STACKREGION,
+              'aws:PrincipalAccount': this.ACCOUNT,
+            },
+          },
         })],
       });
 
-    const ecrPolicy = new ManagedPolicy(stack, 'ecr-policy-main-node', {
-      description: 'Policy for ECR to assume role',
-      statements: [new PolicyStatement({
-        actions: ['sts:AssumeRole'],
-        effect: Effect.ALLOW,
-        resources: [`arn:aws:iam::${ecrStackProps.ecrAccountId}:role/OpenSearch-CI-ECR-ecr-role`],
-      })],
-    });
-
-    return [ec2SsmManagementPolicy, cloudwatchEventPublishingPolicy, accessPolicy, mainJenkinsNodePolicy, ecrPolicy];
+    return [ec2SsmManagementPolicy, cloudwatchEventPublishingPolicy, accessPolicy, mainJenkinsNodePolicy];
   }
 
   public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps,
-    oidcFederateProps: OidcFederateProps, dataRetentionProps : DataRetentionProps, jenkinsyaml: string, efsId?: string): InitElement[] {
+    oidcFederateProps: OidcFederateProps, dataRetentionProps : DataRetentionProps, jenkinsyaml: string,
+    reloadPasswordSecretsArn: string, efsId?: string): InitElement[] {
     return [
       InitPackage.yum('wget'),
       InitPackage.yum('openssl'),
@@ -360,15 +368,15 @@ export class JenkinsMainNode {
         : 'echo Data rentention is disabled, not mounting efs'),
 
       InitFile.fromFileInline('/docker-compose.yml', join(__dirname, '../../resources/docker-compose.yml')),
-      InitCommand.shellCommand('systemctl start docker && docker-compose up -d'),
+
+      InitCommand.shellCommand('systemctl start docker &&'
+      + ` var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${reloadPasswordSecretsArn} --query SecretString --output text\` &&`
+      + ' yq -i \'.services.jenkins.environment[1] = "CASC_RELOAD_TOKEN=\'$var\'"\' docker-compose.yml &&'
+      + ' docker-compose up -d'),
 
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 90 seconds to wait for jenkins to start
-      InitCommand.shellCommand('sleep 90'),
-
-      // Download jenkins-cli from the local machine
-      InitCommand.shellCommand('until $(curl --output /dev/null --silent --head --fail http://localhost:8080); do sleep 5; done &&'
-      + ' wget -O "jenkins-cli.jar" http://localhost:8080/jnlpJars/jenkins-cli.jar'),
+      InitCommand.shellCommand('sleep 60'),
 
       InitFile.fromFileInline('/initial_jenkins.yaml', jenkinsyaml),
 
@@ -385,18 +393,22 @@ export class JenkinsMainNode {
 
       // Reload configuration via Jenkins.yaml
       InitCommand.shellCommand('cp /initial_jenkins.yaml /var/lib/jenkins/jenkins.yaml &&'
-      + ' java -jar /jenkins-cli.jar -s http://localhost:8080 reload-jcasc-configuration'),
-
+      + ` var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${reloadPasswordSecretsArn} --query SecretString --output text\` &&`
+      + ' curl  -f -X POST "http://localhost:8080/reload-configuration-as-code/?casc-reload-token=$var"'),
     ];
   }
 
-  public static addConfigtoJenkinsYaml(stack: Stack, oidcProps: OidcFederateProps, agentNodeObject: AgentNodeConfig,
-    props: AgentNodeNetworkProps, agentNode: AgentNodeProps[]): string {
-    let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(agentNode, props);
+  public static addConfigtoJenkinsYaml(stack: Stack, jenkinsMainNodeProps:JenkinsMainNodeProps, oidcProps: OidcFederateProps, agentNodeObject: AgentNodeConfig,
+    props: AgentNodeNetworkProps, agentNode: AgentNodeProps[], macAgent: string): string {
+    let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(stack, agentNode, props, macAgent);
     if (oidcProps.runWithOidc) {
       updatedConfig = OidcConfig.addOidcConfigToJenkinsYaml(updatedConfig, oidcProps.adminUsers);
     }
+    if (jenkinsMainNodeProps.envVarsFilePath !== '' && jenkinsMainNodeProps.envVarsFilePath != null) {
+      updatedConfig = EnvConfig.addEnvConfigToJenkinsYaml(updatedConfig, jenkinsMainNodeProps.envVarsFilePath);
+    }
     const newConfig = dump(updatedConfig);
+
     writeFileSync(JenkinsMainNode.NEW_JENKINS_YAML_PATH, newConfig, 'utf-8');
     return JenkinsMainNode.NEW_JENKINS_YAML_PATH;
   }

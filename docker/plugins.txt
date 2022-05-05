@@ -61,7 +61,11 @@ throttle-concurrents
 timestamper
 uno-choice
 validating-string-parameter
+workflow-api
 workflow-aggregator
 workflow-basic-steps
 workflow-step-api
 ws-cleanup
+job-import-plugin
+workflow-multibranch
+pipeline-utility-steps
