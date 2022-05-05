@@ -42,8 +42,7 @@ test('External security group is open', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'MyTestStack', {
-  });
+  const stack = new CIStack(app, 'MyTestStack', {});
 
   // THEN
   expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
@@ -71,8 +70,7 @@ test('MainNode', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'MyTestStack', {
-  });
+  const stack = new CIStack(app, 'MyTestStack', {});
 
   // THEN
   expect(stack).to(haveResourceLike('AWS::EC2::Instance', {
@@ -100,8 +98,7 @@ test('LoadBalancer', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'MyTestStack', {
-  });
+  const stack = new CIStack(app, 'MyTestStack', {});
 
   // THEN
   expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
