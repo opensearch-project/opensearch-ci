@@ -21,11 +21,12 @@ describe('JenkinsMainNode Config Elements', () => {
     runWithOidc: true,
   }, {
     dataRetention: true,
-  }, 'test/data/jenkins.yaml');
+  }, 'test/data/jenkins.yaml',
+  'ARN:ABC');
 
   // THEN
   test('Config elements expected counts', async () => {
-    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(19);
+    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(18);
     expect(configElements.filter((e) => e.elementType === 'PACKAGE')).toHaveLength(10);
     expect(configElements.filter((e) => e.elementType === 'FILE')).toHaveLength(4);
   });

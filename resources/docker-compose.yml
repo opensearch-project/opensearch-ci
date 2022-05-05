@@ -1,7 +1,8 @@
 version: '3.8'
 services:
   jenkins:
-    image: opensearchstaging/jenkins:latest
+    image: opensearchstaging/jenkins:2.332.3-lts-jdk8
+    restart: on-failure
     privileged: true
     tty: true
     user: root
@@ -9,12 +10,22 @@ services:
       - 8080:8080
       - 50000:50000
     container_name: jenkins
+    environment:
+      - JENKINS_JAVA_OPTS="-Xmx18g"
+      - CASC_RELOAD_TOKEN=reloadPasswordHere
     volumes:
       - /var/lib/jenkins:/var/jenkins_home
+    deploy:
+      resources:
+        limits:
+          cpus: '12'
+          memory: '20g'
+        reservations:
+          cpus: '12'
+          memory: '20g'
     logging:
       driver: awslogs
       options:
         awslogs-group: JenkinsMainNode/jenkins.log
-        awslogs-stream: jenkins.log
         awslogs-create-group: 'true'
         awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%f%z'

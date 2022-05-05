@@ -6,13 +6,16 @@
  * compatible open source license.
  */
 
-import { FlowLogDestination, FlowLogTrafficType, Vpc } from '@aws-cdk/aws-ec2';
+import {
+  FlowLogDestination, FlowLogTrafficType, IPeer, Vpc,
+} from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import {
-  CfnParameter, Construct, Fn, RemovalPolicy, Stack, StackProps,
+  CfnOutput,
+  CfnParameter, Construct, Fn, Stack, StackProps,
 } from '@aws-cdk/core';
 import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
-import { FileSystem } from '@aws-cdk/aws-efs';
+import { Bucket } from '@aws-cdk/aws-s3';
 import { CIConfigStack } from './ci-config-stack';
 import { JenkinsMainNode } from './compute/jenkins-main-node';
 import { JenkinsMonitoring } from './monitoring/ci-alarms';
@@ -36,10 +39,22 @@ export interface CIStackProps extends StackProps {
   readonly additionalCommands?: string;
   /** Do you want to retain jenkins jobs and build history */
   readonly dataRetention?: boolean;
+  /** IAM role ARN to be assumed by jenkins agent nodes eg: cross-account */
+  readonly agentAssumeRole?: string[];
+  /** File path containing global environment variables to be added to jenkins enviornment */
+  readonly envVarsFilePath?: string;
+  /** Add Mac agent to jenkins */
+  readonly macAgent?: boolean;
+  /** Restrict jenkins access to */
+  readonly restrictServerAccessTo? : IPeer;
+  /** Use Production Agents */
+  readonly useProdAgents?: boolean;
 }
 
 export class CIStack extends Stack {
   public readonly monitoring: JenkinsMonitoring;
+
+  public readonly agentNodes: AgentNodeProps[];
 
   constructor(scope: Construct, id: string, props: CIStackProps) {
     super(scope, id, props);
@@ -53,6 +68,7 @@ export class CIStack extends Stack {
         },
       },
     });
+    const macAgentParameter = `${props?.macAgent ?? this.node.tryGetContext('macAgent')}`;
 
     const useSslParameter = `${props?.useSsl ?? this.node.tryGetContext('useSsl')}`;
     if (useSslParameter !== 'true' && useSslParameter !== 'false') {
@@ -64,6 +80,11 @@ export class CIStack extends Stack {
     const runWithOidcParameter = `${props?.runWithOidc ?? this.node.tryGetContext('runWithOidc')}`;
     if (runWithOidcParameter !== 'true' && runWithOidcParameter !== 'false') {
       throw new Error('runWithOidc parameter is required to be set as - true or false');
+    }
+
+    let useProdAgents = `${props?.useProdAgents ?? this.node.tryGetContext('useProdAgents')}`;
+    if (useProdAgents.toString() === 'undefined') {
+      useProdAgents = 'false';
     }
 
     const runWithOidc = runWithOidcParameter === 'true';
@@ -82,7 +103,7 @@ export class CIStack extends Stack {
       default: useSsl,
     });
 
-    const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl);
+    const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl, props?.restrictServerAccessTo);
     const importedContentsSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE}`);
     const importedContentsChainBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CHAIN_SECRET_EXPORT_VALUE}`);
     const importedCertSecretBucketValue = Fn.importValue(`${CIConfigStack.PRIVATE_KEY_SECRET_EXPORT_VALUE}`);
@@ -90,15 +111,33 @@ export class CIStack extends Stack {
     const importedRedirectUrlSecretBucketValue = Fn.importValue(`${CIConfigStack.REDIRECT_URL_SECRET_EXPORT_VALUE}`);
     const importedOidcConfigValuesSecretBucketValue = Fn.importValue(`${CIConfigStack.OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE}`);
     const certificateArn = Secret.fromSecretCompleteArn(this, 'certificateArn', importedArnSecretBucketValue.toString());
+    const importedReloadPasswordSecretsArn = Fn.importValue(`${CIConfigStack.CASC_RELOAD_TOKEN_SECRET_EXPORT_VALUE}`);
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
     const agentNode = new AgentNodes(this);
-    const agentNodes: AgentNodeProps[] = [agentNode.AL2_X64, agentNode.AL2_ARM64];
+
+    if (useProdAgents.toString() === 'true') {
+      // eslint-disable-next-line no-console
+      console.warn('Please note that if you have decided to use the provided production jenkins agents then '
+          + 'please make sure that you are deploying the stack in US-EAST-1 region as the AMIs used are only publicly '
+          + 'available in US-EAST-1 region. '
+          + 'If you want to deploy the stack in another region then please make sure you copy the public AMIs used '
+          + 'from us-east-1 region to your region of choice and update the ami-id in agent-nodes.ts file accordingly. '
+          + 'If you do not copy the AMI in required region and update the code then the jenkins agents will not spin up.');
+
+      this.agentNodes = [agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_HOST, agentNode.AL2_X64_DOCKER_HOST_PERF_TEST,
+        agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_HOST, agentNode.UBUNTU2004_X64, agentNode.UBUNTU2004_X64_DOCKER_BUILDER,
+        agentNode.MACOS12_X64_MULTI_HOST, agentNode.WINDOWS2019_X64];
+    } else {
+      this.agentNodes = [agentNode.AL2_X64_DEFAULT_AGENT, agentNode.AL2_ARM64_DEFAULT_AGENT];
+    }
 
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
       sg: securityGroups.mainNodeSG,
       efsSG: securityGroups.efsSG,
       dataRetention: props.dataRetention ?? false,
+      envVarsFilePath: props.envVarsFilePath ?? '',
+      reloadPasswordSecretsArn: importedReloadPasswordSecretsArn.toString(),
       sslCertContentsArn: importedContentsSecretBucketValue.toString(),
       sslCertChainArn: importedContentsChainBucketValue.toString(),
       sslCertPrivateKeyContentsArn: importedCertSecretBucketValue.toString(),
@@ -110,7 +149,7 @@ export class CIStack extends Stack {
       adminUsers: props?.adminUsers,
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
       subnetId: vpc.publicSubnets[0].subnetId,
-    }, agentNodes);
+    }, this.agentNodes, macAgentParameter.toString(), props?.agentAssumeRole);
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,
@@ -120,10 +159,17 @@ export class CIStack extends Stack {
       useSsl,
     });
 
+    const artifactBucket = new Bucket(this, 'BuildBucket');
+
     this.monitoring = new JenkinsMonitoring(this, externalLoadBalancer, mainJenkinsNode);
 
     if (additionalCommandsContext.toString() !== 'undefined') {
       new RunAdditionalCommands(this, additionalCommandsContext.toString());
     }
+
+    new CfnOutput(this, 'Artifact Bucket Arn', {
+      value: artifactBucket.bucketArn.toString(),
+      exportName: 'buildBucketArn',
+    });
   }
 }

@@ -8,10 +8,14 @@ jenkins:
   disableRememberMe: false
   labelAtoms:
   - name: "built-in"
-  markupFormatter: "plainText"
-  mode: NORMAL
+  - name: "main-node"
+  labelString: "main-node"
+  markupFormatter:
+    rawHtml:
+      disableSyntaxHighlighting: true
+  mode: EXCLUSIVE
   myViewsTabBar: "standard"
-  numExecutors: 2
+  numExecutors: 4
   primaryView:
     all:
       name: "all"
@@ -58,6 +62,10 @@ unclassified:
   audit-trail:
     logBuildCause: true
     pattern: ".*/(?:configSubmit|doDelete|postBuildResult|enable|disable|cancelQueue|stop|toggleLogKeep|doWipeOutWorkspace|createItem|createView|toggleOffline|cancelQuietDown|quietDown|restart|exit|safeExit)/?.*"
+  awsCredentialsProvider:
+    cache: false
+    client:
+      credentialsProvider: "default"
   buildDiscarders:
     configuredBuildDiscarders:
     - "jobBuildDiscarder"
@@ -149,6 +157,32 @@ tool:
     installations:
     - home: "git"
       name: "Default"
+  jdk:
+    installations:
+    - name: "openjdk-8"
+      properties:
+      - installSource:
+          installers:
+          - adoptOpenJdkInstaller:
+              id: "jdk8u332-b09"
+    - name: "openjdk-11"
+      properties:
+      - installSource:
+          installers:
+          - adoptOpenJdkInstaller:
+              id: "jdk-11.0.15+10"
+    - name: "openjdk-14"
+      properties:
+      - installSource:
+          installers:
+          - adoptOpenJdkInstaller:
+              id: "jdk-14.0.2+12"
+    - name: "openjdk-17"
+      properties:
+      - installSource:
+          installers:
+          - adoptOpenJdkInstaller:
+              id: "jdk-17.0.3+7"
   mavenGlobalConfig:
     globalSettingsProvider: "standard"
     settingsProvider: "standard"
