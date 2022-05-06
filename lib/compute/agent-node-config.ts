@@ -108,7 +108,7 @@
         },
       }),
     );
-    if (assumeRole != undefined) {
+    if (assumeRole !== undefined) {
       console.log('Adding agent agentAssumeRole is  👉', agentAssumeRole.valueAsString);  
       // policy to allow assume role AssumeRole
       AgentNodeRole.addToPolicy(
