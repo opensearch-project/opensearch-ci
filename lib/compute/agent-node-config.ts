@@ -8,7 +8,7 @@
 
 
  import * as iam from '@aws-cdk/aws-iam';
- import { Fn, Stack, Tags } from '@aws-cdk/core';
+ import { Fn, Stack, Tags, CfnParameter, Construct  } from '@aws-cdk/core';
  import { KeyPair } from 'cdk-ec2-key-pair';
  import { readFileSync } from 'fs';
  import { load } from 'js-yaml';
@@ -34,12 +34,21 @@
    public readonly STACKREGION: string;
  
    private readonly ACCOUNT: string;
- 
+
    public readonly SSHEC2KeySecretId: string;
  
    constructor(stack: Stack) {
+
      this.STACKREGION = stack.region;
      this.ACCOUNT = stack.account;
+
+     const agentAssumeRole = new CfnParameter(stack, 'agentAssumeRole', {
+      description: 'The assume role arn of the build agent',
+      allowedPattern: '.+',
+      default: false,
+     });
+     const assumeRole = stack.node.tryGetContext('agentAssumeRole');
+
      const key = new KeyPair(stack, 'AgentNode-KeyPair', {
        name: 'AgentNodeKeyPair',
        description: 'KeyPair used by Jenkins Main Node to SSH into Agent Nodes',
@@ -52,7 +61,7 @@
        description: 'Jenkins agents Node Role',
        roleName: 'OpenSearch-CI-AgentNodeRole',
      });
- 
+
      const ecrManagedPolicy = new iam.ManagedPolicy(stack, 'OpenSearch-CI-AgentNodePolicy', {
        description: 'Jenkins agents Node Policy',
        managedPolicyName: 'OpenSearch-CI-AgentNodePolicy',
@@ -99,6 +108,16 @@
         },
       }),
     );
+    if (assumeRole != undefined) {
+      console.log('Adding agent agentAssumeRole is  👉', agentAssumeRole.valueAsString);  
+      // policy to allow assume role AssumeRole
+      AgentNodeRole.addToPolicy(
+        new iam.PolicyStatement({
+          resources: [assumeRole],
+          actions: ['sts:AssumeRole'],
+        })
+      );
+     };
      const AgentNodeInstanceProfile = new iam.CfnInstanceProfile(stack, 'JenkinsAgentNodeInstanceProfile', { roles: [AgentNodeRole.roleName] });
      this.AgentNodeInstanceProfileArn = AgentNodeInstanceProfile.attrArn.toString();
      this.SSHEC2KeySecretId = Fn.join('/', ['ec2-ssh-key', key.keyPairName.toString(), 'private']);
