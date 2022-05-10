@@ -10,7 +10,7 @@ services:
       - 50000:50000
     container_name: jenkins
     environment:
-      - JENKINS_JAVA_OPTS="-Djenkins.install.runSetupWizard=false -Xms8g -Xmx8g"
+      - JAVA_OPTS="-Djenkins.install.runSetupWizard=false -Xms8g -Xmx8g"
     volumes:
       - /var/lib/jenkins:/var/jenkins_home
     deploy:
