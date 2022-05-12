@@ -35,7 +35,7 @@ export class AgentNodeConfig {
 
    public readonly STACKREGION: string;
 
-   private readonly ACCOUNT: string;
+   public readonly ACCOUNT: string;
 
    public readonly SSHEC2KeySecretId: string;
 
