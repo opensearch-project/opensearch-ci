@@ -6,7 +6,7 @@
  * compatible open source license.
  */
 
-import { CfnInstanceProfile, ServicePrincipal, Role } from '@aws-cdk/aws-iam';
+import { CfnInstanceProfile, ServicePrincipal, Role, ManagedPolicy } from '@aws-cdk/aws-iam';
 import { Fn, Stack, Tags } from '@aws-cdk/core';
 import { KeyPair } from 'cdk-ec2-key-pair';
 import { readFileSync } from 'fs';
@@ -44,6 +44,7 @@ export class AgentNodeConfig {
     const AgentNodeRole = new Role(stack, 'JenkinsAgentNodeRole', {
       assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
     });
+    AgentNodeRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
     const AgentNodeInstanceProfile = new CfnInstanceProfile(stack, 'JenkinsAgentNodeInstanceProfile', { roles: [AgentNodeRole.roleName] });
     this.AgentNodeInstanceProfileArn = AgentNodeInstanceProfile.attrArn.toString();
     this.SSHEC2KeySecretId = Fn.join('/', ['ec2-ssh-key', key.keyPairName.toString(), 'private']);
