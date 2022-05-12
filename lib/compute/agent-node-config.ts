@@ -6,46 +6,47 @@
  * compatible open source license.
  */
 
+import {
+  Role, ManagedPolicy, PolicyStatement, Effect, CfnInstanceProfile, ServicePrincipal,
+} from '@aws-cdk/aws-iam';
+import {
+  Fn, Stack, Tags, CfnParameter, Construct,
+} from '@aws-cdk/core';
+import { KeyPair } from 'cdk-ec2-key-pair';
+import { readFileSync } from 'fs';
+import { load } from 'js-yaml';
+import { JenkinsMainNode } from './jenkins-main-node';
 
- import * as iam from '@aws-cdk/aws-iam';
- import { Fn, Stack, Tags, CfnParameter, Construct  } from '@aws-cdk/core';
- import { KeyPair } from 'cdk-ec2-key-pair';
- import { readFileSync } from 'fs';
- import { load } from 'js-yaml';
- import { JenkinsMainNode } from './jenkins-main-node';
- 
- 
- export interface AgentNodeProps {
+export interface AgentNodeProps {
    amiId: string;
    instanceType: string;
    workerLabelString: string;
    remoteUser: string;
    initScript: string
  }
- 
- export interface AgentNodeNetworkProps {
+
+export interface AgentNodeNetworkProps {
    readonly agentNodeSecurityGroup: string;
    readonly subnetId: string;
  }
- 
- export class AgentNodeConfig {
+
+export class AgentNodeConfig {
    public readonly AgentNodeInstanceProfileArn: string;
- 
+
    public readonly STACKREGION: string;
- 
+
    private readonly ACCOUNT: string;
 
    public readonly SSHEC2KeySecretId: string;
- 
-   constructor(stack: Stack) {
 
+   constructor(stack: Stack) {
      this.STACKREGION = stack.region;
      this.ACCOUNT = stack.account;
 
      const agentAssumeRole = new CfnParameter(stack, 'agentAssumeRole', {
-      description: 'The assume role arn of the build agent',
-      allowedPattern: '.+',
-      default: false,
+       description: 'The assume role arn of the build agent',
+       allowedPattern: '.+',
+       default: false,
      });
      const assumeRole = stack.node.tryGetContext('agentAssumeRole');
 
@@ -55,82 +56,81 @@
      });
      Tags.of(key)
        .add('jenkins:credentials:type', 'sshUserPrivateKey');
-     const AgentNodeRole = new iam.Role(stack, 'OpenSearch-CI-AgentNodeRole', {
-       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-       //assumedBy: new iam.AccountPrincipal(this.ACCOUNT),
+     const AgentNodeRole = new Role(stack, 'OpenSearch-CI-AgentNodeRole', {
+       assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
+       // assumedBy: new AccountPrincipal(this.ACCOUNT),
        description: 'Jenkins agents Node Role',
        roleName: 'OpenSearch-CI-AgentNodeRole',
      });
 
-     const ecrManagedPolicy = new iam.ManagedPolicy(stack, 'OpenSearch-CI-AgentNodePolicy', {
+     const ecrManagedPolicy = new ManagedPolicy(stack, 'OpenSearch-CI-AgentNodePolicy', {
        description: 'Jenkins agents Node Policy',
        managedPolicyName: 'OpenSearch-CI-AgentNodePolicy',
        statements: [
-         new iam.PolicyStatement({
-           effect: iam.Effect.ALLOW,
+         new PolicyStatement({
+           effect: Effect.ALLOW,
            actions: [
-             "ecr-public:BatchCheckLayerAvailability",
-             "ecr-public:GetRepositoryPolicy",
-             "ecr-public:DescribeRepositories",
-             "ecr-public:DescribeRegistries",
-             "ecr-public:DescribeImages",
-             "ecr-public:DescribeImageTags",
-             "ecr-public:GetRepositoryCatalogData",
-             "ecr-public:GetRegistryCatalogData",
-             "ecr-public:InitiateLayerUpload",
-             "ecr-public:UploadLayerPart",
-             "ecr-public:CompleteLayerUpload",
-             "ecr-public:PutImage",
+             'ecr-public:BatchCheckLayerAvailability',
+             'ecr-public:GetRepositoryPolicy',
+             'ecr-public:DescribeRepositories',
+             'ecr-public:DescribeRegistries',
+             'ecr-public:DescribeImages',
+             'ecr-public:DescribeImageTags',
+             'ecr-public:GetRepositoryCatalogData',
+             'ecr-public:GetRegistryCatalogData',
+             'ecr-public:InitiateLayerUpload',
+             'ecr-public:UploadLayerPart',
+             'ecr-public:CompleteLayerUpload',
+             'ecr-public:PutImage',
            ],
-           resources: ['arn:aws:ecr-public::'+this.ACCOUNT+':repository/*'],
+           resources: [`arn:aws:ecr-public::${this.ACCOUNT}:repository/*`],
            conditions: {
-            'StringEquals': {
-              'aws:RequestedRegion': this.STACKREGION,
-              'aws:PrincipalAccount': [this.ACCOUNT],
-            },
-          },
+             StringEquals: {
+               'aws:RequestedRegion': this.STACKREGION,
+               'aws:PrincipalAccount': [this.ACCOUNT],
+             },
+           },
          }),
        ],
        roles: [AgentNodeRole],
      });
      ecrManagedPolicy.addStatements(
-      new iam.PolicyStatement({
-        actions: [
-          'ecr-public:GetAuthorizationToken',
-          'sts:GetServiceBearerToken',
-        ],
-        resources: ['*'],
-        conditions: {
-          'StringEquals': {
-            'aws:RequestedRegion': this.STACKREGION,
-            'aws:PrincipalAccount': [this.ACCOUNT],
-          },
-        },
-      }),
-    );
-    if (assumeRole !== undefined) {
-      console.log('Adding agent agentAssumeRole is  👉', agentAssumeRole.valueAsString);  
-      // policy to allow assume role AssumeRole
-      AgentNodeRole.addToPolicy(
-        new iam.PolicyStatement({
-          resources: [assumeRole],
-          actions: ['sts:AssumeRole'],
-        })
-      );
-     };
-     const AgentNodeInstanceProfile = new iam.CfnInstanceProfile(stack, 'JenkinsAgentNodeInstanceProfile', { roles: [AgentNodeRole.roleName] });
+       new PolicyStatement({
+         actions: [
+           'ecr-public:GetAuthorizationToken',
+           'sts:GetServiceBearerToken',
+         ],
+         resources: ['*'],
+         conditions: {
+           StringEquals: {
+             'aws:RequestedRegion': this.STACKREGION,
+             'aws:PrincipalAccount': [this.ACCOUNT],
+           },
+         },
+       }),
+     );
+     if (assumeRole !== undefined) {
+       // policy to allow assume role AssumeRole
+       AgentNodeRole.addToPolicy(
+         new PolicyStatement({
+           resources: [assumeRole],
+           actions: ['sts:AssumeRole'],
+         }),
+       );
+     }
+     const AgentNodeInstanceProfile = new CfnInstanceProfile(stack, 'JenkinsAgentNodeInstanceProfile', { roles: [AgentNodeRole.roleName] });
      this.AgentNodeInstanceProfileArn = AgentNodeInstanceProfile.attrArn.toString();
      this.SSHEC2KeySecretId = Fn.join('/', ['ec2-ssh-key', key.keyPairName.toString(), 'private']);
    }
- 
+
    public addAgentConfigToJenkinsYaml(templates: AgentNodeProps[], props: AgentNodeNetworkProps): any {
      const jenkinsYaml: any = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
      const configTemplates: any = [];
- 
+
      templates.forEach((element) => {
        configTemplates.push(this.getTemplate(element, props));
      });
- 
+
      const agentNodeYamlConfig = [{
        amazonEC2: {
          cloudName: 'Amazon_ec2_cloud',
@@ -143,7 +143,7 @@
      jenkinsYaml.jenkins.clouds = agentNodeYamlConfig;
      return jenkinsYaml;
    }
- 
+
    private getTemplate(config: AgentNodeProps, props: AgentNodeNetworkProps): { [x: string]: any; } {
      return {
        ami: config.amiId,
@@ -183,11 +183,10 @@
          name: 'type',
          value: `jenkinsAgentNode-${config.workerLabelString}`,
        },
-      ],
+       ],
        tenancy: 'Default',
        type: config.instanceType,
        useEphemeralDevices: false,
      };
    }
- }
- 
+}

@@ -17,4 +17,3 @@ const defaultEnv: string = 'Dev';
 const ciConfigStack = new CIConfigStack(app, `OpenSearch-CI-Config-${defaultEnv}`, {});
 
 const ciStack = new CIStack(app, `OpenSearch-CI-${defaultEnv}`, {});
-

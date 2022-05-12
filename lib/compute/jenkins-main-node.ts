@@ -25,7 +25,7 @@ import {
   Vpc,
 } from '@aws-cdk/aws-ec2';
 import {
-   IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal
+  IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
 import { join } from 'path';
@@ -158,7 +158,7 @@ export class JenkinsMainNode {
   public static createPoliciesForMainNode(stack: Stack): (IManagedPolicy | ManagedPolicy)[] {
     this.STACKREGION = stack.region;
     this.ACCOUNT = stack.account;
-    
+
     // Policy for SSM management of the host - Removes the need of SSH keys
     const ec2SsmManagementPolicy = ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore');
 
@@ -206,7 +206,7 @@ export class JenkinsMainNode {
             'ForAllValues:StringEquals': {
               'aws:RequestedRegion': this.STACKREGION,
               'aws:PrincipalAccount': this.ACCOUNT,
-           },
+            },
           },
         })],
       });
