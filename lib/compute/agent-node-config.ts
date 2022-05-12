@@ -10,7 +10,7 @@ import {
   Role, ManagedPolicy, PolicyStatement, Effect, CfnInstanceProfile, ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import {
-  Fn, Stack, Tags, CfnParameter, Construct,
+  Fn, Stack, Tags, CfnParameter,
 } from '@aws-cdk/core';
 import { KeyPair } from 'cdk-ec2-key-pair';
 import { readFileSync } from 'fs';
