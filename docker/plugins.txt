@@ -65,3 +65,5 @@ workflow-aggregator
 workflow-basic-steps
 workflow-step-api
 ws-cleanup
+job-import-plugin
+workflow-multibranch

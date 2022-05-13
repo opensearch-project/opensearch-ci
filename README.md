@@ -8,7 +8,8 @@
   - [Executing Optional Tasks](#executing-optional-tasks)
     - [SSL Configuration](#ssl-configuration)
     - [Setup OpenId Connect (OIDC) via Federate](#setup-openid-connect-oidc-via-federate)
-    - [Data Retention](#Data Retention)
+    - [Data Retention](#data-retention)
+    - [Assume role](#cross-account-assume-role)
   - [Troubleshooting](#troubleshooting)
     - [Main Node](#main-node)
   - [Useful commands](#useful-commands)
@@ -41,12 +42,8 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
    new CIStack(app, 'CI-Beta', ciSettings, {});
    ```
 3. Update the `ciSettings` according to the environment needs such as SSL or strict deployment, see [CIStackProps](./lib/ci-stack.ts) for details.
-4. Import `DeployAwsAssets` stack to deploy aws assets as per your needs.
-5. We currently support deploying public ECR and is deployed as follows -
-   ```typescript
-    new DeployAwsAssets(app, `OpenSearch-CI-Deploy-Assets`, {props); ```
-6. Update the `assetsSettings` according to the environment needs such as SSL or strict deployment, see [deployAwsAssetProps](./lib/ci-stack.ts) for details.
-7. Deploy using the CI system of your choice.
+4. Update the `assetsSettings` according to the environment needs such as SSL or strict deployment, see [deployAwsAssetProps](./lib/ci-stack.ts) for details.
+5. Deploy using the CI system of your choice.
 
 ### Dev Deployment 
 1. Setup your local machine to credentials to deploy to the AWS Account
@@ -67,17 +64,6 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
 1. When OIDC is disabled, this set up will enforce the user to secure jenkins by adding first admin user on deployment. Create admin user and password, fill in all other details like name and email id to start using jenkins.
 1. Go to the `OpenSearch-CI-Dev.JenkinsExternalLoadBalancerDns` url returned by CDK output to access the jenkins host.
 1. If you want to destroy the stack make sure you delete the agent nodes manually (via jenkins UI or AWS console) so that shared resources (like vpc, security groups, etc) can be deleted.
-
-### Deploying AWS assets
-1. Setup your local machine to credentials to deploy to the AWS Account
-2. Deploy the bootstrap stack by running following command that sets up required resources to create the stacks. [More info](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
-
-   `npm run cdk bootstrap -- -c useSsl=false -c runWithOidc=false`
-3. Deploy `deployAwsAssets` stack using the following (takes ~1 minute to deploy) -
-   1. To deploy with ECR (default `false`)
-   
-      `npm run cdk deploy OpenSearch-CI-Deploy-Assets-Dev -- -c deployEcr=true`
-
 
 ### Executing Optional Tasks
 #### SSL Configuration
@@ -129,6 +115,14 @@ See inital [jenkins.yaml](./resources/baseJenkins.yaml)
 If you want to retain all the jobs and its build history, 
 1. Update the `dataRetention` property in `ciSettings` to true (defaults to false) see [CIStackProps](./lib/ci-stack.ts) for details.
 This will create an EFS (Elastic File System) and mount it on `/var/lib/jenkins/jobs` which will retain all jobs and its build history.
+
+#### Assume role
+The Created jenkins agent role can assume cross account role by passing `agentAssumeRole` parameter
+Example:
+```
+npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false -c agentAssumeRole=arn:aws:iam::522XXX13897:role/sample-assume-role
+```
+NOTE: The assume role has to be pre-created for the agents to assume. Once CDK stack is deployed with `-c agentAssumeRole` flag, make sure this flag is passed for next CDK operations to make sure this created policy that assumes cross-account role is not removed.
 
 #### Runnning additional commands
 In cases where you need to run additional logic/commands, such as adding a cron to emit ssl cert expiry metric, you can pass the commands as a script using `additionalCommands` context parameter.

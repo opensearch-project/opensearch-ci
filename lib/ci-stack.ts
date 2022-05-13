@@ -30,8 +30,6 @@ export interface CIStackProps extends StackProps {
   readonly runWithOidc?: boolean;
   /** Additional verification during deployment and resource startup. */
   readonly ignoreResourcesFailures?: boolean;
-  /** Account to deploy your ECR Assets on */
-  readonly ecrAccountId?: string;
   /** Users with admin access during initial deployment */
   readonly adminUsers?: string[];
   /** Additional logic that needs to be run on Master Node. The value has to be path to a file */
@@ -109,7 +107,6 @@ export class CIStack extends Stack {
       useSsl,
       runWithOidc,
       failOnCloudInitError: props?.ignoreResourcesFailures,
-      ecrAccountId: props.ecrAccountId ?? Stack.of(this).account,
       adminUsers: props?.adminUsers,
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
       subnetId: vpc.publicSubnets[0].subnetId,
