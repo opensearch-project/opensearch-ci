@@ -102,6 +102,7 @@ export class AgentNodeConfig {
          },
        }),
      );
+
      if (assumeRole.toString() !== 'undefined') {
        // policy to allow assume role AssumeRole
        AgentNodeRole.addToPolicy(
