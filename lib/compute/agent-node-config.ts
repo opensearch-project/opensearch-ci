@@ -39,16 +39,9 @@ export class AgentNodeConfig {
 
    public readonly SSHEC2KeySecretId: string;
 
-   constructor(stack: Stack) {
+   constructor(stack: Stack, assumeRole: string) {
      this.STACKREGION = stack.region;
      this.ACCOUNT = stack.account;
-
-     const agentAssumeRole = new CfnParameter(stack, 'agentAssumeRole', {
-       description: 'The assume role arn of the build agent',
-       allowedPattern: '.+',
-       default: false,
-     });
-     const assumeRole = stack.node.tryGetContext('agentAssumeRole');
 
      const key = new KeyPair(stack, 'AgentNode-KeyPair', {
        name: 'AgentNodeKeyPair',
@@ -109,7 +102,7 @@ export class AgentNodeConfig {
          },
        }),
      );
-     if (assumeRole !== undefined) {
+     if (assumeRole.toString() !== 'undefined') {
        // policy to allow assume role AssumeRole
        AgentNodeRole.addToPolicy(
          new PolicyStatement({

@@ -88,7 +88,7 @@ export class JenkinsMainNode {
     foundJenkinsProcessCount: Metric
   }
 
-  constructor(stack: Stack, props: JenkinsMainNodeProps, agentNode: AgentNodeProps[]) {
+  constructor(stack: Stack, props: JenkinsMainNodeProps, agentNode: AgentNodeProps[], assumeRole: string) {
     this.ec2InstanceMetrics = {
       cpuTime: new Metric({
         metricName: 'procstat_cpu_usage',
@@ -104,7 +104,7 @@ export class JenkinsMainNode {
       }),
     };
 
-    const agentNodeConfig = new AgentNodeConfig(stack);
+    const agentNodeConfig = new AgentNodeConfig(stack, assumeRole);
     const jenkinsyaml = JenkinsMainNode.addConfigtoJenkinsYaml(stack, props, agentNodeConfig, props, agentNode);
     if (props.dataRetention) {
       const efs = new FileSystem(stack, 'EFSfilesystem', {
