@@ -19,7 +19,7 @@ import { JenkinsMonitoring } from './monitoring/ci-alarms';
 import { JenkinsExternalLoadBalancer } from './network/ci-external-load-balancer';
 import { JenkinsSecurityGroups } from './security/ci-security-groups';
 import { CiAuditLogging } from './auditing/ci-audit-logging';
-import { AgentNodeProps, AgentNodeConfig } from './compute/agent-node-config';
+import { AgentNodeProps } from './compute/agent-node-config';
 import { AgentNodes } from './compute/agent-nodes';
 import { RunAdditionalCommands } from './compute/run-additional-commands';
 
@@ -56,7 +56,7 @@ export class CIStack extends Stack {
       },
     });
 
-    const agentAssumeRole = `${props?.agentAssumeRole ?? this.node.tryGetContext('agentAssumeRole')}`;
+    const agentAssumeRoleContext = `${props?.agentAssumeRole ?? this.node.tryGetContext('agentAssumeRole')}`;
 
     const useSslParameter = `${props?.useSsl ?? this.node.tryGetContext('useSsl')}`;
     if (useSslParameter !== 'true' && useSslParameter !== 'false') {
@@ -114,7 +114,7 @@ export class CIStack extends Stack {
       adminUsers: props?.adminUsers,
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
       subnetId: vpc.publicSubnets[0].subnetId,
-    }, agentNodes, agentAssumeRole.toString());
+    }, agentNodes, agentAssumeRoleContext.toString());
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,
