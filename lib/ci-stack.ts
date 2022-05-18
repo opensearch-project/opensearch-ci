@@ -36,6 +36,8 @@ export interface CIStackProps extends StackProps {
   readonly additionalCommands?: string;
   /** Do you want to retain jenkins jobs and build history */
   readonly dataRetention?: boolean;
+  /** Policy for agent node role to assume a cross-account role */
+  readonly agentAssumeRole?: string;
 }
 
 export class CIStack extends Stack {
@@ -53,6 +55,8 @@ export class CIStack extends Stack {
         },
       },
     });
+
+    const agentAssumeRoleContext = `${props?.agentAssumeRole ?? this.node.tryGetContext('agentAssumeRole')}`;
 
     const useSslParameter = `${props?.useSsl ?? this.node.tryGetContext('useSsl')}`;
     if (useSslParameter !== 'true' && useSslParameter !== 'false') {
@@ -110,7 +114,7 @@ export class CIStack extends Stack {
       adminUsers: props?.adminUsers,
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
       subnetId: vpc.publicSubnets[0].subnetId,
-    }, agentNodes);
+    }, agentNodes, agentAssumeRoleContext.toString());
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,
