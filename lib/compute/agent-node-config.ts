@@ -112,6 +112,7 @@ export class AgentNodeConfig {
          }),
        );
      }
+     AgentNodeRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
      const AgentNodeInstanceProfile = new CfnInstanceProfile(stack, 'JenkinsAgentNodeInstanceProfile', { roles: [AgentNodeRole.roleName] });
      this.AgentNodeInstanceProfileArn = AgentNodeInstanceProfile.attrArn.toString();
      this.SSHEC2KeySecretId = Fn.join('/', ['ec2-ssh-key', key.keyPairName.toString(), 'private']);
