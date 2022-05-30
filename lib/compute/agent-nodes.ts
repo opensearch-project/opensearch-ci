@@ -16,7 +16,11 @@ export class AgentNodes {
     // Refer: https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/ec2/model/InstanceType.html for instance types
     readonly AL2_X64: AgentNodeProps;
 
+    readonly AL2_X64_DOCKER_1: AgentNodeProps;
+
     readonly AL2_ARM64: AgentNodeProps;
+
+    readonly AL2_ARM64_DOCKER_1: AgentNodeProps;
 
     constructor(stack: Stack) {
       this.AL2_X64 = {
@@ -31,6 +35,13 @@ export class AgentNodes {
         + ' sudo yum install -y java-1.8.0-openjdk cmake python3 python3-pip python3-devel && sudo yum groupinstall -y "Development Tools" &&'
         + ' sudo ln -sfn `which pip3` /usr/bin/pip && pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin',
       };
+      this.AL2_X64_DOCKER_1 = {
+        workerLabelString: 'Jenkins-Agent-al2-x64-c54xlarge-Docker-Host',
+        instanceType: 'C54xlarge',
+        remoteUser: 'ec2-user',
+        amiId: 'ami-00a07e55fcad01043',
+        initScript: 'sudo yum update -y || sudo yum update -y',
+      };
       this.AL2_ARM64 = {
         workerLabelString: 'AL2-ARM64',
         instanceType: 'C6g4xlarge',
@@ -42,6 +53,13 @@ export class AgentNodes {
         initScript: 'sudo mkdir -p /var/jenkins/ && sudo chown -R ec2-user:ec2-user /var/jenkins &&'
         + ' sudo yum install -y java-1.8.0-openjdk cmake python3 python3-pip python3-devel && sudo yum groupinstall -y "Development Tools" &&'
         + ' sudo ln -sfn `which pip3` /usr/bin/pip && pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin',
+      };
+      this.AL2_ARM64_DOCKER_1 = {
+        workerLabelString: 'Jenkins-Agent-al2-arm64-c6g4xlarge-Docker-Host',
+        instanceType: 'C6g4xlarge',
+        remoteUser: 'ec2-user',
+        amiId: 'ami-020c52efb1a60f1ae',
+        initScript: 'sudo yum update -y || sudo yum update -y',
       };
     }
 }
