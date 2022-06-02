@@ -2,7 +2,7 @@ name: Push new jenkins docker image
 
 on:
   push:
-    paths: 
+    paths:
       - docker/**
   workflow_dispatch:
 
@@ -26,4 +26,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: "{{defaultContext}}:docker"
           push: true
-          tags: opensearchstaging/jenkins:2.332.2-lts,opensearchstaging/jenkins:latest
+          tags: opensearchstaging/jenkins:2.332.3-lts,opensearchstaging/jenkins:latest
