@@ -10,7 +10,7 @@ import {
   Role, ManagedPolicy, PolicyStatement, Effect, CfnInstanceProfile, ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import {
-  Fn, Stack, Tags, CfnParameter,
+  Fn, Stack, Tags, CfnOutput,
 } from '@aws-cdk/core';
 import { KeyPair } from 'cdk-ec2-key-pair';
 import { readFileSync } from 'fs';
@@ -116,6 +116,11 @@ export class AgentNodeConfig {
      const AgentNodeInstanceProfile = new CfnInstanceProfile(stack, 'JenkinsAgentNodeInstanceProfile', { roles: [AgentNodeRole.roleName] });
      this.AgentNodeInstanceProfileArn = AgentNodeInstanceProfile.attrArn.toString();
      this.SSHEC2KeySecretId = Fn.join('/', ['ec2-ssh-key', key.keyPairName.toString(), 'private']);
+
+     new CfnOutput(stack, 'Jenkins Agent Node Role Arn', {
+       value: `${AgentNodeRole.roleArn}`,
+       exportName: 'agentNodeRoleArn',
+     });
    }
 
    public addAgentConfigToJenkinsYaml(templates: AgentNodeProps[], props: AgentNodeNetworkProps): any {
