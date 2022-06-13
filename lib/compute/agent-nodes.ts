@@ -22,6 +22,8 @@ export class AgentNodes {
 
     readonly AL2_ARM64_DOCKER_1: AgentNodeProps;
 
+    readonly UBUNTU_X64_DOCKER: AgentNodeProps;
+
     constructor(stack: Stack) {
       this.AL2_X64 = {
         workerLabelString: 'AL2-X64',
@@ -60,6 +62,13 @@ export class AgentNodes {
         remoteUser: 'ec2-user',
         amiId: 'ami-020c52efb1a60f1ae',
         initScript: 'sudo yum update -y || sudo yum update -y',
+      };
+      this.UBUNTU_X64_DOCKER = {
+        workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-m52xlarge-Docker-Builder',
+        instanceType: 'M52xlarge',
+        remoteUser: 'ubuntu',
+        amiId: 'ami-0f6ceb3b3687a3fba',
+        initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps',
       };
     }
 }

@@ -15,4 +15,7 @@ jobs:
       - name: Run CDK Build and Test
         run: | 
           npm install
+          cd resources/cf-url-rewriter
+          npm install
+          cd -
           npm run build
