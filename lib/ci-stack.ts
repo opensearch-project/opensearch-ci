@@ -9,10 +9,9 @@
 import { FlowLogDestination, FlowLogTrafficType, Vpc } from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import {
-  CfnParameter, Construct, Fn, RemovalPolicy, Stack, StackProps,
+  CfnParameter, Construct, Fn, Stack, StackProps,
 } from '@aws-cdk/core';
 import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
-import { FileSystem } from '@aws-cdk/aws-efs';
 import { CIConfigStack } from './ci-config-stack';
 import { JenkinsMainNode } from './compute/jenkins-main-node';
 import { JenkinsMonitoring } from './monitoring/ci-alarms';
@@ -38,6 +37,8 @@ export interface CIStackProps extends StackProps {
   readonly dataRetention?: boolean;
   /** Policy for agent node role to assume a cross-account role */
   readonly agentAssumeRole?: string;
+  /** Global environment variables to be added to jenkins enviornment */
+  readonly envVars?: {[key: string]: any};
 }
 
 export class CIStack extends Stack {
@@ -103,6 +104,7 @@ export class CIStack extends Stack {
       sg: securityGroups.mainNodeSG,
       efsSG: securityGroups.efsSG,
       dataRetention: props.dataRetention ?? false,
+      envVars: props.envVars ?? null,
       sslCertContentsArn: importedContentsSecretBucketValue.toString(),
       sslCertChainArn: importedContentsChainBucketValue.toString(),
       sslCertPrivateKeyContentsArn: importedCertSecretBucketValue.toString(),
