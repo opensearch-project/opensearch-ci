@@ -60,6 +60,10 @@ unclassified:
   audit-trail:
     logBuildCause: true
     pattern: ".*/(?:configSubmit|doDelete|postBuildResult|enable|disable|cancelQueue|stop|toggleLogKeep|doWipeOutWorkspace|createItem|createView|toggleOffline|cancelQuietDown|quietDown|restart|exit|safeExit)/?.*"
+  awsCredentialsProvider:
+    cache: false
+    client:
+      credentialsProvider: "default"
   buildDiscarders:
     configuredBuildDiscarders:
     - "jobBuildDiscarder"
