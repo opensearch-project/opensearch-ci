@@ -2,6 +2,7 @@ version: '3.8'
 services:
   jenkins:
     image: opensearchstaging/jenkins:2.332.3-lts-jdk8
+    restart: on-failure 
     privileged: true
     tty: true
     user: root
@@ -17,10 +18,10 @@ services:
       resources:
         limits:
           cpus: '4'
-          memory: 10000M
+          memory: '10g'
         reservations:
           cpus: '4'
-          memory: 10000M
+          memory: '10g'
     logging:
       driver: awslogs
       options:
