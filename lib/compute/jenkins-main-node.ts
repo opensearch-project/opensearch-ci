@@ -59,7 +59,7 @@ interface DataRetentionProps {
 export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, AgentNodeNetworkProps, DataRetentionProps{
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
-  readonly envVars: {[key: string]: any} | null;
+  readonly envVarsFilePath: string;
   readonly failOnCloudInitError?: boolean;
 }
 
@@ -402,8 +402,8 @@ export class JenkinsMainNode {
     if (oidcProps.runWithOidc) {
       updatedConfig = OidcConfig.addOidcConfigToJenkinsYaml(updatedConfig, oidcProps.adminUsers);
     }
-    if (jenkinsMainNodeProps.envVars != null) {
-      updatedConfig = EnvConfig.addEnvConfigToJenkinsYaml(updatedConfig, jenkinsMainNodeProps.envVars);
+    if (jenkinsMainNodeProps.envVarsFilePath !== '' && jenkinsMainNodeProps.envVarsFilePath != null) {
+      updatedConfig = EnvConfig.addEnvConfigToJenkinsYaml(updatedConfig, jenkinsMainNodeProps.envVarsFilePath);
     }
     const newConfig = dump(updatedConfig);
 

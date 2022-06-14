@@ -15,23 +15,23 @@ describe('Env Config', () => {
   // WHEN
   const testYaml = 'test/data/test_env.yaml';
   const jenkinsYaml = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
-  const testEnvVars = { s3Bucket: 'artifactBucket', account: 1234, isStaging: true };
 
-  const envVarConfig = EnvConfig.addEnvConfigToJenkinsYaml(jenkinsYaml, testEnvVars);
+  const envVarConfig = EnvConfig.addEnvConfigToJenkinsYaml(jenkinsYaml, 'test/data/env.txt');
   const newConfig = dump(envVarConfig);
   writeFileSync(testYaml, newConfig, 'utf-8');
-
-  const envConfig: { [x: string]: any; } = {
-    envVars: {
-      env: [{ key: 's3Bucket', value: 'artifactBucket' },
-        { key: 'account', value: 1234 },
-        { key: 'isStaging', value: true }],
-    },
-  };
 
   const yml: any = load(readFileSync(testYaml, 'utf-8'));
   // THEN
   test('Verify env variables', async () => {
+    const envConfig = {
+      envVars: {
+        env: [
+          { key: 's3Bucket', value: 'artifactBucket' },
+          { key: 'account', value: '1234' },
+          { key: 'isStaging', value: 'true' },
+        ],
+      },
+    };
     const addedEnvConfig = yml.jenkins.globalNodeProperties;
     expect(addedEnvConfig).toEqual([envConfig]);
   });

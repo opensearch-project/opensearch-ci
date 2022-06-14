@@ -120,11 +120,11 @@ This will create an EFS (Elastic File System) and mount it on `/var/lib/jenkins`
 #### Add environment variables
 Users can add global level environment variables using configuration as code as follows:
 
-Update the `envVars` property in `ciSettings` to an array of key value pairs. See [CIStackProps](./lib/ci-stack.ts) for details.
+Update the `envVarsFilePath` property in `ciSettings` to the file path containing all environment variables in the form of key:value pair. See [CIStackProps](./lib/ci-stack.ts) for details.
 
-Example: 
+Example: See [env.txt](./test/data/env.txt)
 ```
-envVars = { s3Bucket: 'artifactBucket', account: 1234, isStaging: true }
+envVarsFilePath = 'test/data/env.txt'
 ```
 
 #### Assume role

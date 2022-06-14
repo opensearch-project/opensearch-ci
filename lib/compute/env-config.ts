@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs';
+
 /**
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -17,9 +19,18 @@ export class Env {
 }
 
 export class EnvConfig {
-  public static addEnvConfigToJenkinsYaml(yamlObject: any, envVars: {[key: string]: any}): any {
+  public static addEnvConfigToJenkinsYaml(yamlObject: any, envVarsFilePath: string): any {
     const jenkinsYaml: any = yamlObject;
-    const newEnvVars = this.getNewKeyValuePairs(envVars);
+    const envArray: Env[] = [];
+    const envFile: string = readFileSync(envVarsFilePath, 'utf-8');
+    const c = envFile.split('\n');
+    c.forEach((item) => {
+      const e = item.split(':');
+      envArray.push(new Env(e[0], e[1]));
+    });
+
+    const newEnvVars: Env[] = envArray;
+
     const envConfig: { [x: string]: any; } = {
       envVars: {
         env: newEnvVars,
@@ -27,13 +38,5 @@ export class EnvConfig {
     };
     jenkinsYaml.jenkins.globalNodeProperties = [envConfig];
     return jenkinsYaml;
-  }
-
-  private static getNewKeyValuePairs(vars: {[key: string]: any}): Env[] {
-    const envobject: Env[] = [];
-    Object.keys(vars).forEach((key) => {
-      envobject.push(new Env(key, vars[key]));
-    });
-    return envobject;
   }
 }

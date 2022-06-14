@@ -37,8 +37,8 @@ export interface CIStackProps extends StackProps {
   readonly dataRetention?: boolean;
   /** Policy for agent node role to assume a cross-account role */
   readonly agentAssumeRole?: string;
-  /** Global environment variables to be added to jenkins enviornment */
-  readonly envVars?: {[key: string]: any};
+  /** File path containing global environment variables to be added to jenkins enviornment */
+  readonly envVarsFilePath?: string;
 }
 
 export class CIStack extends Stack {
@@ -104,7 +104,7 @@ export class CIStack extends Stack {
       sg: securityGroups.mainNodeSG,
       efsSG: securityGroups.efsSG,
       dataRetention: props.dataRetention ?? false,
-      envVars: props.envVars ?? null,
+      envVarsFilePath: props.envVarsFilePath ?? '',
       sslCertContentsArn: importedContentsSecretBucketValue.toString(),
       sslCertChainArn: importedContentsChainBucketValue.toString(),
       sslCertPrivateKeyContentsArn: importedCertSecretBucketValue.toString(),
