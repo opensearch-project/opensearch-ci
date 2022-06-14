@@ -6,7 +6,7 @@
  * compatible open source license.
  */
 
-import { Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import {
   AmazonLinuxGeneration,
   BlockDeviceVolume,
@@ -153,6 +153,11 @@ export class JenkinsMainNode {
     JenkinsMainNode.createPoliciesForMainNode(stack).map(
       (policy) => this.ec2Instance.role.addManagedPolicy(policy),
     );
+
+    new CfnOutput(stack, 'Jenkins Main Node Role Arn', {
+      value: this.ec2Instance.role.roleArn,
+      exportName: 'mainNodeRoleArn',
+    });
   }
 
   public static createPoliciesForMainNode(stack: Stack): (IManagedPolicy | ManagedPolicy)[] {

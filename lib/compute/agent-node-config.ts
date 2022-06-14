@@ -10,7 +10,7 @@ import {
   Role, ManagedPolicy, PolicyStatement, Effect, CfnInstanceProfile, ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import {
-  Fn, Stack, Tags, CfnParameter,
+  Fn, Stack, Tags, CfnOutput,
 } from '@aws-cdk/core';
 import { KeyPair } from 'cdk-ec2-key-pair';
 import { readFileSync } from 'fs';
@@ -116,6 +116,11 @@ export class AgentNodeConfig {
      const AgentNodeInstanceProfile = new CfnInstanceProfile(stack, 'JenkinsAgentNodeInstanceProfile', { roles: [AgentNodeRole.roleName] });
      this.AgentNodeInstanceProfileArn = AgentNodeInstanceProfile.attrArn.toString();
      this.SSHEC2KeySecretId = Fn.join('/', ['ec2-ssh-key', key.keyPairName.toString(), 'private']);
+
+     new CfnOutput(stack, 'Jenkins Agent Node Role Arn', {
+       value: `${AgentNodeRole.roleArn}`,
+       exportName: 'agentNodeRoleArn',
+     });
    }
 
    public addAgentConfigToJenkinsYaml(templates: AgentNodeProps[], props: AgentNodeNetworkProps): any {
@@ -147,7 +152,7 @@ export class AgentNodeConfig {
        associatePublicIp: false,
        connectBySSHProcess: false,
        connectionStrategy: 'PRIVATE_IP',
-       customDeviceMapping: '/dev/xvda=:100:true:::encrypted',
+       customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
        deleteRootOnTermination: true,
        description: `jenkinsAgentNode-${config.workerLabelString}`,
        ebsEncryptRootVolume: 'ENCRYPTED',
@@ -163,7 +168,7 @@ export class AgentNodeConfig {
        minimumNumberOfSpareInstances: 1,
        mode: 'EXCLUSIVE',
        monitoring: true,
-       numExecutors: 1,
+       numExecutors: 4,
        remoteAdmin: config.remoteUser,
        remoteFS: '/var/jenkins',
        securityGroups: props.agentNodeSecurityGroup,

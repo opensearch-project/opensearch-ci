@@ -96,7 +96,7 @@ export class CIStack extends Stack {
     const certificateArn = Secret.fromSecretCompleteArn(this, 'certificateArn', importedArnSecretBucketValue.toString());
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
     const agentNode = new AgentNodes(this);
-    const agentNodes: AgentNodeProps[] = [agentNode.AL2_X64, agentNode.AL2_ARM64];
+    const agentNodes: AgentNodeProps[] = [agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_1, agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_1];
 
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
