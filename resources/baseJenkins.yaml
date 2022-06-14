@@ -8,7 +8,9 @@ jenkins:
   disableRememberMe: false
   labelAtoms:
   - name: "built-in"
-  markupFormatter: "plainText"
+  markupFormatter:
+    rawHtml:
+      disableSyntaxHighlighting: true
   mode: NORMAL
   myViewsTabBar: "standard"
   numExecutors: 2
