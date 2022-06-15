@@ -1,0 +1,170 @@
+jenkins:
+  agentProtocols:
+    - JNLP4-connect
+    - Ping
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: false
+  disableRememberMe: false
+  labelAtoms:
+    - name: built-in
+  markupFormatter: plainText
+  mode: NORMAL
+  myViewsTabBar: standard
+  numExecutors: 2
+  primaryView:
+    all:
+      name: all
+  projectNamingStrategy: standard
+  quietPeriod: 5
+  scmCheckoutRetryCount: 0
+  securityRealm:
+    local:
+      allowsSignup: false
+      enableCaptcha: false
+      users:
+        - id: admin
+          name: admin
+          properties:
+            - apiToken
+            - preferredProvider:
+                providerId: default
+            - loginDetailsProperty
+  slaveAgentPort: 50000
+  updateCenter:
+    sites:
+      - id: default
+        url: https://updates.jenkins.io/update-center.json
+  views:
+    - all:
+        name: all
+  viewsTabBar: standard
+  globalNodeProperties:
+    - envVars:
+        env:
+          - key: s3Bucket
+            value: artifactBucket
+          - key: account
+            value: '1234'
+          - key: isStaging
+            value: 'true'
+globalCredentialsConfiguration:
+  configuration:
+    providerFilter: none
+    typeFilter: none
+security:
+  apiToken:
+    creationOfLegacyTokenEnabled: false
+    tokenGenerationOnCreationEnabled: false
+    usageStatisticsEnabled: true
+  copyartifact:
+    mode: PRODUCTION
+  globalJobDslSecurityConfiguration:
+    useScriptSecurity: true
+  sSHD:
+    port: -1
+unclassified:
+  audit-trail:
+    logBuildCause: true
+    pattern: >-
+      .*/(?:configSubmit|doDelete|postBuildResult|enable|disable|cancelQueue|stop|toggleLogKeep|doWipeOutWorkspace|createItem|createView|toggleOffline|cancelQuietDown|quietDown|restart|exit|safeExit)/?.*
+  buildDiscarders:
+    configuredBuildDiscarders:
+      - jobBuildDiscarder
+  buildStepOperation:
+    enabled: false
+  buildTimestamp:
+    enableBuildTimestamp: true
+    pattern: yyyy-MM-dd HH:mm:ss z
+    timezone: Etc/UTC
+  descriptionSetterWrapper:
+    disableTokens: false
+  email-ext:
+    adminRequiredForTemplateTesting: false
+    allowUnregisteredEnabled: false
+    charset: UTF-8
+    debugMode: false
+    defaultBody: |-
+      $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:
+
+      Check console output at $BUILD_URL to view the results.
+    defaultSubject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!'
+    defaultTriggerIds:
+      - hudson.plugins.emailext.plugins.trigger.FailureTrigger
+    maxAttachmentSize: -1
+    maxAttachmentSizeMb: -1
+    precedenceBulk: false
+    watchingEnabled: false
+  fingerprints:
+    fingerprintCleanupDisabled: false
+    storage: file
+  ghprbTrigger:
+    autoCloseFailedPullRequests: false
+    cron: H/5 * * * *
+    extensions:
+      - ghprbSimpleStatus:
+          addTestResults: false
+          showMatrixStatus: false
+    githubAuth:
+      - description: Anonymous connection
+        id: d4456c70-9c5e-4b40-bee4-e1ebb693153b
+        serverAPIUrl: https://api.github.com
+    manageWebhooks: true
+    okToTestPhrase: .*ok\W+to\W+test.*
+    retestPhrase: .*test\W+this\W+please.*
+    skipBuildPhrase: .*\[skip\W+ci\].*
+    useComments: false
+    useDetailedComments: false
+    whitelistPhrase: .*add\W+to\W+whitelist.*
+  gitHubConfiguration:
+    apiRateLimitChecker: ThrottleForNormalize
+  gitHubPluginConfig:
+    hookUrl: http://localhost:8080/github-webhook/
+  gitSCM:
+    addGitTagAction: false
+    allowSecondFetch: false
+    createAccountBasedOnEmail: false
+    disableGitToolChooser: false
+    hideCredentials: false
+    showEntireCommitSummaryInChanges: false
+    useExistingAccountWithSameEmail: false
+  ivyBuildTrigger:
+    extendedVersionMatching: false
+  junitTestResultStorage:
+    storage: file
+  location:
+    adminAddress: address not configured yet <nobody@nowhere>
+  login-theme-plugin:
+    useDefaultTheme: true
+  mailer:
+    charset: UTF-8
+    useSsl: false
+    useTls: false
+  mavenModuleSet:
+    localRepository: default
+  pluginImpl:
+    enableCredentialsFromNode: false
+  pollSCM:
+    pollingThreadCount: 10
+  timestamper:
+    allPipelines: false
+    elapsedTimeFormat: '''<b>''HH:mm:ss.S''</b> '''
+    systemTimeFormat: '''<b>''HH:mm:ss''</b> '''
+  upstream:
+    globalUpstreamFilterStrategy: UseOldest
+  whitelist:
+    enabled: false
+tool:
+  git:
+    installations:
+      - home: git
+        name: Default
+  mavenGlobalConfig:
+    globalSettingsProvider: standard
+    settingsProvider: standard
+  powerShellInstallation:
+    installations:
+      - home: powershell.exe
+        name: DefaultWindows
+      - home: pwsh
+        name: DefaultLinux
