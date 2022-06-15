@@ -395,7 +395,7 @@ export class JenkinsMainNode {
 
   public static addConfigtoJenkinsYaml(stack: Stack, oidcProps: OidcFederateProps, agentNodeObject: AgentNodeConfig,
     props: AgentNodeNetworkProps, agentNode: AgentNodeProps[]): string {
-    let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(agentNode, props);
+    let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(stack, agentNode, props);
     if (oidcProps.runWithOidc) {
       updatedConfig = OidcConfig.addOidcConfigToJenkinsYaml(updatedConfig, oidcProps.adminUsers);
     }

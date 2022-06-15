@@ -9,8 +9,8 @@
 import {
   Construct, Fn, Stack, StackProps,
 } from '@aws-cdk/core';
-import { BuildArtifactsPermissions } from './buildArtefacts/build-artifacts-permissions';
-import { ArtifactsPublicAccess } from './buildArtefacts/artifacts-public-access';
+import { BuildArtifactsPermissions } from './buildArtifacts/build-artifacts-permissions';
+import { ArtifactsPublicAccess } from './buildArtifacts/artifacts-public-access';
 
 export class CiCdnStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
