@@ -31,6 +31,7 @@ describe('Env Config', () => {
           { key: 'isStaging', value: 'true' },
           { key: 'url', value: 'https://url.com' },
           { key: 'nospace', value: 'dummy' },
+          { key: 'multiplespace', value: 'spaces' },
         ],
       },
     };

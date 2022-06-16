@@ -54,6 +54,8 @@ jenkins:
             value: https://url.com
           - key: nospace
             value: dummy
+          - key: multiplespace
+            value: spaces
 globalCredentialsConfiguration:
   configuration:
     providerFilter: none
