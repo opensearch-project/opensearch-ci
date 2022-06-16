@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import { load } from 'js-yaml';
 
 /**
  * SPDX-License-Identifier: Apache-2.0
@@ -22,13 +23,9 @@ export class EnvConfig {
   public static addEnvConfigToJenkinsYaml(yamlObject: any, envVarsFilePath: string): any {
     const jenkinsYaml: any = yamlObject;
     const envArray: Env[] = [];
-    const envFile: string = readFileSync(envVarsFilePath, 'utf-8');
-    const c = envFile.split('\n');
-    c.forEach((item) => {
-      const e = item.split(/:(.*)/s).map((element) => element.trim());
-      envArray.push(new Env(e[0], e[1]));
-    });
+    const envFile: any = load(readFileSync(envVarsFilePath, 'utf-8'));
 
+    Object.keys(envFile).forEach((item) => envArray.push(new Env(item, envFile[item])));
     const newEnvVars: Env[] = envArray;
 
     const envConfig: { [x: string]: any; } = {
