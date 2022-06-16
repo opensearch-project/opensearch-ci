@@ -120,11 +120,11 @@ This will create an EFS (Elastic File System) and mount it on `/var/lib/jenkins`
 #### Add environment variables
 Users can add global level environment variables using configuration as code as follows:
 
-Update the `envVarsFilePath` property in `ciSettings` to the file path containing all environment variables in the form of key:value pair. See [CIStackProps](./lib/ci-stack.ts) for details.
+Update the `envVarsFilePath` property in `ciSettings` to the *yaml* file path containing all environment variables in the form of key:value pair. See [CIStackProps](./lib/ci-stack.ts) for details.
 
-Example: See [env.txt](./test/data/env.txt)
+Example: See [env.txt](./test/data/env.yaml)
 ```
-envVarsFilePath = 'test/data/env.txt'
+envVarsFilePath = 'test/data/env.yaml'
 ```
 
 #### Assume role

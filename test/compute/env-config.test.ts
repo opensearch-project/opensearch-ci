@@ -16,7 +16,7 @@ describe('Env Config', () => {
   const testYaml = 'test/data/test_env.yaml';
   const jenkinsYaml = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
 
-  const envVarConfig = EnvConfig.addEnvConfigToJenkinsYaml(jenkinsYaml, 'test/data/env.txt');
+  const envVarConfig = EnvConfig.addEnvConfigToJenkinsYaml(jenkinsYaml, 'test/data/env.yaml');
   const newConfig = dump(envVarConfig);
   writeFileSync(testYaml, newConfig, 'utf-8');
 
@@ -27,11 +27,9 @@ describe('Env Config', () => {
       envVars: {
         env: [
           { key: 's3Bucket', value: 'artifactBucket' },
-          { key: 'account', value: '1234' },
-          { key: 'isStaging', value: 'true' },
+          { key: 'account', value: 1234 },
+          { key: 'isStaging', value: true },
           { key: 'url', value: 'https://url.com' },
-          { key: 'nospace', value: 'dummy' },
-          { key: 'multiplespace', value: 'spaces' },
         ],
       },
     };
