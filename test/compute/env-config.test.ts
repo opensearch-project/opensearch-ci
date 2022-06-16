@@ -29,6 +29,9 @@ describe('Env Config', () => {
           { key: 's3Bucket', value: 'artifactBucket' },
           { key: 'account', value: '1234' },
           { key: 'isStaging', value: 'true' },
+          { key: 'url', value: 'https://url.com' },
+          { key: 'nospace', value: 'dummy' },
+          { key: 'multiplespace', value: 'spaces' },
         ],
       },
     };

@@ -8,7 +8,9 @@ jenkins:
   disableRememberMe: false
   labelAtoms:
     - name: built-in
-  markupFormatter: plainText
+  markupFormatter:
+    rawHtml:
+      disableSyntaxHighlighting: true
   mode: NORMAL
   myViewsTabBar: standard
   numExecutors: 2
@@ -48,6 +50,12 @@ jenkins:
             value: '1234'
           - key: isStaging
             value: 'true'
+          - key: url
+            value: https://url.com
+          - key: nospace
+            value: dummy
+          - key: multiplespace
+            value: spaces
 globalCredentialsConfiguration:
   configuration:
     providerFilter: none
@@ -68,6 +76,10 @@ unclassified:
     logBuildCause: true
     pattern: >-
       .*/(?:configSubmit|doDelete|postBuildResult|enable|disable|cancelQueue|stop|toggleLogKeep|doWipeOutWorkspace|createItem|createView|toggleOffline|cancelQuietDown|quietDown|restart|exit|safeExit)/?.*
+  awsCredentialsProvider:
+    cache: false
+    client:
+      credentialsProvider: default
   buildDiscarders:
     configuredBuildDiscarders:
       - jobBuildDiscarder
