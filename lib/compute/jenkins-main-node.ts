@@ -35,6 +35,7 @@ import { FileSystem, PerformanceMode, ThroughputMode } from '@aws-cdk/aws-efs';
 import { OidcConfig } from './oidc-config';
 import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
+import { EnvConfig } from './env-config';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -58,6 +59,7 @@ interface DataRetentionProps {
 export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, AgentNodeNetworkProps, DataRetentionProps{
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
+  readonly envVarsFilePath: string;
   readonly failOnCloudInitError?: boolean;
 }
 
@@ -105,7 +107,7 @@ export class JenkinsMainNode {
     };
 
     const agentNodeConfig = new AgentNodeConfig(stack, assumeRole);
-    const jenkinsyaml = JenkinsMainNode.addConfigtoJenkinsYaml(stack, props, agentNodeConfig, props, agentNode);
+    const jenkinsyaml = JenkinsMainNode.addConfigtoJenkinsYaml(stack, props, props, agentNodeConfig, props, agentNode);
     if (props.dataRetention) {
       const efs = new FileSystem(stack, 'EFSfilesystem', {
         vpc: props.vpc,
@@ -393,13 +395,17 @@ export class JenkinsMainNode {
     ];
   }
 
-  public static addConfigtoJenkinsYaml(stack: Stack, oidcProps: OidcFederateProps, agentNodeObject: AgentNodeConfig,
+  public static addConfigtoJenkinsYaml(stack: Stack, jenkinsMainNodeProps:JenkinsMainNodeProps, oidcProps: OidcFederateProps, agentNodeObject: AgentNodeConfig,
     props: AgentNodeNetworkProps, agentNode: AgentNodeProps[]): string {
     let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(stack, agentNode, props);
     if (oidcProps.runWithOidc) {
       updatedConfig = OidcConfig.addOidcConfigToJenkinsYaml(updatedConfig, oidcProps.adminUsers);
     }
+    if (jenkinsMainNodeProps.envVarsFilePath !== '' && jenkinsMainNodeProps.envVarsFilePath != null) {
+      updatedConfig = EnvConfig.addEnvConfigToJenkinsYaml(updatedConfig, jenkinsMainNodeProps.envVarsFilePath);
+    }
     const newConfig = dump(updatedConfig);
+
     writeFileSync(JenkinsMainNode.NEW_JENKINS_YAML_PATH, newConfig, 'utf-8');
     return JenkinsMainNode.NEW_JENKINS_YAML_PATH;
   }

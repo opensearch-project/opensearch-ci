@@ -57,8 +57,7 @@ export class BuildArtifactsPermissions {
         new PolicyStatement({
           actions: [
             's3:GetObject*',
-            's3:GetBucket*',
-            's3:List*',
+            's3:ListBucket',
           ],
           resources: [`${s3BucketArn}`],
           effect: Effect.ALLOW,
@@ -67,8 +66,7 @@ export class BuildArtifactsPermissions {
           {
             actions: [
               's3:GetObject*',
-              's3:GetBucket*',
-              's3:List*',
+              's3:ListBucket',
               's3:PutObject',
               's3:PutObjectLegalHold',
               's3:PutObjectRetention',

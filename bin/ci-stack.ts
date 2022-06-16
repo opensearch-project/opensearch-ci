@@ -6,7 +6,7 @@
  * compatible open source license.
  */
 
-import { App, RemovalPolicy } from '@aws-cdk/core';
+import { App } from '@aws-cdk/core';
 import { CIStack } from '../lib/ci-stack';
 import { CIConfigStack } from '../lib/ci-config-stack';
 import { CiCdnStack } from '../lib/ci-cdn-stack';

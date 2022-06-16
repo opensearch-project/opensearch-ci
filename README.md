@@ -9,6 +9,7 @@
     - [SSL Configuration](#ssl-configuration)
     - [Setup OpenId Connect (OIDC) via Federate](#setup-openid-connect-oidc-via-federate)
     - [Data Retention](#data-retention)
+    - [Add environment variable](#add-environment-variables)
     - [Assume role](#cross-account-assume-role)
   - [Troubleshooting](#troubleshooting)
     - [Main Node](#main-node)
@@ -114,7 +115,17 @@ Change in any EC2 config (specially init config) leads to replacement of EC2. Th
 See inital [jenkins.yaml](./resources/baseJenkins.yaml)
 If you want to retain all the jobs and its build history, 
 1. Update the `dataRetention` property in `ciSettings` to true (defaults to false) see [CIStackProps](./lib/ci-stack.ts) for details.
-This will create an EFS (Elastic File System) and mount it on `/var/lib/jenkins/jobs` which will retain all jobs and its build history.
+This will create an EFS (Elastic File System) and mount it on `/var/lib/jenkins` which will retain all jobs and its build history.
+
+#### Add environment variables
+Users can add global level environment variables using configuration as code as follows:
+
+Update the `envVarsFilePath` property in `ciSettings` to the file path containing all environment variables in the form of key:value pair. See [CIStackProps](./lib/ci-stack.ts) for details.
+
+Example: See [env.txt](./test/data/env.txt)
+```
+envVarsFilePath = 'test/data/env.txt'
+```
 
 #### Assume role
 The Created jenkins agent role can assume cross account role by passing `agentAssumeRole` parameter
