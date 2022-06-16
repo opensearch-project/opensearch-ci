@@ -25,7 +25,7 @@ export class EnvConfig {
     const envFile: string = readFileSync(envVarsFilePath, 'utf-8');
     const c = envFile.split('\n');
     c.forEach((item) => {
-      const e = item.split(':');
+      const e = item.split(/:(.*)/s).map((element) => element.trim());
       envArray.push(new Env(e[0], e[1]));
     });
 
