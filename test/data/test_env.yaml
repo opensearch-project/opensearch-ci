@@ -47,9 +47,11 @@ jenkins:
           - key: s3Bucket
             value: artifactBucket
           - key: account
-            value: '1234'
+            value: 1234
           - key: isStaging
-            value: 'true'
+            value: true
+          - key: url
+            value: https://url.com
 globalCredentialsConfiguration:
   configuration:
     providerFilter: none
