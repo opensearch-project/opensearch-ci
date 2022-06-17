@@ -390,7 +390,7 @@ export class JenkinsMainNode {
 
       // Reload configuration via Jenkins.yaml
       InitCommand.shellCommand('cp /initial_jenkins.yaml /var/lib/jenkins/jenkins.yaml &&'
-      + ' java -jar /jenkins-cli.jar -s http://localhost:8080 reload-jcasc-configuration'),
+      + ' java -jar /jenkins-cli.jar -s http://localhost:8080 reload-jcasc-configuration || echo Reload command ran here'),
 
     ];
   }
