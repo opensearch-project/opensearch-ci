@@ -28,7 +28,7 @@ test('CI Stack Basic Resources', () => {
   expect(stack).to(countResources('AWS::EC2::SecurityGroup', 4));
   expect(stack).to(countResources('AWS::IAM::Policy', 1));
   expect(stack).to(countResources('AWS::IAM::Role', 3));
-  expect(stack).to(countResources('AWS::S3::Bucket', 1));
+  expect(stack).to(countResources('AWS::S3::Bucket', 2));
   expect(stack).to(countResources('Custom::EC2-Key-Pair', 1));
   expect(stack).to(countResources('AWS::IAM::InstanceProfile', 2));
   expect(stack).to(countResources('AWS::SSM::Document', 1));

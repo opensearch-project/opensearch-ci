@@ -107,7 +107,7 @@ export class JenkinsMainNode {
     };
 
     const agentNodeConfig = new AgentNodeConfig(stack, assumeRole);
-    const jenkinsyaml = JenkinsMainNode.addConfigtoJenkinsYaml(props, props, agentNodeConfig, props, agentNode);
+    const jenkinsyaml = JenkinsMainNode.addConfigtoJenkinsYaml(stack, props, props, agentNodeConfig, props, agentNode);
     if (props.dataRetention) {
       const efs = new FileSystem(stack, 'EFSfilesystem', {
         vpc: props.vpc,
@@ -395,10 +395,9 @@ export class JenkinsMainNode {
     ];
   }
 
-  public static addConfigtoJenkinsYaml(jenkinsMainNodeProps:JenkinsMainNodeProps, oidcProps: OidcFederateProps, agentNodeObject: AgentNodeConfig,
+  public static addConfigtoJenkinsYaml(stack: Stack, jenkinsMainNodeProps:JenkinsMainNodeProps, oidcProps: OidcFederateProps, agentNodeObject: AgentNodeConfig,
     props: AgentNodeNetworkProps, agentNode: AgentNodeProps[]): string {
-    let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(agentNode, props);
-
+    let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(stack, agentNode, props);
     if (oidcProps.runWithOidc) {
       updatedConfig = OidcConfig.addOidcConfigToJenkinsYaml(updatedConfig, oidcProps.adminUsers);
     }

@@ -123,12 +123,12 @@ export class AgentNodeConfig {
      });
    }
 
-   public addAgentConfigToJenkinsYaml(templates: AgentNodeProps[], props: AgentNodeNetworkProps): any {
+   public addAgentConfigToJenkinsYaml(stack: Stack, templates: AgentNodeProps[], props: AgentNodeNetworkProps): any {
      const jenkinsYaml: any = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
      const configTemplates: any = [];
 
      templates.forEach((element) => {
-       configTemplates.push(this.getTemplate(element, props));
+       configTemplates.push(this.getTemplate(stack, element, props));
      });
 
      const agentNodeYamlConfig = [{
@@ -144,7 +144,7 @@ export class AgentNodeConfig {
      return jenkinsYaml;
    }
 
-   private getTemplate(config: AgentNodeProps, props: AgentNodeNetworkProps): { [x: string]: any; } {
+   private getTemplate(stack: Stack, config: AgentNodeProps, props: AgentNodeNetworkProps): { [x: string]: any; } {
      return {
        ami: config.amiId,
        amiType:
@@ -177,7 +177,7 @@ export class AgentNodeConfig {
        t2Unlimited: false,
        tags: [{
          name: 'Name',
-         value: 'OpenSearch-CI-Prod/AgentNode',
+         value: `${stack.stackName}/AgentNode`,
        },
        {
          name: 'type',

@@ -9,9 +9,12 @@
 import { FlowLogDestination, FlowLogTrafficType, Vpc } from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import {
-  CfnParameter, Construct, Fn, Stack, StackProps,
+  CfnOutput,
+  CfnParameter, Construct, Fn, RemovalPolicy, Stack, StackProps,
 } from '@aws-cdk/core';
 import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { FileSystem } from '@aws-cdk/aws-efs';
+import { Bucket } from '@aws-cdk/aws-s3';
 import { CIConfigStack } from './ci-config-stack';
 import { JenkinsMainNode } from './compute/jenkins-main-node';
 import { JenkinsMonitoring } from './monitoring/ci-alarms';
@@ -97,7 +100,8 @@ export class CIStack extends Stack {
     const certificateArn = Secret.fromSecretCompleteArn(this, 'certificateArn', importedArnSecretBucketValue.toString());
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
     const agentNode = new AgentNodes(this);
-    const agentNodes: AgentNodeProps[] = [agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_1, agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_1];
+    const agentNodes: AgentNodeProps[] = [agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_1, agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_1,
+      agentNode.UBUNTU_X64_DOCKER];
 
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
@@ -126,10 +130,17 @@ export class CIStack extends Stack {
       useSsl,
     });
 
+    const artifactBucket = new Bucket(this, 'BuildBucket');
+
     this.monitoring = new JenkinsMonitoring(this, externalLoadBalancer, mainJenkinsNode);
 
     if (additionalCommandsContext.toString() !== 'undefined') {
       new RunAdditionalCommands(this, additionalCommandsContext.toString());
     }
+
+    new CfnOutput(this, 'Artifact Bucket Arn', {
+      value: artifactBucket.bucketArn.toString(),
+      exportName: 'buildBucketArn',
+    });
   }
 }
