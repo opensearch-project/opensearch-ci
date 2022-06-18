@@ -376,11 +376,7 @@ export class JenkinsMainNode {
 
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 90 seconds to wait for jenkins to start
-      InitCommand.shellCommand('sleep 90'),
-
-      // Download jenkins-cli from the local machine
-      InitCommand.shellCommand('until $(curl --output /dev/null --silent --head --fail http://localhost:8080); do sleep 5; done &&'
-      + ' wget -O "jenkins-cli.jar" http://localhost:8080/jnlpJars/jenkins-cli.jar'),
+      InitCommand.shellCommand('sleep 60'),
 
       InitFile.fromFileInline('/initial_jenkins.yaml', jenkinsyaml),
 
