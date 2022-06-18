@@ -56,6 +56,12 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
    
    `npm run cdk deploy OpenSearch-CI-Config-Dev -- -c useSsl=false -c runWithOidc=false`
    
+1. Locate the secret manager arns in the ci-config-stack outputs for `CASC_RELOAD_TOKEN` and update the secret value ([see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)) with the password you want to use to reload jenkins configuration. _Do not enclose it in quotes_
+```
+$aws secretsmanager put-secret-value \
+--secret-id MyCASCreloadTokenSecretARN \
+--secret-string CascReloadToken
+```
 1. [Optional](#ssl-configuration) Configure the elements of the config stack for SSL configuration
 1. [Optional](#setup-openid-connect-oidc-via-federate) Configure the elements setting up oidc via federate
 1. Deploy the ci-stack, takes ~10 minutes to deploy (parameter values depend on step 2 and step 3)
