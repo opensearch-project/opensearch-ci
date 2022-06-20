@@ -60,6 +60,7 @@ export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
   readonly envVarsFilePath: string;
+  readonly reloadPasswordSecretsArn: string;
   readonly failOnCloudInitError?: boolean;
 }
 
@@ -144,6 +145,7 @@ export class JenkinsMainNode {
         props,
         props,
         jenkinsyaml,
+        props.reloadPasswordSecretsArn,
         this.EFS_ID,
       )),
       blockDevices: [{
@@ -222,7 +224,8 @@ export class JenkinsMainNode {
   }
 
   public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps,
-    oidcFederateProps: OidcFederateProps, dataRetentionProps : DataRetentionProps, jenkinsyaml: string, efsId?: string): InitElement[] {
+    oidcFederateProps: OidcFederateProps, dataRetentionProps : DataRetentionProps, jenkinsyaml: string,
+    reloadPasswordSecretsArn: string, efsId?: string): InitElement[] {
     return [
       InitPackage.yum('wget'),
       InitPackage.yum('openssl'),
@@ -365,15 +368,15 @@ export class JenkinsMainNode {
         : 'echo Data rentention is disabled, not mounting efs'),
 
       InitFile.fromFileInline('/docker-compose.yml', join(__dirname, '../../resources/docker-compose.yml')),
-      InitCommand.shellCommand('systemctl start docker && docker-compose up -d'),
+
+      InitCommand.shellCommand('systemctl start docker &&'
+      + ` var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${reloadPasswordSecretsArn} --query SecretString --output text\` &&`
+      + ' yq -i \'.services.jenkins.environment[1] = "CASC_RELOAD_TOKEN=\'$var\'"\' docker-compose.yml &&'
+      + ' docker-compose up -d'),
 
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 90 seconds to wait for jenkins to start
-      InitCommand.shellCommand('sleep 90'),
-
-      // Download jenkins-cli from the local machine
-      InitCommand.shellCommand('until $(curl --output /dev/null --silent --head --fail http://localhost:8080); do sleep 5; done &&'
-      + ' wget -O "jenkins-cli.jar" http://localhost:8080/jnlpJars/jenkins-cli.jar'),
+      InitCommand.shellCommand('sleep 60'),
 
       InitFile.fromFileInline('/initial_jenkins.yaml', jenkinsyaml),
 
@@ -390,8 +393,8 @@ export class JenkinsMainNode {
 
       // Reload configuration via Jenkins.yaml
       InitCommand.shellCommand('cp /initial_jenkins.yaml /var/lib/jenkins/jenkins.yaml &&'
-      + ' java -jar /jenkins-cli.jar -s http://localhost:8080 reload-jcasc-configuration'),
-
+      + ` var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${reloadPasswordSecretsArn} --query SecretString --output text\` &&`
+      + ' curl  -f -X POST "http://localhost:8080/reload-configuration-as-code/?casc-reload-token=$var"'),
     ];
   }
 

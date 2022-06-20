@@ -98,6 +98,7 @@ export class CIStack extends Stack {
     const importedRedirectUrlSecretBucketValue = Fn.importValue(`${CIConfigStack.REDIRECT_URL_SECRET_EXPORT_VALUE}`);
     const importedOidcConfigValuesSecretBucketValue = Fn.importValue(`${CIConfigStack.OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE}`);
     const certificateArn = Secret.fromSecretCompleteArn(this, 'certificateArn', importedArnSecretBucketValue.toString());
+    const importedReloadPasswordSecretsArn = Fn.importValue(`${CIConfigStack.CASC_RELOAD_TOKEN_SECRET_EXPORT_VALUE}`);
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
     const agentNode = new AgentNodes(this);
     const agentNodes: AgentNodeProps[] = [agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_1, agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_1,
@@ -109,6 +110,7 @@ export class CIStack extends Stack {
       efsSG: securityGroups.efsSG,
       dataRetention: props.dataRetention ?? false,
       envVarsFilePath: props.envVarsFilePath ?? '',
+      reloadPasswordSecretsArn: importedReloadPasswordSecretsArn.toString(),
       sslCertContentsArn: importedContentsSecretBucketValue.toString(),
       sslCertChainArn: importedContentsChainBucketValue.toString(),
       sslCertPrivateKeyContentsArn: importedCertSecretBucketValue.toString(),

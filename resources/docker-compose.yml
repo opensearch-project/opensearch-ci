@@ -2,7 +2,7 @@ version: '3.8'
 services:
   jenkins:
     image: opensearchstaging/jenkins:2.332.3-lts-jdk8
-    restart: on-failure 
+    restart: on-failure
     privileged: true
     tty: true
     user: root
@@ -12,6 +12,7 @@ services:
     container_name: jenkins
     environment:
       - JENKINS_JAVA_OPTS="-Xmx8g"
+      - CASC_RELOAD_TOKEN=reloadPasswordHere
     volumes:
       - /var/lib/jenkins:/var/jenkins_home
     deploy:
