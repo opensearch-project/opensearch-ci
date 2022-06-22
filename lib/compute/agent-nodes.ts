@@ -9,7 +9,6 @@
 import {
   AmazonLinuxCpuType, AmazonLinuxGeneration, MachineImage,
 } from '@aws-cdk/aws-ec2';
-import { Stack } from '@aws-cdk/core';
 import { AgentNodeProps } from './agent-node-config';
 
 export class AgentNodes {
@@ -24,7 +23,7 @@ export class AgentNodes {
 
     readonly UBUNTU_X64_DOCKER_BUILDER: AgentNodeProps;
 
-    constructor(stack: Stack) {
+    constructor() {
       this.AL2_X64 = {
         workerLabelString: 'Jenkins-Agent-al2-x64-c54xlarge-Single-Host',
         instanceType: 'C54xlarge',
