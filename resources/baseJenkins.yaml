@@ -8,12 +8,14 @@ jenkins:
   disableRememberMe: false
   labelAtoms:
   - name: "built-in"
+  - name: "main-node"
+  labelString: "main-node"
   markupFormatter:
     rawHtml:
       disableSyntaxHighlighting: true
-  mode: NORMAL
+  mode: EXCLUSIVE
   myViewsTabBar: "standard"
-  numExecutors: 2
+  numExecutors: 4
   primaryView:
     all:
       name: "all"
