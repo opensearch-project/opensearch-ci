@@ -101,8 +101,8 @@ export class CIStack extends Stack {
     const importedReloadPasswordSecretsArn = Fn.importValue(`${CIConfigStack.CASC_RELOAD_TOKEN_SECRET_EXPORT_VALUE}`);
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
     const agentNode = new AgentNodes(this);
-    const agentNodes: AgentNodeProps[] = [agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_1, agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_1,
-      agentNode.UBUNTU_X64_DOCKER];
+    const agentNodes: AgentNodeProps[] = [agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_HOST, agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_HOST,
+      agentNode.UBUNTU_X64_DOCKER_BUILDER];
 
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,

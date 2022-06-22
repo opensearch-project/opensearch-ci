@@ -22,6 +22,7 @@ export interface AgentNodeProps {
    instanceType: string;
    workerLabelString: string;
    remoteUser: string;
+   numExecutors: number;
    initScript: string
  }
 
@@ -168,7 +169,7 @@ export class AgentNodeConfig {
        minimumNumberOfSpareInstances: 1,
        mode: 'EXCLUSIVE',
        monitoring: true,
-       numExecutors: 4,
+       numExecutors: config.numExecutors,
        remoteAdmin: config.remoteUser,
        remoteFS: '/var/jenkins',
        securityGroups: props.agentNodeSecurityGroup,
@@ -177,7 +178,7 @@ export class AgentNodeConfig {
        t2Unlimited: false,
        tags: [{
          name: 'Name',
-         value: `${stack.stackName}/AgentNode`,
+         value: `${stack.stackName}/AgentNode/${config.workerLabelString}`,
        },
        {
          name: 'type',
