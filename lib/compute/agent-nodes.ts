@@ -62,8 +62,8 @@ export class AgentNodes {
         remoteUser: 'ubuntu',
         numExecutors: 1,
         amiId: 'ami-0f6ceb3b3687a3fba',
-        initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps'
-        + 'sudo apt-get update -y && sudo apt-get upgrade -y',
+        initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps &&'
+        + ' sudo apt-get update -y && sudo apt-get upgrade -y',
       };
     }
 }
