@@ -102,7 +102,7 @@ export class CIStack extends Stack {
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
     const agentNode = new AgentNodes();
     const agentNodes: AgentNodeProps[] = [agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_HOST, agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_HOST,
-      agentNode.UBUNTU_X64_DOCKER_BUILDER];
+      agentNode.UBUNTU_X64, agentNode.UBUNTU_X64_DOCKER_BUILDER];
 
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,

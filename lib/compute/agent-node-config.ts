@@ -160,7 +160,7 @@ export class AgentNodeConfig {
        ebsOptimized: false,
        hostKeyVerificationStrategy: 'OFF',
        iamInstanceProfile: this.AgentNodeInstanceProfileArn,
-       idleTerminationMinutes: '30',
+       idleTerminationMinutes: '60',
        initScript: config.initScript,
        labelString: config.workerLabelString,
        launchTimeoutStr: '300',

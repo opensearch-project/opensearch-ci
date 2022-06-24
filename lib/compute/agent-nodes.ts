@@ -21,6 +21,8 @@ export class AgentNodes {
 
     readonly AL2_ARM64_DOCKER_HOST: AgentNodeProps;
 
+    readonly UBUNTU_X64: AgentNodeProps;
+
     readonly UBUNTU_X64_DOCKER_BUILDER: AgentNodeProps;
 
     constructor() {
@@ -30,7 +32,8 @@ export class AgentNodes {
         remoteUser: 'ec2-user',
         numExecutors: 1,
         amiId: 'ami-00a07e55fcad01043',
-        initScript: 'sudo yum update -y || sleep 10 && sudo yum update -y',
+        initScript: 'sudo yum clean all && sudo yum repolist &&'
+        + ' sudo yum update --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_X64_DOCKER_HOST = {
         workerLabelString: 'Jenkins-Agent-al2-x64-c54xlarge-Docker-Host',
@@ -38,7 +41,8 @@ export class AgentNodes {
         remoteUser: 'ec2-user',
         numExecutors: 8,
         amiId: 'ami-00a07e55fcad01043',
-        initScript: 'sudo yum update -y || sleep 10 && sudo yum update -y',
+        initScript: 'sudo yum clean all && sudo yum repolist &&'
+        + ' sudo yum update --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_ARM64 = {
         workerLabelString: 'Jenkins-Agent-al2-arm64-c6g4xlarge-Single-Host',
@@ -46,7 +50,8 @@ export class AgentNodes {
         remoteUser: 'ec2-user',
         numExecutors: 1,
         amiId: 'ami-020c52efb1a60f1ae',
-        initScript: 'sudo yum update -y || sleep 10 && sudo yum update -y',
+        initScript: 'sudo yum clean all && sudo yum repolist &&'
+        + ' sudo yum update --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_ARM64_DOCKER_HOST = {
         workerLabelString: 'Jenkins-Agent-al2-arm64-c6g4xlarge-Docker-Host',
@@ -54,7 +59,17 @@ export class AgentNodes {
         remoteUser: 'ec2-user',
         numExecutors: 8,
         amiId: 'ami-020c52efb1a60f1ae',
-        initScript: 'sudo yum update -y || sleep 10 && sudo yum update -y',
+        initScript: 'sudo yum clean all && sudo yum repolist &&'
+        + ' sudo yum update --exclude=openssh* --exclude=docker* -y',
+      };
+      this.UBUNTU_X64 = {
+        workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-c54xlarge-Single-Host',
+        instanceType: 'C54xlarge',
+        remoteUser: 'ubuntu',
+        numExecutors: 1,
+        amiId: 'ami-0f6ceb3b3687a3fba',
+        initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps &&'
+        + ' sudo apt-get update -y && sudo apt-get upgrade -y && sudo apt-get install docker-compose -y',
       };
       this.UBUNTU_X64_DOCKER_BUILDER = {
         workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-m52xlarge-Docker-Builder',

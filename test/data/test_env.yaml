@@ -8,12 +8,14 @@ jenkins:
   disableRememberMe: false
   labelAtoms:
     - name: built-in
+    - name: main-node
+  labelString: main-node
   markupFormatter:
     rawHtml:
       disableSyntaxHighlighting: true
-  mode: NORMAL
+  mode: EXCLUSIVE
   myViewsTabBar: standard
-  numExecutors: 2
+  numExecutors: 4
   primaryView:
     all:
       name: all
@@ -167,6 +169,26 @@ tool:
     installations:
       - home: git
         name: Default
+  jdk:
+    installations:
+      - name: jdk-8
+        properties:
+          - installSource:
+              installers:
+                - adoptOpenJdkInstaller:
+                    id: jdk8u332-b09
+      - name: jdk-11
+        properties:
+          - installSource:
+              installers:
+                - adoptOpenJdkInstaller:
+                    id: jdk-11.0.15+10
+      - name: jdk-17
+        properties:
+          - installSource:
+              installers:
+                - adoptOpenJdkInstaller:
+                    id: jdk-17.0.3+7
   mavenGlobalConfig:
     globalSettingsProvider: standard
     settingsProvider: standard
