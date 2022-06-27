@@ -63,8 +63,8 @@ export class AgentNodes {
         + ' sudo yum update --exclude=openssh* --exclude=docker* -y',
       };
       this.UBUNTU_X64 = {
-        workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-c54xlarge-Single-Host',
-        instanceType: 'C54xlarge',
+        workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-c518xlarge-Single-Host',
+        instanceType: 'C518xlarge',
         remoteUser: 'ubuntu',
         numExecutors: 1,
         amiId: 'ami-0f6ceb3b3687a3fba',
