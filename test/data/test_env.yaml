@@ -183,6 +183,12 @@ tool:
               installers:
                 - adoptOpenJdkInstaller:
                     id: jdk-11.0.15+10
+      - name: jdk-14
+        properties:
+          - installSource:
+              installers:
+                - adoptOpenJdkInstaller:
+                    id: jdk-14.0.2+12
       - name: jdk-17
         properties:
           - installSource:
