@@ -17,6 +17,8 @@ export class AgentNodes {
 
     readonly AL2_X64_DOCKER_HOST: AgentNodeProps;
 
+    readonly AL2_X64_DOCKER_HOST_PERF_TEST: AgentNodeProps;
+
     readonly AL2_ARM64: AgentNodeProps;
 
     readonly AL2_ARM64_DOCKER_HOST: AgentNodeProps;
@@ -38,6 +40,15 @@ export class AgentNodes {
       this.AL2_X64_DOCKER_HOST = {
         workerLabelString: 'Jenkins-Agent-al2-x64-c54xlarge-Docker-Host',
         instanceType: 'C54xlarge',
+        remoteUser: 'ec2-user',
+        numExecutors: 8,
+        amiId: 'ami-00a07e55fcad01043',
+        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
+        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
+      };
+      this.AL2_X64_DOCKER_HOST_PERF_TEST = {
+        workerLabelString: 'Jenkins-Agent-al2-x64-m52xlarge-Docker-Host-Perf-Test',
+        instanceType: 'M52xlarge',
         remoteUser: 'ec2-user',
         numExecutors: 8,
         amiId: 'ami-00a07e55fcad01043',
