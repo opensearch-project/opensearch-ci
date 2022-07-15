@@ -2,13 +2,13 @@
 
 ### Structure
 
-* **config:** This folder contains all the configuration files
-* **scripts:** This folder contains all the running scripts during the image creation
-* **.json:** All templates are now in JSON format, we have not converted them into HCL2 yet
+* **config:** This folder contains all the configuration files.
+* **scripts:** This folder contains all the running scripts during the image creation.
+* **.json:** All templates are now in JSON format, we have not converted them into HCL2 yet.
 
 ### Usages
 
-* You need to install `packer` on your host as a pre-requisite
+* You need to install `packer` on your host as a pre-requisite.
 ```
 # Needs to be run in this directory
 $ cd packer/
@@ -22,12 +22,12 @@ $ packer build -debug <template json name>
 
 ### Notes
 
-* Run packer outside of VPN as port 5985/5986, 22, 445 might be blocked for winrm/ssh/smb during the provision, corresponding security group must have the same rules
-* Make sure the variable section in the template file is filled up, as well as the configs in config folder
-* Must use a public subnet for packer to connect to the hosts
-* You can choose to use fixed AMI ID instead of using the AMI filter to find the IDs
-* EC2Launch vs EC2Launchv2 have a lot of differences, all the templates here are using EC2Launch on Windows AMI
-* If the process get interrupted in the middle of the run, you need to log onto AWS console to cleanup everything starts with `packer` prefix
+* Run packer outside of VPN as port 5985/5986, 22, 445 might be blocked for winrm/ssh/smb during the provision, corresponding security group must have the same rules.
+* Make sure the variable section in the template file is filled up, as well as the configs in config folder.
+* Must use a public subnet for packer to connect to the hosts.
+* You can choose to use fixed AMI ID instead of using the AMI filter to find the IDs.
+* EC2Launch vs EC2Launchv2 have a lot of differences, all the templates here are using EC2Launch on Windows AMI.
+* If the process get interrupted in the middle of the run, you need to log onto AWS console to cleanup everything starts with `packer` prefix.
 
 ### Thanks
 
