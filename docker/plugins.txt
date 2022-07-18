@@ -32,6 +32,7 @@ job-dsl
 job-restrictions
 jobConfigHistory
 ldap
+lockable-resources
 login-theme
 managed-scripts
 nodelabelparameter
@@ -56,6 +57,7 @@ s3
 saml
 simple-theme-plugin
 ssh-slaves
+sshd:3.237.v883d165a_c1d3
 strict-crumb-issuer
 throttle-concurrents
 timestamper
