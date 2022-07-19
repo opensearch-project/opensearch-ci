@@ -1,0 +1,88 @@
+{
+  "variables": {
+    "name-base":"Jenkins-Agent-Windows2019",
+    "build-region":"us-east-1",
+    "build-vpc":"vpc-<>",
+    "build-subnet":"subnet-<>",
+    "build-secgrp":"sg-<>",
+    "build-time":"{{isotime \"2006-01-02T03-04-05Z\"}}",
+    "aws_ami_region":"us-east-1"
+  },
+  "builders": [
+    {
+      "name":"{{user `name-base`}}-{{user `build-time`}}" ,
+      "ami_description":"{{user `name-base`}}",
+      "type":"amazon-ebs",
+      "encrypt_boot":"false",
+      "region":"{{user `build-region`}}",
+      "ami_regions":"{{user `aws_ami_region`}}",
+      "instance_type":"c5.4xlarge",
+      "ami_name":"{{user `name-base`}}-{{user `build-time`}}",
+      "vpc_id":"{{user `build-vpc`}}",
+      "subnet_id":"{{user `build-subnet`}}",
+      "security_group_ids":"{{user `build-secgrp`}}",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type":"hvm",
+          "architecture":"x86_64",
+          "name": "Windows_Server-2019-English-Full-Base-20*",
+          "block-device-mapping.volume-type":"gp2",
+          "root-device-type":"ebs"
+        },
+        "owners": [
+          "amazon"
+        ],
+        "most_recent":true
+      },
+      "user_data_file":"scripts/windows/userdata.ps1",
+      "associate_public_ip_address":false,
+      "communicator":"winrm",
+      "winrm_username":"Administrator",
+      "winrm_timeout":"40m",
+      "windows_password_timeout":"30m",
+      "winrm_insecure":true,
+      "tags": {
+        "Name": "{{user `name-base`}}-{{user `build-time`}}",
+        "OS_Version":"{{user `name-base`}}",
+        "User":"Packer",
+        "Encrypted_AMI":"False",
+        "Created":"{{user `build-time`}}"
+      },
+      "launch_block_device_mappings": [
+        {
+          "device_name":"/dev/sda1",
+          "volume_size":100,
+          "delete_on_termination":true,
+          "volume_type":"gp3"
+        }
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type":"powershell",
+      "scripts": [
+        "scripts/windows/smb-setup-2019-plus.ps1",
+        "scripts/windows/scoop-setup.ps1",
+        "scripts/windows/scoop-install-commons.ps1",
+        "scripts/windows/pip-install.ps1"
+      ],
+      "max_retries": 3
+    },
+    {
+      "type":"file",
+      "source":"config/windows/launch-config.json",
+      "destination":"C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Config\\LaunchConfig.json"
+    },
+    {
+      "type": "windows-restart"
+    },
+    {
+      "type":"powershell",
+      "inline": [
+        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeInstance.ps1 -Schedule",
+        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1 -NoShutdown"
+      ]
+    }
+  ]
+}
