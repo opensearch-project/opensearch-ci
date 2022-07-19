@@ -63,7 +63,7 @@
       "type":"powershell",
       "scripts": [
         "scripts/windows/smb-setup-2019-plus.ps1",
-        "scripts/windows/scoop-install-scoop.ps1",
+        "scripts/windows/scoop-setup.ps1",
         "scripts/windows/scoop-install-commons.ps1",
         "scripts/windows/pip-install.ps1",
         "scripts/windows/wsl-setup.ps1"

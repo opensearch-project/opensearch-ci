@@ -6,6 +6,11 @@
 * **scripts:** This folder contains all the running scripts during the image creation.
 * **.json:** All templates are now in JSON format, we have not converted them into HCL2 yet.
 
+### Templates
+* jenkins-agent-win2016-x64.json: Windows 2016 Server.
+* jenkins-agent-win2019-x64.json: Windows 2019 Server (Recommended).
+* jenkins-agent-win2019-x64-alpine-wsl.json: Windows 2019 Server with WSL enabled running Alpine 3.
+
 ### Usages
 
 * You need to install `packer` on your host as a pre-requisite.
