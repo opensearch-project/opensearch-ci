@@ -165,7 +165,7 @@ export class AgentNodeConfig {
        initScript: config.initScript,
        labelString: config.workerLabelString,
        launchTimeoutStr: '300',
-       maxTotalUses: config.maxTotalUses ?? '-1',
+       maxTotalUses: config.maxTotalUses,
        minimumNumberOfInstances: 0,
        minimumNumberOfSpareInstances: 1,
        mode: 'EXCLUSIVE',
