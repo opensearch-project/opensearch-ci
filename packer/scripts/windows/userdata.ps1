@@ -11,10 +11,7 @@ cmd /c winrm set "winrm/config/client" '@{AllowUnencrypted="true"}'
 cmd /c winrm set "winrm/config/service/auth" '@{Basic="true"}'
 cmd /c winrm set "winrm/config/client/auth" '@{Basic="true"}'
 cmd /c winrm set "winrm/config/listener?Address=*+Transport=HTTP" '@{Port="5985"}'
-cmd /c netsh advfirewall firewall set rule group="remote administration-winrm" new enable=yes
-cmd /c netsh firewall add portopening TCP 5985 "Port 5985"
-cmd /c netsh advfirewall firewall set rule group="remote administration-smb" new enable=yes
-cmd /c netsh firewall add portopening TCP 445 "Port 445"
+cmd /c netsh advfirewall set allprofiles state off
 cmd /c net stop winrm
 cmd /c sc config winrm start= auto
 cmd /c net start winrm
