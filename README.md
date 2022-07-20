@@ -11,7 +11,10 @@
     - [Data Retention](#data-retention)
     - [Add environment variable](#add-environment-variables)
     - [Assume role](#cross-account-assume-role)
+<<<<<<< HEAD
     - [Mac agents](#mac-agents)
+=======
+>>>>>>> upstream/main
   - [Troubleshooting](#troubleshooting)
     - [Main Node](#main-node)
   - [Useful commands](#useful-commands)
@@ -141,6 +144,7 @@ Example:
 npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false -c agentAssumeRole=arn:aws:iam::522XXX13897:role/sample-assume-role
 ```
 NOTE: The assume role has to be pre-created for the agents to assume. Once CDK stack is deployed with `-c agentAssumeRole` flag, make sure this flag is passed for next CDK operations to make sure this created policy that assumes cross-account role is not removed.
+<<<<<<< HEAD
 
 #### Mac agents
 ##### Prerequisite
@@ -152,6 +156,8 @@ Example:
 ```
 npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false -c macAgent=true
 ```
+=======
+>>>>>>> upstream/main
 
 #### Runnning additional commands
 In cases where you need to run additional logic/commands, such as adding a cron to emit ssl cert expiry metric, you can pass the commands as a script using `additionalCommands` context parameter.
