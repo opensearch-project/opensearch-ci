@@ -33,7 +33,7 @@ export class AgentNodes {
         numExecutors: 1,
         amiId: 'ami-00a07e55fcad01043',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
+        + ' sudo rm -rf /var/lib/yum/history && sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_X64_DOCKER_HOST = {
         workerLabelString: 'Jenkins-Agent-AL2-X64-C54xlarge-Docker-Host',
@@ -43,7 +43,7 @@ export class AgentNodes {
         numExecutors: 8,
         amiId: 'ami-00a07e55fcad01043',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
+        + ' sudo rm -rf /var/lib/yum/history && sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_X64_DOCKER_HOST_PERF_TEST = {
         workerLabelString: 'Jenkins-Agent-AL2-X64-M52xlarge-Docker-Host-Perf-Test',
@@ -53,7 +53,7 @@ export class AgentNodes {
         numExecutors: 8,
         amiId: 'ami-00a07e55fcad01043',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
+        + ' sudo rm -rf /var/lib/yum/history && sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_ARM64 = {
         workerLabelString: 'Jenkins-Agent-AL2-Arm64-C6g4xlarge-Single-Host',
@@ -63,7 +63,7 @@ export class AgentNodes {
         numExecutors: 1,
         amiId: 'ami-020c52efb1a60f1ae',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
+        + ' sudo rm -rf /var/lib/yum/history && sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_ARM64_DOCKER_HOST = {
         workerLabelString: 'Jenkins-Agent-AL2-Arm64-C6g4xlarge-Docker-Host',
@@ -73,7 +73,7 @@ export class AgentNodes {
         numExecutors: 8,
         amiId: 'ami-020c52efb1a60f1ae',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
+        + ' sudo rm -rf /var/lib/yum/history && sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.UBUNTU_X64 = {
         workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-C524xlarge-Single-Host',
