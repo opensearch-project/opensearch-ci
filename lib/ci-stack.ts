@@ -42,6 +42,8 @@ export interface CIStackProps extends StackProps {
   readonly agentAssumeRole?: string;
   /** File path containing global environment variables to be added to jenkins enviornment */
   readonly envVarsFilePath?: string;
+  /** Add Mac agent to jenkins */
+  readonly macAgent?: boolean;
 }
 
 export class CIStack extends Stack {
@@ -61,6 +63,7 @@ export class CIStack extends Stack {
     });
 
     const agentAssumeRoleContext = `${props?.agentAssumeRole ?? this.node.tryGetContext('agentAssumeRole')}`;
+    const macAgentParameter = `${props?.macAgent ?? this.node.tryGetContext('macAgent')}`;
 
     const useSslParameter = `${props?.useSsl ?? this.node.tryGetContext('useSsl')}`;
     if (useSslParameter !== 'true' && useSslParameter !== 'false') {
@@ -122,7 +125,7 @@ export class CIStack extends Stack {
       adminUsers: props?.adminUsers,
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
       subnetId: vpc.publicSubnets[0].subnetId,
-    }, agentNodes, agentAssumeRoleContext.toString());
+    }, agentNodes, agentAssumeRoleContext.toString(), macAgentParameter.toString());
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,

@@ -25,7 +25,6 @@ export interface AgentNodeProps {
    numExecutors: number;
    initScript: string
  }
-
 export interface AgentNodeNetworkProps {
    readonly agentNodeSecurityGroup: string;
    readonly subnetId: string;
@@ -104,6 +103,7 @@ export class AgentNodeConfig {
        }),
      );
 
+     /* eslint-disable eqeqeq */
      if (assumeRole.toString() !== 'undefined') {
        // policy to allow assume role AssumeRole
        AgentNodeRole.addToPolicy(
@@ -124,13 +124,16 @@ export class AgentNodeConfig {
      });
    }
 
-   public addAgentConfigToJenkinsYaml(stack: Stack, templates: AgentNodeProps[], props: AgentNodeNetworkProps): any {
+   public addAgentConfigToJenkinsYaml(stack: Stack, templates: AgentNodeProps[], props: AgentNodeNetworkProps, macAgent: string): any {
      const jenkinsYaml: any = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
      const configTemplates: any = [];
 
      templates.forEach((element) => {
        configTemplates.push(this.getTemplate(stack, element, props));
      });
+     if (macAgent == 'true') {
+       configTemplates.push(this.getMacTemplate(stack, props));
+     }
 
      const agentNodeYamlConfig = [{
        amazonEC2: {
@@ -187,6 +190,63 @@ export class AgentNodeConfig {
        ],
        tenancy: 'Default',
        type: config.instanceType,
+       useEphemeralDevices: false,
+     };
+   }
+
+   private getMacTemplate(stack: Stack, props: AgentNodeNetworkProps): { [x: string]: any; } {
+     return {
+       ami: 'ami-0379811a08268a97e',
+       amiType:
+        { macData: { sshPort: '22' } },
+       associatePublicIp: false,
+       connectBySSHProcess: false,
+       connectionStrategy: 'PRIVATE_IP',
+       customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
+       deleteRootOnTermination: true,
+       description: 'jenkinsAgentNode-Jenkins-Agent-MacOS-x64-Mac1Metal-Multi-Host',
+       ebsEncryptRootVolume: 'ENCRYPTED',
+       ebsOptimized: true,
+       hostKeyVerificationStrategy: 'OFF',
+       iamInstanceProfile: this.AgentNodeInstanceProfileArn,
+       labelString: 'Jenkins-Agent-MacOS-x64-Mac1Metal-Multi-Host',
+       maxTotalUses: -1,
+       minimumNumberOfInstances: 1,
+       minimumNumberOfSpareInstances: 0,
+       mode: 'EXCLUSIVE',
+       monitoring: true,
+       numExecutors: '6',
+       remoteAdmin: 'ec2-user',
+       remoteFS: '/var/jenkins',
+       securityGroups: props.agentNodeSecurityGroup,
+       stopOnTerminate: false,
+       subnetId: props.subnetId,
+       t2Unlimited: false,
+       tags: [
+         {
+           name: 'Name',
+           value: `${stack.stackName}/AgentNode/Jenkins-Agent-MacOS-x64-Mac1Metal-Multi-Host`,
+         },
+         {
+           name: 'type',
+           value: 'jenkinsAgentNode-Jenkins-Agent-MacOS-x64-Mac1Metal-Multi-Host',
+         },
+       ],
+       tenancy: 'Host',
+       type: 'Mac1Metal',
+       nodeProperties: [
+         {
+           envVars: {
+             env: [
+               {
+                 key: 'Path',
+                 /* eslint-disable max-len */
+                 value: '/usr/local/opt/python@3.7/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/Cellar/python@3.7/3.7.13_1/Frameworks/Python.framework/Versions/3.7/bin',
+               },
+             ],
+           },
+         },
+       ],
        useEphemeralDevices: false,
      };
    }

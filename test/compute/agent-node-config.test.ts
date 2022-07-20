@@ -6,11 +6,14 @@
  * compatible open source license.
  */
 
+import { Stack, App } from '@aws-cdk/core';
 import {
   expect as expectCDK, haveResource, haveResourceLike, countResources,
 } from '@aws-cdk/assert';
-import { Stack, App } from '@aws-cdk/core';
+import { readFileSync } from 'fs';
+import { load } from 'js-yaml';
 import { CIStack } from '../../lib/ci-stack';
+import { JenkinsMainNode } from '../../lib/compute/jenkins-main-node';
 
 test('Agents Resource is present', () => {
   const app = new App({
@@ -119,4 +122,27 @@ test('Agents Resource is present', () => {
       Version: '2012-10-17',
     },
   }));
+});
+
+describe('JenkinsMainNode Config with macAgent template', () => {
+  // WHEN
+  const testYaml = 'test/data/jenkins.yaml';
+  const yml: any = load(readFileSync(testYaml, 'utf-8'));
+  // THEN
+  test('Verify Mac template tenancy ', async () => {
+    const macConfig = yml.jenkins.clouds[0].amazonEC2.templates[0].tenancy;
+    expect(macConfig).toEqual('Host');
+  });
+  test('Verify Mac template type', async () => {
+    const macConfig = yml.jenkins.clouds[0].amazonEC2.templates[0].type;
+    expect(macConfig).toEqual('Mac1Metal');
+  });
+  test('Verify Mac template amiType.macData.sshPort', async () => {
+    const macConfig = yml.jenkins.clouds[0].amazonEC2.templates[0].amiType.macData.sshPort;
+    expect(macConfig).toEqual('22');
+  });
+  test('Verify Mac template customDeviceMapping', async () => {
+    const macConfig = yml.jenkins.clouds[0].amazonEC2.templates[0].customDeviceMapping;
+    expect(macConfig).toEqual('/dev/sda1=:300:true:gp3::encrypted');
+  });
 });

@@ -91,7 +91,7 @@ export class JenkinsMainNode {
     foundJenkinsProcessCount: Metric
   }
 
-  constructor(stack: Stack, props: JenkinsMainNodeProps, agentNode: AgentNodeProps[], assumeRole: string) {
+  constructor(stack: Stack, props: JenkinsMainNodeProps, agentNode: AgentNodeProps[], assumeRole: string, macAgent: string) {
     this.ec2InstanceMetrics = {
       cpuTime: new Metric({
         metricName: 'procstat_cpu_usage',
@@ -108,7 +108,7 @@ export class JenkinsMainNode {
     };
 
     const agentNodeConfig = new AgentNodeConfig(stack, assumeRole);
-    const jenkinsyaml = JenkinsMainNode.addConfigtoJenkinsYaml(stack, props, props, agentNodeConfig, props, agentNode);
+    const jenkinsyaml = JenkinsMainNode.addConfigtoJenkinsYaml(stack, props, props, agentNodeConfig, props, agentNode, macAgent);
     if (props.dataRetention) {
       const efs = new FileSystem(stack, 'EFSfilesystem', {
         vpc: props.vpc,
@@ -399,8 +399,8 @@ export class JenkinsMainNode {
   }
 
   public static addConfigtoJenkinsYaml(stack: Stack, jenkinsMainNodeProps:JenkinsMainNodeProps, oidcProps: OidcFederateProps, agentNodeObject: AgentNodeConfig,
-    props: AgentNodeNetworkProps, agentNode: AgentNodeProps[]): string {
-    let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(stack, agentNode, props);
+    props: AgentNodeNetworkProps, agentNode: AgentNodeProps[], macAgent: string): string {
+    let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(stack, agentNode, props, macAgent);
     if (oidcProps.runWithOidc) {
       updatedConfig = OidcConfig.addOidcConfigToJenkinsYaml(updatedConfig, oidcProps.adminUsers);
     }

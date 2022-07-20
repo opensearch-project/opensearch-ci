@@ -11,6 +11,7 @@
     - [Data Retention](#data-retention)
     - [Add environment variable](#add-environment-variables)
     - [Assume role](#cross-account-assume-role)
+    - [Mac agents](#mac-agents)
   - [Troubleshooting](#troubleshooting)
     - [Main Node](#main-node)
   - [Useful commands](#useful-commands)
@@ -140,6 +141,17 @@ Example:
 npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false -c agentAssumeRole=arn:aws:iam::522XXX13897:role/sample-assume-role
 ```
 NOTE: The assume role has to be pre-created for the agents to assume. Once CDK stack is deployed with `-c agentAssumeRole` flag, make sure this flag is passed for next CDK operations to make sure this created policy that assumes cross-account role is not removed.
+
+#### Mac agents
+##### Prerequisite
+To deploy mac agents, as a prerequisites make sure the backend AWS account has dedicated hosts setup done with instance family as `mac1` and instance type as `mac1.metal`. For More details check the [getting-started](https://aws.amazon.com/getting-started/hands-on/launch-connect-to-amazon-ec2-mac-instance/) guide.
+
+##### Configuration
+To configure ec2 Mac agent setup run the stack with `-c macAgent=true`.
+Example: 
+```
+npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false -c macAgent=true
+```
 
 #### Runnning additional commands
 In cases where you need to run additional logic/commands, such as adding a cron to emit ssl cert expiry metric, you can pass the commands as a script using `additionalCommands` context parameter.

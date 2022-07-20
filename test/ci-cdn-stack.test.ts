@@ -32,3 +32,28 @@ test('CDN Stack Resources', () => {
   }));
   expect(cdnStack).to(countResources('AWS::Lambda::Function', 1));
 });
+
+test('CDN Stack Resources With mac agent', () => {
+  const cdnApp = new App({
+    context: {
+      useSsl: 'true', runWithOidc: 'true', additionalCommands: './test/data/hello-world.py', macAgent: true,
+    },
+  });
+
+  // WHEN
+  const cdnStack = new CiCdnStack(cdnApp, 'cdnTestStack', {});
+
+  // THEN
+  expect(cdnStack).to(countResources('AWS::IAM::Role', 2));
+  expect(cdnStack).to(countResources('AWS::IAM::Policy', 2));
+  expect(cdnStack).to(countResources('AWS::CloudFront::CloudFrontOriginAccessIdentity', 1));
+  expect(cdnStack).to(countResources('AWS::CloudFront::Distribution', 1));
+  expect(cdnStack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        DefaultTTL: 300,
+      },
+    },
+  }));
+  expect(cdnStack).to(countResources('AWS::Lambda::Function', 1));
+});
