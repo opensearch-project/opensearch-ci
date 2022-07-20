@@ -26,7 +26,7 @@ export class AgentNodes {
 
     constructor() {
       this.AL2_X64 = {
-        workerLabelString: 'Jenkins-Agent-al2-x64-c54xlarge-Single-Host',
+        workerLabelString: 'Jenkins-Agent-AL2-X64-C54xlarge-Single-Host',
         instanceType: 'C54xlarge',
         remoteUser: 'ec2-user',
         maxTotalUses: -1,
@@ -36,7 +36,7 @@ export class AgentNodes {
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_X64_DOCKER_HOST = {
-        workerLabelString: 'Jenkins-Agent-al2-x64-c54xlarge-Docker-Host',
+        workerLabelString: 'Jenkins-Agent-AL2-X64-C54xlarge-Docker-Host',
         instanceType: 'C54xlarge',
         remoteUser: 'ec2-user',
         maxTotalUses: -1,
@@ -46,7 +46,7 @@ export class AgentNodes {
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_X64_DOCKER_HOST_PERF_TEST = {
-        workerLabelString: 'Jenkins-Agent-al2-x64-m52xlarge-Docker-Host-Perf-Test',
+        workerLabelString: 'Jenkins-Agent-AL2-X64-M52xlarge-Docker-Host-Perf-Test',
         instanceType: 'M52xlarge',
         remoteUser: 'ec2-user',
         maxTotalUses: -1,
@@ -56,7 +56,7 @@ export class AgentNodes {
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_ARM64 = {
-        workerLabelString: 'Jenkins-Agent-al2-arm64-c6g4xlarge-Single-Host',
+        workerLabelString: 'Jenkins-Agent-AL2-Arm64-C6g4xlarge-Single-Host',
         instanceType: 'C6g4xlarge',
         remoteUser: 'ec2-user',
         maxTotalUses: -1,
@@ -66,7 +66,7 @@ export class AgentNodes {
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_ARM64_DOCKER_HOST = {
-        workerLabelString: 'Jenkins-Agent-al2-arm64-c6g4xlarge-Docker-Host',
+        workerLabelString: 'Jenkins-Agent-AL2-Arm64-C6g4xlarge-Docker-Host',
         instanceType: 'C6g4xlarge',
         remoteUser: 'ec2-user',
         maxTotalUses: -1,
@@ -76,7 +76,7 @@ export class AgentNodes {
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.UBUNTU_X64 = {
-        workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-c524xlarge-Single-Host',
+        workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-C524xlarge-Single-Host',
         instanceType: 'C524xlarge',
         remoteUser: 'ubuntu',
         maxTotalUses: 1,
@@ -86,7 +86,7 @@ export class AgentNodes {
         + ' sudo apt-get update -y && sudo apt-get upgrade -y && sudo apt-get install docker-compose -y',
       };
       this.UBUNTU_X64_DOCKER_BUILDER = {
-        workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-m52xlarge-Docker-Builder',
+        workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-M52xlarge-Docker-Builder',
         instanceType: 'M52xlarge',
         remoteUser: 'ubuntu',
         maxTotalUses: -1,
