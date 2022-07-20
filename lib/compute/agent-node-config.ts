@@ -22,6 +22,7 @@ export interface AgentNodeProps {
    instanceType: string;
    workerLabelString: string;
    remoteUser: string;
+   maxTotalUses: number;
    numExecutors: number;
    initScript: string
  }
@@ -167,7 +168,7 @@ export class AgentNodeConfig {
        initScript: config.initScript,
        labelString: config.workerLabelString,
        launchTimeoutStr: '300',
-       maxTotalUses: -1,
+       maxTotalUses: config.maxTotalUses,
        minimumNumberOfInstances: 0,
        minimumNumberOfSpareInstances: 1,
        mode: 'EXCLUSIVE',
