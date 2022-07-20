@@ -205,12 +205,12 @@ export class AgentNodeConfig {
        connectionStrategy: 'PRIVATE_IP',
        customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
        deleteRootOnTermination: true,
-       description: 'jenkinsAgentNode-Jenkins-Agent-MacOS-X64-Mac1Metal-Multi-Host',
+       description: 'jenkinsAgentNode-Jenkins-Agent-MacOS12-X64-Mac1Metal-Multi-Host',
        ebsEncryptRootVolume: 'ENCRYPTED',
        ebsOptimized: true,
        hostKeyVerificationStrategy: 'OFF',
        iamInstanceProfile: this.AgentNodeInstanceProfileArn,
-       labelString: 'Jenkins-Agent-MacOS-X64-Mac1Metal-Multi-Host',
+       labelString: 'Jenkins-Agent-MacOS12-X64-Mac1Metal-Multi-Host',
        maxTotalUses: -1,
        minimumNumberOfInstances: 1,
        minimumNumberOfSpareInstances: 0,
@@ -226,11 +226,11 @@ export class AgentNodeConfig {
        tags: [
          {
            name: 'Name',
-           value: `${stack.stackName}/AgentNode/Jenkins-Agent-MacOS-X64-Mac1Metal-Multi-Host`,
+           value: `${stack.stackName}/AgentNode/Jenkins-Agent-MacOS12-X64-Mac1Metal-Multi-Host`,
          },
          {
            name: 'type',
-           value: 'jenkinsAgentNode-Jenkins-Agent-MacOS-X64-Mac1Metal-Multi-Host',
+           value: 'jenkinsAgentNode-Jenkins-Agent-MacOS12-X64-Mac1Metal-Multi-Host',
          },
        ],
        tenancy: 'Host',
