@@ -6,143 +6,54 @@
  * compatible open source license.
  */
 
-import { Stack, App } from '@aws-cdk/core';
-import {
-  expect as expectCDK, haveResource, haveResourceLike, countResources,
-} from '@aws-cdk/assert';
-import { readFileSync } from 'fs';
-import { load } from 'js-yaml';
-import { CIStack } from '../../lib/ci-stack';
-import { JenkinsMainNode } from '../../lib/compute/jenkins-main-node';
+import { App } from '@aws-cdk/core';
+import { countResources, expect, haveResourceLike } from '@aws-cdk/assert';
+import { CiCdnStack } from '../lib/ci-cdn-stack';
 
-test('Agents Resource is present', () => {
-  const app = new App({
-    context: { useSsl: 'true', runWithOidc: 'true' },
+test('CDN Stack Resources', () => {
+  const cdnApp = new App({
+    context: { useSsl: 'true', runWithOidc: 'true', additionalCommands: './test/data/hello-world.py' },
   });
-  const stack = new CIStack(app, 'TestStack', {});
 
-  expectCDK(stack).to(haveResourceLike('AWS::IAM::Role', {
-    RoleName: 'OpenSearch-CI-AgentNodeRole',
-    AssumeRolePolicyDocument: {
-      Statement: [
-        {
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Principal: {
-            Service: {
-              'Fn::Join': [
-                '',
-                [
-                  'ec2.',
-                  {
-                    Ref: 'AWS::URLSuffix',
-                  },
-                ],
-              ],
-            },
-          },
-        },
-      ],
-      Version: '2012-10-17',
-    },
-  }));
-  expectCDK(stack).to(haveResourceLike('AWS::IAM::ManagedPolicy', {
-    Description: 'Jenkins agents Node Policy',
-    Path: '/',
-    ManagedPolicyName: 'OpenSearch-CI-AgentNodePolicy',
-    Roles: [
-      {
-        Ref: 'OpenSearchCIAgentNodeRole4270FE0F',
+  // WHEN
+  const cdnStack = new CiCdnStack(cdnApp, 'cdnTestStack', {});
+
+  // THEN
+  expect(cdnStack).to(countResources('AWS::IAM::Role', 2));
+  expect(cdnStack).to(countResources('AWS::IAM::Policy', 2));
+  expect(cdnStack).to(countResources('AWS::CloudFront::CloudFrontOriginAccessIdentity', 1));
+  expect(cdnStack).to(countResources('AWS::CloudFront::Distribution', 1));
+  expect(cdnStack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        DefaultTTL: 300,
       },
-    ],
-    PolicyDocument: {
-      Statement: [
-        {
-          Action: [
-            'ecr-public:BatchCheckLayerAvailability',
-            'ecr-public:GetRepositoryPolicy',
-            'ecr-public:DescribeRepositories',
-            'ecr-public:DescribeRegistries',
-            'ecr-public:DescribeImages',
-            'ecr-public:DescribeImageTags',
-            'ecr-public:GetRepositoryCatalogData',
-            'ecr-public:GetRegistryCatalogData',
-            'ecr-public:InitiateLayerUpload',
-            'ecr-public:UploadLayerPart',
-            'ecr-public:CompleteLayerUpload',
-            'ecr-public:PutImage',
-          ],
-          Condition: {
-            StringEquals: {
-              'aws:RequestedRegion': {
-                Ref: 'AWS::Region',
-              },
-              'aws:PrincipalAccount': [
-                {
-                  Ref: 'AWS::AccountId',
-                },
-              ],
-            },
-          },
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:aws:ecr-public::',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':repository/*',
-              ],
-            ],
-          },
-        },
-        {
-          Action: [
-            'ecr-public:GetAuthorizationToken',
-            'sts:GetServiceBearerToken',
-          ],
-          Condition: {
-            StringEquals: {
-              'aws:RequestedRegion': {
-                Ref: 'AWS::Region',
-              },
-              'aws:PrincipalAccount': [
-                {
-                  Ref: 'AWS::AccountId',
-                },
-              ],
-            },
-          },
-          Effect: 'Allow',
-          Resource: '*',
-        },
-      ],
-      Version: '2012-10-17',
     },
   }));
+  expect(cdnStack).to(countResources('AWS::Lambda::Function', 1));
 });
 
-describe('JenkinsMainNode Config with macAgent template', () => {
+test('CDN Stack Resources With mac agent', () => {
+  const cdnApp = new App({
+    context: {
+      useSsl: 'true', runWithOidc: 'true', additionalCommands: './test/data/hello-world.py', macAgent: true,
+    },
+  });
+
   // WHEN
-  const testYaml = 'test/data/jenkins.yaml';
-  const yml: any = load(readFileSync(testYaml, 'utf-8'));
+  const cdnStack = new CiCdnStack(cdnApp, 'cdnTestStack', {});
+
   // THEN
-  test('Verify Mac template tenancy ', async () => {
-    const macConfig = yml.jenkins.clouds[0].amazonEC2.templates[0].tenancy;
-    expect(macConfig).toEqual('Host');
-  });
-  test('Verify Mac template type', async () => {
-    const macConfig = yml.jenkins.clouds[0].amazonEC2.templates[0].type;
-    expect(macConfig).toEqual('Mac1Metal');
-  });
-  test('Verify Mac template amiType.macData.sshPort', async () => {
-    const macConfig = yml.jenkins.clouds[0].amazonEC2.templates[0].amiType.macData.sshPort;
-    expect(macConfig).toEqual('22');
-  });
-  test('Verify Mac template customDeviceMapping', async () => {
-    const macConfig = yml.jenkins.clouds[0].amazonEC2.templates[0].customDeviceMapping;
-    expect(macConfig).toEqual('/dev/sda1=:300:true:gp3::encrypted');
-  });
+  expect(cdnStack).to(countResources('AWS::IAM::Role', 2));
+  expect(cdnStack).to(countResources('AWS::IAM::Policy', 2));
+  expect(cdnStack).to(countResources('AWS::CloudFront::CloudFrontOriginAccessIdentity', 1));
+  expect(cdnStack).to(countResources('AWS::CloudFront::Distribution', 1));
+  expect(cdnStack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        DefaultTTL: 300,
+      },
+    },
+  }));
+  expect(cdnStack).to(countResources('AWS::Lambda::Function', 1));
 });
