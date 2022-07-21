@@ -32,7 +32,7 @@ export class AgentNodes {
         maxTotalUses: -1,
         numExecutors: 1,
         amiId: 'ami-00a07e55fcad01043',
-        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
+        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_X64_DOCKER_HOST = {
@@ -42,7 +42,7 @@ export class AgentNodes {
         maxTotalUses: -1,
         numExecutors: 8,
         amiId: 'ami-00a07e55fcad01043',
-        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
+        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_X64_DOCKER_HOST_PERF_TEST = {
@@ -52,7 +52,7 @@ export class AgentNodes {
         maxTotalUses: -1,
         numExecutors: 8,
         amiId: 'ami-00a07e55fcad01043',
-        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
+        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_ARM64 = {
@@ -62,7 +62,7 @@ export class AgentNodes {
         maxTotalUses: -1,
         numExecutors: 1,
         amiId: 'ami-020c52efb1a60f1ae',
-        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
+        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_ARM64_DOCKER_HOST = {
@@ -72,7 +72,7 @@ export class AgentNodes {
         maxTotalUses: -1,
         numExecutors: 8,
         amiId: 'ami-020c52efb1a60f1ae',
-        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
+        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.UBUNTU_X64 = {
@@ -83,6 +83,7 @@ export class AgentNodes {
         numExecutors: 1,
         amiId: 'ami-0f6ceb3b3687a3fba',
         initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps &&'
+        + ' (sudo killall -9 apt-get apt 2>&1 || echo) &&'
         + ' sudo apt-get update -y && sudo apt-get upgrade -y && sudo apt-get install docker-compose -y',
       };
       this.UBUNTU_X64_DOCKER_BUILDER = {
@@ -93,6 +94,7 @@ export class AgentNodes {
         numExecutors: 1,
         amiId: 'ami-0f6ceb3b3687a3fba',
         initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps &&'
+        + ' (sudo killall -9 apt-get apt 2>&1 || echo) &&'
         + ' sudo apt-get update -y && sudo apt-get upgrade -y',
       };
     }
