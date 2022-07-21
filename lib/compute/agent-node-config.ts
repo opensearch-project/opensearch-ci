@@ -209,6 +209,7 @@ export class AgentNodeConfig {
        ebsOptimized: true,
        hostKeyVerificationStrategy: 'OFF',
        iamInstanceProfile: this.AgentNodeInstanceProfileArn,
+       idleTerminationMinutes: '720',
        labelString: 'Jenkins-Agent-MacOS-x64-Mac1Metal-Multi-Host',
        maxTotalUses: -1,
        minimumNumberOfInstances: 1,
