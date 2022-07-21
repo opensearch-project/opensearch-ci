@@ -183,6 +183,14 @@ tool:
           installers:
           - adoptOpenJdkInstaller:
               id: "jdk-17.0.3+7"
+  maven:
+    installations:
+    - name: "maven-3.8.2"
+      properties:
+      - installSource:
+          installers:
+          - maven:
+              id: "3.8.2"
   mavenGlobalConfig:
     globalSettingsProvider: "standard"
     settingsProvider: "standard"
