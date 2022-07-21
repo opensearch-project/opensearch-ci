@@ -26,66 +26,75 @@ export class AgentNodes {
 
     constructor() {
       this.AL2_X64 = {
-        workerLabelString: 'Jenkins-Agent-al2-x64-c54xlarge-Single-Host',
+        workerLabelString: 'Jenkins-Agent-AL2-X64-C54xlarge-Single-Host',
         instanceType: 'C54xlarge',
         remoteUser: 'ec2-user',
+        maxTotalUses: -1,
         numExecutors: 1,
         amiId: 'ami-00a07e55fcad01043',
-        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
+        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_X64_DOCKER_HOST = {
-        workerLabelString: 'Jenkins-Agent-al2-x64-c54xlarge-Docker-Host',
+        workerLabelString: 'Jenkins-Agent-AL2-X64-C54xlarge-Docker-Host',
         instanceType: 'C54xlarge',
         remoteUser: 'ec2-user',
+        maxTotalUses: -1,
         numExecutors: 8,
         amiId: 'ami-00a07e55fcad01043',
-        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
+        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_X64_DOCKER_HOST_PERF_TEST = {
-        workerLabelString: 'Jenkins-Agent-al2-x64-m52xlarge-Docker-Host-Perf-Test',
+        workerLabelString: 'Jenkins-Agent-AL2-X64-M52xlarge-Docker-Host-Perf-Test',
         instanceType: 'M52xlarge',
         remoteUser: 'ec2-user',
+        maxTotalUses: -1,
         numExecutors: 8,
         amiId: 'ami-00a07e55fcad01043',
-        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
+        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_ARM64 = {
-        workerLabelString: 'Jenkins-Agent-al2-arm64-c6g4xlarge-Single-Host',
+        workerLabelString: 'Jenkins-Agent-AL2-Arm64-C6g4xlarge-Single-Host',
         instanceType: 'C6g4xlarge',
         remoteUser: 'ec2-user',
+        maxTotalUses: -1,
         numExecutors: 1,
         amiId: 'ami-020c52efb1a60f1ae',
-        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
+        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.AL2_ARM64_DOCKER_HOST = {
-        workerLabelString: 'Jenkins-Agent-al2-arm64-c6g4xlarge-Docker-Host',
+        workerLabelString: 'Jenkins-Agent-AL2-Arm64-C6g4xlarge-Docker-Host',
         instanceType: 'C6g4xlarge',
         remoteUser: 'ec2-user',
+        maxTotalUses: -1,
         numExecutors: 8,
         amiId: 'ami-020c52efb1a60f1ae',
-        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum/* && sudo yum repolist &&'
+        initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
       };
       this.UBUNTU_X64 = {
-        workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-c524xlarge-Single-Host',
+        workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-C524xlarge-Single-Host',
         instanceType: 'C524xlarge',
         remoteUser: 'ubuntu',
+        maxTotalUses: 1,
         numExecutors: 1,
         amiId: 'ami-0f6ceb3b3687a3fba',
         initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps &&'
+        + ' (sudo killall -9 apt-get apt 2>&1 || echo) &&'
         + ' sudo apt-get update -y && sudo apt-get upgrade -y && sudo apt-get install docker-compose -y',
       };
       this.UBUNTU_X64_DOCKER_BUILDER = {
-        workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-m52xlarge-Docker-Builder',
+        workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-M52xlarge-Docker-Builder',
         instanceType: 'M52xlarge',
         remoteUser: 'ubuntu',
+        maxTotalUses: -1,
         numExecutors: 1,
         amiId: 'ami-0f6ceb3b3687a3fba',
         initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps &&'
+        + ' (sudo killall -9 apt-get apt 2>&1 || echo) &&'
         + ' sudo apt-get update -y && sudo apt-get upgrade -y',
       };
     }
