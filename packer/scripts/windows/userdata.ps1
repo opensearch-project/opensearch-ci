@@ -19,5 +19,8 @@ cmd /c net start winrm
 echo "Create Jenkins Home"
 New-Item -Path 'C:\\Users\\Administrator\\jenkins' -ItemType Directory
 
+echo "NTP Time Syncing"
+cmd /c net time \\time.windows.com /set /y
+
 </powershell>
 

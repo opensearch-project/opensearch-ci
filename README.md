@@ -153,6 +153,10 @@ Example:
 npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false -c macAgent=true
 ```
 
+#### Windows agents
+###### Prerequisite
+Make sure there is an existing Windows AMI with necessary requirements, see [packer directory](./packer/README.md) for more information and AMI build commands.
+
 #### Runnning additional commands
 In cases where you need to run additional logic/commands, such as adding a cron to emit ssl cert expiry metric, you can pass the commands as a script using `additionalCommands` context parameter.
 Below sample will write the python script to $HOME/hello-world path on jenkins master node and then execute it once the jenkins master node has been brought up. 
