@@ -132,7 +132,7 @@ export class AgentNodes {
         remoteUser: 'Administrator',
         maxTotalUses: -1,
         numExecutors: 1,
-        amiId: 'ami-0f6362f85f5bc407e',
+        amiId: 'ami-07591ca4ef792c2d4',
         initScript: 'echo',
       };
     }
