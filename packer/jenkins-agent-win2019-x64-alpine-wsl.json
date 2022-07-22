@@ -71,11 +71,6 @@
       "max_retries": 3
     },
     {
-      "type":"file",
-      "source":"config/windows/launch-config.json",
-      "destination":"C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Config\\LaunchConfig.json"
-    },
-    {
       "type": "windows-restart"
     },
     {
