@@ -10,6 +10,7 @@
 * jenkins-agent-win2016-x64.json: Windows 2016 x86_64 Server.
 * jenkins-agent-win2019-x64.json: Windows 2019 x86_64 Server (Recommended).
 * jenkins-agent-win2019-x64-alpine-wsl.json: Windows 2019 Server with WSL enabled running Alpine 3.
+* jenkins-agent-macos12-x64.json: MacOS 12 with x86_64_mac os_architecture.
 
 ### Usages
 

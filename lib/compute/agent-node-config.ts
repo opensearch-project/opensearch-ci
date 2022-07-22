@@ -214,6 +214,7 @@ export class AgentNodeConfig {
        ebsOptimized: true,
        hostKeyVerificationStrategy: 'OFF',
        iamInstanceProfile: this.AgentNodeInstanceProfileArn,
+       idleTerminationMinutes: '720',
        labelString: config.workerLabelString,
        initScript: config.initScript,
        maxTotalUses: config.maxTotalUses,
