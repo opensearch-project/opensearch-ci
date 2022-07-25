@@ -216,6 +216,7 @@ export class AgentNodeConfig {
        iamInstanceProfile: this.AgentNodeInstanceProfileArn,
        idleTerminationMinutes: '720',
        labelString: config.workerLabelString,
+       launchTimeoutStr: '1000',
        initScript: config.initScript,
        maxTotalUses: config.maxTotalUses,
        minimumNumberOfInstances: 1,
