@@ -18,6 +18,7 @@ import { load } from 'js-yaml';
 import { JenkinsMainNode } from './jenkins-main-node';
 
 export interface AgentNodeProps {
+   agentType: string;
    amiId: string;
    instanceType: string;
    workerLabelString: string;
@@ -130,11 +131,14 @@ export class AgentNodeConfig {
      const configTemplates: any = [];
 
      templates.forEach((element) => {
-       configTemplates.push(this.getTemplate(stack, element, props));
+       if (element.agentType == 'unix') {
+         configTemplates.push(this.getUnixTemplate(stack, element, props));
+       } else if (element.agentType == 'mac' && macAgent == 'true') {
+         configTemplates.push(this.getMacTemplate(stack, element, props));
+       } else if (element.agentType == 'windows') {
+         configTemplates.push(this.getWindowsTemplate(stack, element, props));
+       }
      });
-     if (macAgent == 'true') {
-       configTemplates.push(this.getMacTemplate(stack, props));
-     }
 
      const agentNodeYamlConfig = [{
        amazonEC2: {
@@ -149,7 +153,7 @@ export class AgentNodeConfig {
      return jenkinsYaml;
    }
 
-   private getTemplate(stack: Stack, config: AgentNodeProps, props: AgentNodeNetworkProps): { [x: string]: any; } {
+   private getUnixTemplate(stack: Stack, config: AgentNodeProps, props: AgentNodeNetworkProps): { [x: string]: any; } {
      return {
        ami: config.amiId,
        amiType:
@@ -195,9 +199,9 @@ export class AgentNodeConfig {
      };
    }
 
-   private getMacTemplate(stack: Stack, props: AgentNodeNetworkProps): { [x: string]: any; } {
+   private getMacTemplate(stack: Stack, config: AgentNodeProps, props: AgentNodeNetworkProps): { [x: string]: any; } {
      return {
-       ami: 'ami-0379811a08268a97e',
+       ami: config.amiId,
        amiType:
         { macData: { sshPort: '22' } },
        associatePublicIp: false,
@@ -205,20 +209,22 @@ export class AgentNodeConfig {
        connectionStrategy: 'PRIVATE_IP',
        customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
        deleteRootOnTermination: true,
-       description: 'jenkinsAgentNode-Jenkins-Agent-MacOS12-X64-Mac1Metal-Multi-Host',
+       description: `jenkinsAgentNode-${config.workerLabelString}`,
        ebsEncryptRootVolume: 'ENCRYPTED',
        ebsOptimized: true,
        hostKeyVerificationStrategy: 'OFF',
        iamInstanceProfile: this.AgentNodeInstanceProfileArn,
        idleTerminationMinutes: '720',
-       labelString: 'Jenkins-Agent-MacOS12-X64-Mac1Metal-Multi-Host',
-       maxTotalUses: -1,
+       labelString: config.workerLabelString,
+       launchTimeoutStr: '1000',
+       initScript: config.initScript,
+       maxTotalUses: config.maxTotalUses,
        minimumNumberOfInstances: 1,
        minimumNumberOfSpareInstances: 0,
        mode: 'EXCLUSIVE',
        monitoring: true,
-       numExecutors: '6',
-       remoteAdmin: 'ec2-user',
+       numExecutors: config.numExecutors,
+       remoteAdmin: config.remoteUser,
        remoteFS: '/var/jenkins',
        securityGroups: props.agentNodeSecurityGroup,
        stopOnTerminate: false,
@@ -227,15 +233,15 @@ export class AgentNodeConfig {
        tags: [
          {
            name: 'Name',
-           value: `${stack.stackName}/AgentNode/Jenkins-Agent-MacOS12-X64-Mac1Metal-Multi-Host`,
+           value: `${stack.stackName}/AgentNode/${config.workerLabelString}`,
          },
          {
            name: 'type',
-           value: 'jenkinsAgentNode-Jenkins-Agent-MacOS12-X64-Mac1Metal-Multi-Host',
+           value: `jenkinsAgentNode-${config.workerLabelString}`,
          },
        ],
        tenancy: 'Host',
-       type: 'Mac1Metal',
+       type: config.instanceType,
        nodeProperties: [
          {
            envVars: {
@@ -249,6 +255,56 @@ export class AgentNodeConfig {
            },
          },
        ],
+       useEphemeralDevices: false,
+     };
+   }
+
+   private getWindowsTemplate(stack: Stack, config: AgentNodeProps, props: AgentNodeNetworkProps): { [x: string]: any; } {
+     return {
+       ami: config.amiId,
+       amiType:
+         {
+           windowsData: {
+             allowSelfSignedCertificate: false, bootDelay: '7.5', specifyPassword: false, useHTTPS: false,
+           },
+         },
+       associatePublicIp: false,
+       connectBySSHProcess: false,
+       connectionStrategy: 'PRIVATE_IP',
+       customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
+       deleteRootOnTermination: true,
+       description: `jenkinsAgentNode-${config.workerLabelString}`,
+       ebsEncryptRootVolume: 'ENCRYPTED',
+       ebsOptimized: true,
+       hostKeyVerificationStrategy: 'OFF',
+       iamInstanceProfile: this.AgentNodeInstanceProfileArn,
+       idleTerminationMinutes: '120',
+       initScript: config.initScript,
+       labelString: config.workerLabelString,
+       launchTimeoutStr: '1000',
+       maxTotalUses: config.maxTotalUses,
+       minimumNumberOfInstances: 0,
+       minimumNumberOfSpareInstances: 1,
+       mode: 'EXCLUSIVE',
+       monitoring: true,
+       numExecutors: config.numExecutors,
+       remoteAdmin: config.remoteUser,
+       remoteFS: `C:\\Users\\${config.remoteUser}\\jenkins`,
+       securityGroups: props.agentNodeSecurityGroup,
+       stopOnTerminate: false,
+       subnetId: props.subnetId,
+       t2Unlimited: false,
+       tags: [{
+         name: 'Name',
+         value: `${stack.stackName}/AgentNode/${config.workerLabelString}`,
+       },
+       {
+         name: 'type',
+         value: `jenkinsAgentNode-${config.workerLabelString}`,
+       },
+       ],
+       tenancy: 'Default',
+       type: config.instanceType,
        useEphemeralDevices: false,
      };
    }

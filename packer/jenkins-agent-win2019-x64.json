@@ -1,6 +1,7 @@
 {
   "variables": {
-    "name-base":"Jenkins-Agent-Windows2019",
+    "name-base":"Jenkins-Agent-Windows2019-x64",
+    "os-version": "Windows2019",
     "build-region":"us-east-1",
     "build-vpc":"vpc-<>",
     "build-subnet":"subnet-<>",
@@ -43,7 +44,7 @@
       "winrm_insecure":true,
       "tags": {
         "Name": "{{user `name-base`}}-{{user `build-time`}}",
-        "OS_Version":"{{user `name-base`}}",
+        "OS_Version":"{{user `os-version`}}",
         "User":"Packer",
         "Encrypted_AMI":"False",
         "Created":"{{user `build-time`}}"
