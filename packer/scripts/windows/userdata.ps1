@@ -20,7 +20,7 @@ echo "Create Jenkins Home"
 New-Item -Path 'C:\\Users\\Administrator\\jenkins' -ItemType Directory
 
 echo "NTP Time Syncing"
-cmd /c net time \\time.windows.com /set /y
+cmd /c net time \\pool.ntp.org /set /y
 
 </powershell>
 

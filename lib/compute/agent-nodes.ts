@@ -100,7 +100,7 @@ export class AgentNodes {
         initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps &&'
         + ' sudo apt-get update && (sudo killall -9 apt-get apt 2>&1 || echo) &&'
         + ' sudo apt-get upgrade -y && sudo apt-get install -y ntp &&'
-        + ' sudo systemctl restart ntpd && sudo systemctl enable ntpd',
+        + ' sudo systemctl restart ntp && sudo systemctl enable ntp',
       };
       this.UBUNTU2004_X64_DOCKER_BUILDER = {
         agentType: 'unix',
@@ -113,7 +113,7 @@ export class AgentNodes {
         initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps &&'
         + ' sudo apt-get update && (sudo killall -9 apt-get apt 2>&1 || echo) &&'
         + ' sudo apt-get upgrade -y && sudo apt-get install -y ntp &&'
-        + ' sudo systemctl restart ntpd && sudo systemctl enable ntpd',
+        + ' sudo systemctl restart ntp && sudo systemctl enable ntp',
       };
       this.MACOS12_X64_MULTI_HOST = {
         agentType: 'mac',
