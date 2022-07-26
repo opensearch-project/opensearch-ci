@@ -39,7 +39,7 @@ export interface CIStackProps extends StackProps {
   readonly additionalCommands?: string;
   /** Do you want to retain jenkins jobs and build history */
   readonly dataRetention?: boolean;
-  /** Policy for agent node role to assume a cross-account role */
+  /** IAM role ARN to be assumed by jenkins agent nodes eg: cross-account */
   readonly agentAssumeRole?: string;
   /** File path containing global environment variables to be added to jenkins enviornment */
   readonly envVarsFilePath?: string;
