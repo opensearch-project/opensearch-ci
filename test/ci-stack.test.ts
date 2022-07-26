@@ -83,7 +83,7 @@ test('External security group is restricted', () => {
     ],
   }));
 
-  // Make sure that `open` is false on all the load balancers
+  // Make sure that load balancer access is restricted to given Ipeer
   expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
     SecurityGroupIngress: [
       {
