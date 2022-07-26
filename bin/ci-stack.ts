@@ -13,7 +13,7 @@ import { CiCdnStack } from '../lib/ci-cdn-stack';
 
 const app = new App();
 
-const defaultEnv: string = 'lol';
+const defaultEnv: string = 'Dev';
 
 const ciConfigStack = new CIConfigStack(app, `OpenSearch-CI-Config-${defaultEnv}`, {});
 
