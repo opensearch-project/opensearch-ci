@@ -209,6 +209,7 @@ export class JenkinsMainNode {
             'elasticfilesystem:DescribeFileSystems',
             'elasticfilesystem:DescribeMountTargets',
             'ec2:DescribeAvailabilityZones',
+            'ec2:GetPasswordData',
           ],
           resources: ['*'],
           conditions: {

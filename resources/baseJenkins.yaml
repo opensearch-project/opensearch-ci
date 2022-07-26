@@ -159,25 +159,25 @@ tool:
       name: "Default"
   jdk:
     installations:
-    - name: "jdk-8"
+    - name: "openjdk-8"
       properties:
       - installSource:
           installers:
           - adoptOpenJdkInstaller:
               id: "jdk8u332-b09"
-    - name: "jdk-11"
+    - name: "openjdk-11"
       properties:
       - installSource:
           installers:
           - adoptOpenJdkInstaller:
               id: "jdk-11.0.15+10"
-    - name: "jdk-14"
+    - name: "openjdk-14"
       properties:
       - installSource:
           installers:
           - adoptOpenJdkInstaller:
               id: "jdk-14.0.2+12"
-    - name: "jdk-17"
+    - name: "openjdk-17"
       properties:
       - installSource:
           installers:

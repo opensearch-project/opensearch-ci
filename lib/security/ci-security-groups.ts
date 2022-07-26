@@ -40,6 +40,8 @@ export class JenkinsSecurityGroups {
       description: 'Agent Node of Jenkins',
     });
     this.agentNodeSG.addIngressRule(this.mainNodeSG, Port.tcp(22), 'Main node SSH Access into agent nodes');
+    this.agentNodeSG.addIngressRule(this.mainNodeSG, Port.tcp(445), 'Main node SMB Access into agent nodes for Windows');
+    this.agentNodeSG.addIngressRule(this.mainNodeSG, Port.tcp(5985), 'Main node WinRM HTTP Access into agent nodes for Windows');
 
     this.efsSG = new SecurityGroup(stack, 'efsSG', {
       vpc,

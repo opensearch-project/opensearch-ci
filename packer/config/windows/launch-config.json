@@ -1,8 +1,0 @@
-{
-  "setComputerName": false,
-  "setWallpaper": true,
-  "addDnsSuffixList": true,
-  "extendBootVolumeSize": true,
-  "adminPasswordType": "Specify",
-  "adminPassword":  "EnterYourPassWordMustMatchAwsPasswordRequirements"
-}
