@@ -6,14 +6,15 @@
  * compatible open source license.
  */
 
-import { FlowLogDestination, FlowLogTrafficType, Vpc } from '@aws-cdk/aws-ec2';
+import {
+  FlowLogDestination, FlowLogTrafficType, IPeer, Vpc,
+} from '@aws-cdk/aws-ec2';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import {
   CfnOutput,
-  CfnParameter, Construct, Fn, RemovalPolicy, Stack, StackProps,
+  CfnParameter, Construct, Fn, Stack, StackProps,
 } from '@aws-cdk/core';
 import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
-import { FileSystem } from '@aws-cdk/aws-efs';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { CIConfigStack } from './ci-config-stack';
 import { JenkinsMainNode } from './compute/jenkins-main-node';
@@ -38,12 +39,14 @@ export interface CIStackProps extends StackProps {
   readonly additionalCommands?: string;
   /** Do you want to retain jenkins jobs and build history */
   readonly dataRetention?: boolean;
-  /** Policy for agent node role to assume a cross-account role */
+  /** IAM role ARN to be assumed by jenkins agent nodes eg: cross-account */
   readonly agentAssumeRole?: string;
   /** File path containing global environment variables to be added to jenkins enviornment */
   readonly envVarsFilePath?: string;
   /** Add Mac agent to jenkins */
   readonly macAgent?: boolean;
+  /** Restrict jenkins access to */
+  readonly restrictServerAccessTo? : IPeer;
 }
 
 export class CIStack extends Stack {
@@ -93,7 +96,7 @@ export class CIStack extends Stack {
       default: useSsl,
     });
 
-    const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl);
+    const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl, props?.restrictServerAccessTo);
     const importedContentsSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE}`);
     const importedContentsChainBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CHAIN_SECRET_EXPORT_VALUE}`);
     const importedCertSecretBucketValue = Fn.importValue(`${CIConfigStack.PRIVATE_KEY_SECRET_EXPORT_VALUE}`);

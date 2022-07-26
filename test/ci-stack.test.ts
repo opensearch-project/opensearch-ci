@@ -9,6 +9,7 @@
 import {
   expect, countResources, haveResourceLike, ResourcePart,
 } from '@aws-cdk/assert';
+import { Peer } from '@aws-cdk/aws-ec2';
 import { App } from '@aws-cdk/core';
 import { CIStack } from '../lib/ci-stack';
 
@@ -59,6 +60,34 @@ test('External security group is open', () => {
     SecurityGroupIngress: [
       {
         CidrIp: '0.0.0.0/0',
+      },
+    ],
+  }));
+});
+
+test('External security group is restricted', () => {
+  const app = new App({
+    context: { useSsl: 'true', runWithOidc: 'true' },
+  });
+
+  // WHEN
+  const stack = new CIStack(app, 'MyTestStack', { restrictServerAccessTo: Peer.ipv4('10.0.0.0/24') });
+
+  // THEN
+  expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+    GroupDescription: 'External access to Jenkins',
+    SecurityGroupEgress: [
+      {
+        CidrIp: '0.0.0.0/0',
+      },
+    ],
+  }));
+
+  // Make sure that load balancer access is restricted to given Ipeer
+  expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+    SecurityGroupIngress: [
+      {
+        CidrIp: '10.0.0.0/24',
       },
     ],
   }));
