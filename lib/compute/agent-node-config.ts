@@ -54,12 +54,12 @@ export class AgentNodeConfig {
        assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
        // assumedBy: new AccountPrincipal(this.ACCOUNT),
        description: 'Jenkins agents Node Role',
-       //  roleName: 'OpenSearch-CI-AgentNodeRole',
+       roleName: 'OpenSearch-CI-AgentNodeRole',
      });
 
      const ecrManagedPolicy = new ManagedPolicy(stack, 'OpenSearch-CI-AgentNodePolicy', {
        description: 'Jenkins agents Node Policy',
-       //  managedPolicyName: 'OpenSearch-CI-AgentNodePolicy',
+       managedPolicyName: 'OpenSearch-CI-AgentNodePolicy',
        statements: [
          new PolicyStatement({
            effect: Effect.ALLOW,

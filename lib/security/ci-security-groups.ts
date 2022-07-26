@@ -7,7 +7,7 @@
  */
 
 import {
-  IPeer, Port, SecurityGroup, Vpc,
+  IPeer, Peer, Port, SecurityGroup, Vpc,
 } from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
 
@@ -21,25 +21,26 @@ export class JenkinsSecurityGroups {
   public readonly efsSG: SecurityGroup;
 
   constructor(stack: Stack, vpc: Vpc, useSsl: boolean, restrictServerAccessTo?: IPeer) {
+    let accessPort = 80;
+    if (useSsl) {
+      accessPort = 443;
+    }
+
     this.externalAccessSG = new SecurityGroup(stack, 'ExternalAccessSG', {
       vpc,
       description: 'External access to Jenkins',
     });
-
     if (restrictServerAccessTo) {
-      this.externalAccessSG.addEgressRule(restrictServerAccessTo, Port.allTraffic(), 'Allow all outbound traffic');
+      this.externalAccessSG.addIngressRule(restrictServerAccessTo, Port.tcp(accessPort), 'Restrict access to this source');
+    } else {
+      this.externalAccessSG.addIngressRule(Peer.anyIpv4(), Port.tcp(accessPort), 'Allow anyone to connect');
     }
 
     this.mainNodeSG = new SecurityGroup(stack, 'MainNodeSG', {
       vpc,
       description: 'Main node of Jenkins',
     });
-
-    const accessPort = 80;
     this.mainNodeSG.addIngressRule(this.externalAccessSG, Port.tcp(accessPort));
-    if (useSsl) {
-      this.mainNodeSG.addIngressRule(this.externalAccessSG, Port.tcp(443));
-    }
 
     this.agentNodeSG = new SecurityGroup(stack, 'AgentNodeSG', {
       vpc,

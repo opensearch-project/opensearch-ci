@@ -20,10 +20,7 @@ const defaultEnv: string = 'lol';
 
 const ciConfigStack = new CIConfigStack(app, `OpenSearch-CI-Config-${defaultEnv}`, {});
 
-const ciStack = new CIStack(app, `OpenSearch-CI-${defaultEnv}`, {
-  restrictServerAccessTo: access,
-  ignoreResourcesFailures: false,
-});
+const ciStack = new CIStack(app, `OpenSearch-CI-${defaultEnv}`, {});
 
 const ciCdnStack = new CiCdnStack(app, `OpenSearch-CI-Cdn-${defaultEnv}`, {});
 ciCdnStack.addDependency(ciStack);
