@@ -7,12 +7,9 @@
  */
 
 import { App } from '@aws-cdk/core';
-import { Peer } from '@aws-cdk/aws-ec2';
 import { CIStack } from '../lib/ci-stack';
 import { CIConfigStack } from '../lib/ci-config-stack';
 import { CiCdnStack } from '../lib/ci-cdn-stack';
-
-const access = Peer.prefixList('pl-f8a64391');
 
 const app = new App();
 
