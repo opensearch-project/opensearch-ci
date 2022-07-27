@@ -39,7 +39,7 @@ export class JenkinsMonitoring {
 
     this.alarms.push(new Alarm(stack, 'MainNodeHighCpuUtilization', {
       alarmDescription: 'The jenkins process is using much more CPU that expected, it should be investigated for a stuck process/job',
-      metric: mainNode.ec2InstanceMetrics.cpuTime.with({ statistic: 'max' }),
+      metric: mainNode.ec2InstanceMetrics.cpuTime.with({ statistic: 'avg' }),
       evaluationPeriods: 5,
       threshold: 50,
       comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
@@ -48,7 +48,7 @@ export class JenkinsMonitoring {
 
     this.alarms.push(new Alarm(stack, 'MainNodeHighMemoryUtilization', {
       alarmDescription: 'The jenkins process is using more memory than expected, it should be investigated for a large number of jobs or heavy weight jobs',
-      metric: mainNode.ec2InstanceMetrics.memUsed.with({ statistic: 'max' }),
+      metric: mainNode.ec2InstanceMetrics.memUsed.with({ statistic: 'avg' }),
       evaluationPeriods: 5,
       threshold: 50,
       comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
