@@ -8,6 +8,7 @@
   - [Executing Optional Tasks](#executing-optional-tasks)
     - [SSL Configuration](#ssl-configuration)
     - [Setup OpenId Connect (OIDC) via Federate](#setup-openid-connect-oidc-via-federate)
+    - [Restricting Server Access](#restricting-server-access)
     - [Data Retention](#data-retention)
     - [Add environment variable](#add-environment-variables)
     - [Assume role](#cross-account-assume-role)
@@ -74,6 +75,19 @@ $aws secretsmanager put-secret-value \
 1. If you want to destroy the stack make sure you delete the agent nodes manually (via jenkins UI or AWS console) so that shared resources (like vpc, security groups, etc) can be deleted.
 
 ### Executing Optional Tasks
+#### Construct Props
+|  Name   | Type           | Description  |
+| ------------- |:-------------| :-----|
+| [useSsl](#ssl-configuration)      | boolean | Should the Jenkins use https |
+| [runWithOidc](#setup-openid-connect-oidc-via-federate)      | boolean      |    Should an OIDC provider be installed on Jenkins |
+| [ignoreResourcesFailures]() | boolean      |    Additional verification during deployment and resource startup |
+| [adminUsers](#setup-openid-connect-oidc-via-federate) | string[]      |   List of users with admin access during initial deployment |
+| [additionalCommands](#runnning-additional-commands) | string      |    Additional logic that needs to be run on Master Node. The value has to be path to a file |
+| [dataRetention](#data-retention) | boolean     |    Do you want to retain jenkins jobs and build history |
+| [agentAssumeRole](#assume-role) | string    |    IAM role ARN to be assumed by jenkins agent nodes |
+| [envVarsFilePath](#add-environment-variables) | string      |    Path to file containing env variables in the form of key value pairs |
+| [macAgent](#mac-agents) | boolean    |    Add mac agents to jenkins |
+| [restrictServerAccessTo](#restricting-server-access) | Ipeer      |    Restrict jenkins server access |
 #### SSL Configuration
 1. Locate the secret manager arns in the ci-config-stack outputs
 1. Update the secret value ([see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)) for the `certContentsSecret` with the certificate contents
@@ -116,6 +130,16 @@ $aws secretsmanager put-secret-value \
    1. `npm run cdk deploy OpenSearch-CI-Dev -- -c runWithOidc=true -c useSsl=true` or,
    1. `cdk deploy OpenSearch-CI-Dev -c runWithOidc=true -c useSsl=true`
 1. Continue with [next steps](#dev-deployment)
+
+#### Restricting Server Access
+You can now restrict access to your jenkins endpoint (load balancer). Here's how:
+1. Update the `restrictServerAccessTo` property in `ciSettings` to your desired [Ipeer](https://docs.aws.amazon.com/cdk/api/v1/docs/@aws-cdk_aws-ec2.IPeer.html). By default it is open to all.
+See [CIStackProps](./lib/ci-stack.ts) for details.
+
+Example:
+```
+const stack = new CIStack(app, 'MyStack', { restrictServerAccessTo: Peer.ipv4('10.0.0.0/24') });
+```
 
 #### Data Retention
 Change in any EC2 config (specially init config) leads to replacement of EC2. The jenkins configuration is managed via code using configuration as code plugin. [More details](https://plugins.jenkins.io/configuration-as-code/).

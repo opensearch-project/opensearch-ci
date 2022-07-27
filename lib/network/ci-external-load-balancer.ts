@@ -7,7 +7,7 @@
  */
 
 import {
-  Instance, Peer, SecurityGroup, Vpc,
+  Instance, SecurityGroup, Vpc,
 } from '@aws-cdk/aws-ec2';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
@@ -44,7 +44,7 @@ export class JenkinsExternalLoadBalancer {
     this.listener = this.loadBalancer.addListener('JenkinsListener', {
       sslPolicy: props.useSsl ? SslPolicy.RECOMMENDED : undefined,
       port: accessPort,
-      open: true,
+      open: false,
       certificates: props.useSsl ? [props.listenerCertificate] : undefined,
     });
 
