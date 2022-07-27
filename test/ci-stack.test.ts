@@ -35,6 +35,7 @@ test('CI Stack Basic Resources', () => {
   expect(stack).to(countResources('AWS::SSM::Document', 1));
   expect(stack).to(countResources('AWS::SSM::Association', 1));
   expect(stack).to(countResources('AWS::EFS::FileSystem', 1));
+  expect(stack).to(countResources('AWS::CloudWatch::Alarm', 5));
 });
 
 test('External security group is open', () => {
@@ -139,5 +140,35 @@ test('LoadBalancer', () => {
         ],
       },
     ],
+  }, ResourcePart.Properties));
+});
+
+test('CloudwatchCpuAlarm', () => {
+  const app = new App({
+    context: { useSsl: 'false', runWithOidc: 'false' },
+  });
+
+  // WHEN
+  const stack = new CIStack(app, 'MyTestStack', {});
+
+  // THEN
+  expect(stack).to(haveResourceLike('AWS::CloudWatch::Alarm', {
+    MetricName: 'procstat_cpu_usage',
+    Statistic: 'Average',
+  }, ResourcePart.Properties));
+});
+
+test('CloudwatchMemoryAlarm', () => {
+  const app = new App({
+    context: { useSsl: 'false', runWithOidc: 'false' },
+  });
+
+  // WHEN
+  const stack = new CIStack(app, 'MyTestStack', {});
+
+  // THEN
+  expect(stack).to(haveResourceLike('AWS::CloudWatch::Alarm', {
+    MetricName: 'mem_used_percent',
+    Statistic: 'Average',
   }, ResourcePart.Properties));
 });
