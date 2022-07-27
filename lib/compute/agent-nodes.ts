@@ -99,7 +99,7 @@ export class AgentNodes {
         amiId: 'ami-0f6ceb3b3687a3fba',
         initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps &&'
         + ' sudo apt-get update && (sudo killall -9 apt-get apt 2>&1 || echo) &&'
-        + ' sudo apt-get upgrade -y && sudo apt-get install -y ntp &&'
+        + ' sudo apt-get upgrade -y && sudo apt-get install -y ntp docker-compose &&'
         + ' sudo systemctl restart ntp && sudo systemctl enable ntp',
       };
       this.UBUNTU2004_X64_DOCKER_BUILDER = {
@@ -112,7 +112,7 @@ export class AgentNodes {
         amiId: 'ami-0f6ceb3b3687a3fba',
         initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps &&'
         + ' sudo apt-get update && (sudo killall -9 apt-get apt 2>&1 || echo) &&'
-        + ' sudo apt-get upgrade -y && sudo apt-get install -y ntp &&'
+        + ' sudo apt-get upgrade -y && sudo apt-get install -y ntp docker-compose &&'
         + ' sudo systemctl restart ntp && sudo systemctl enable ntp',
       };
       this.MACOS12_X64_MULTI_HOST = {
