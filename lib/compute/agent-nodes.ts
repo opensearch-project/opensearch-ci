@@ -122,7 +122,7 @@ export class AgentNodes {
         remoteUser: 'ec2-user',
         maxTotalUses: -1,
         numExecutors: 6,
-        amiId: 'ami-0379811a08268a97e',
+        amiId: 'ami-022cee9eedb91288a',
         initScript: 'echo',
       };
       this.WINDOWS2019_X64 = {

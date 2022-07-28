@@ -242,19 +242,6 @@ export class AgentNodeConfig {
        ],
        tenancy: 'Host',
        type: config.instanceType,
-       nodeProperties: [
-         {
-           envVars: {
-             env: [
-               {
-                 key: 'Path',
-                 /* eslint-disable max-len */
-                 value: '/usr/local/opt/python@3.7/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/Cellar/python@3.7/3.7.13_1/Frameworks/Python.framework/Versions/3.7/bin',
-               },
-             ],
-           },
-         },
-       ],
        useEphemeralDevices: false,
      };
    }
