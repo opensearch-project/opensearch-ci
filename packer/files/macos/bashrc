@@ -1,3 +1,4 @@
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
 export PATH=/opt/local/bin:$PATH
 export PATH=/Users/ec2-user/Library/Python/3.7/bin:/opt/local/Library/Frameworks/Python.framework/Versions/3.7/bin:$PATH
 export PATH=/usr/local/opt/grep/libexec/gnubin:$PATH
