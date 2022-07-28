@@ -4,6 +4,7 @@
 
 * **config:** This folder contains all the configuration files.
 * **scripts:** This folder contains all the running scripts during the image creation.
+* **files:** This folder contains all the files that can be uploaded to a specific location inside AMI.
 * **.json:** All templates are now in JSON format, we have not converted them into HCL2 yet.
 
 ### Templates
