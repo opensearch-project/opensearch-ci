@@ -25,7 +25,8 @@ export interface AgentNodeProps {
    remoteUser: string;
    maxTotalUses: number;
    numExecutors: number;
-   initScript: string
+   initScript: string,
+  remoteFs: string
  }
 export interface AgentNodeNetworkProps {
    readonly agentNodeSecurityGroup: string;
@@ -179,7 +180,7 @@ export class AgentNodeConfig {
        monitoring: true,
        numExecutors: config.numExecutors,
        remoteAdmin: config.remoteUser,
-       remoteFS: '/var/jenkins',
+       remoteFS: config.remoteFs,
        securityGroups: props.agentNodeSecurityGroup,
        stopOnTerminate: false,
        subnetId: props.subnetId,
@@ -225,7 +226,7 @@ export class AgentNodeConfig {
        monitoring: true,
        numExecutors: config.numExecutors,
        remoteAdmin: config.remoteUser,
-       remoteFS: '/var/jenkins',
+       remoteFS: config.remoteFs,
        securityGroups: props.agentNodeSecurityGroup,
        stopOnTerminate: false,
        subnetId: props.subnetId,
@@ -276,7 +277,7 @@ export class AgentNodeConfig {
        monitoring: true,
        numExecutors: config.numExecutors,
        remoteAdmin: config.remoteUser,
-       remoteFS: `C:\\Users\\${config.remoteUser}\\jenkins`,
+       remoteFS: config.remoteFs,
        securityGroups: props.agentNodeSecurityGroup,
        stopOnTerminate: false,
        subnetId: props.subnetId,
