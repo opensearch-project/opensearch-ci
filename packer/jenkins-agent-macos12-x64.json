@@ -23,6 +23,10 @@
       "ami_name":"{{user `ami_name`}}-{{user `os_version`}}-{{user `build-time`}}",
       "vpc_id":"{{user `build-vpc`}}",
       "subnet_id":"{{user `build-subnet`}}",
+      "aws_polling" : {
+        "delay_seconds": 60,
+        "max_attempts": 60
+      },
       "security_group_ids":"{{user `build-secgrp`}}",
       "ssh_interface": "",
       "source_ami_filter":{
@@ -71,6 +75,23 @@
         "sudo /usr/local/bin/ec2-macos-init clean --all"
       ],
       "max_retries": 3
+    },
+    {
+      "type":"shell",
+      "inline": [
+        "sudo chsh -s /bin/bash $(whoami)"
+      ],
+      "max_retries": 3
+    },
+    {
+      "type": "file",
+      "source": "files/macos/bash_profile",
+      "destination": "/Users/ec2-user/.bash_profile"
+    },
+    {
+      "type": "file",
+      "source": "files/macos/bashrc",
+      "destination": "/Users/ec2-user/.bashrc"
     },
     {
       "type":"shell",
