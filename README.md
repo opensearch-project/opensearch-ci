@@ -13,6 +13,7 @@
     - [Add environment variable](#add-environment-variables)
     - [Assume role](#cross-account-assume-role)
     - [Mac agents](#mac-agents)
+    - [Use Production Agents](#use-production-agents)
   - [Troubleshooting](#troubleshooting)
     - [Main Node](#main-node)
   - [Useful commands](#useful-commands)
@@ -76,18 +77,19 @@ $aws secretsmanager put-secret-value \
 
 ### Executing Optional Tasks
 #### Construct Props
-|  Name   | Type           | Description  |
-| ------------- |:-------------| :-----|
-| [useSsl](#ssl-configuration)      | boolean | Should the Jenkins use https |
-| [runWithOidc](#setup-openid-connect-oidc-via-federate)      | boolean      |    Should an OIDC provider be installed on Jenkins |
-| [ignoreResourcesFailures]() | boolean      |    Additional verification during deployment and resource startup |
-| [adminUsers](#setup-openid-connect-oidc-via-federate) | string[]      |   List of users with admin access during initial deployment |
-| [additionalCommands](#runnning-additional-commands) | string      |    Additional logic that needs to be run on Master Node. The value has to be path to a file |
-| [dataRetention](#data-retention) | boolean     |    Do you want to retain jenkins jobs and build history |
-| [agentAssumeRole](#assume-role) | string    |    IAM role ARN to be assumed by jenkins agent nodes |
-| [envVarsFilePath](#add-environment-variables) | string      |    Path to file containing env variables in the form of key value pairs |
-| [macAgent](#mac-agents) | boolean    |    Add mac agents to jenkins |
-| [restrictServerAccessTo](#restricting-server-access) | Ipeer      |    Restrict jenkins server access |
+| Name                                                   | Type     | Description                                                                              |
+|--------------------------------------------------------|:---------|:-----------------------------------------------------------------------------------------|
+| [useSsl](#ssl-configuration)                           | boolean  | Should the Jenkins use https                                                             |
+| [runWithOidc](#setup-openid-connect-oidc-via-federate) | boolean  | Should an OIDC provider be installed on Jenkins                                          |
+| [ignoreResourcesFailures]()                            | boolean  | Additional verification during deployment and resource startup                           |
+| [adminUsers](#setup-openid-connect-oidc-via-federate)  | string[] | List of users with admin access during initial deployment                                |
+| [additionalCommands](#runnning-additional-commands)    | string   | Additional logic that needs to be run on Master Node. The value has to be path to a file |
+| [dataRetention](#data-retention)                       | boolean  | Do you want to retain jenkins jobs and build history                                     |
+| [agentAssumeRole](#assume-role)                        | string   | IAM role ARN to be assumed by jenkins agent nodes                                        |
+| [envVarsFilePath](#add-environment-variables)          | string   | Path to file containing env variables in the form of key value pairs                     |
+| [macAgent](#mac-agents)                                | boolean  | Add mac agents to jenkins                                                                |
+| [restrictServerAccessTo](#restricting-server-access)   | Ipeer    | Restrict jenkins server access                                                           |
+| [useProdAgents](#use-production-agents)                | boolean  | should jenkins server use production agents                                              |
 #### SSL Configuration
 1. Locate the secret manager arns in the ci-config-stack outputs
 1. Update the secret value ([see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)) for the `certContentsSecret` with the certificate contents
@@ -200,6 +202,17 @@ Usage:
 ```
 npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false -c additionalCommands='./example.txt'
 ```
+
+#### Use Production Agents
+Please note that if you have decided to use the provided production jenkins agents then please make sure that you are 
+deploying the stack in US-EAST-1 region as the AMIs used are only publicly available in US-EAST-1 region.
+If you want to deploy the stack in another region then please make sure you copy the public AMIs used
+from us-east-1 region to your region of choice and update the new ami-id in agent-nodes.ts file accordingly.
+
+If you do not copy the AMI in required region and update the code then the desired jenkins agents will not spin up.
+
+If you do not specify this flag or use `false` then jenkins server will spin up two ec2 agents with minimal config, AL2 AMD64 and ARM64,
+they will be using the latest ami available.
 
 ### Troubleshooting
 #### Main Node

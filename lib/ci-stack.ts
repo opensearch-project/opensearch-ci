@@ -16,6 +16,7 @@ import {
 } from '@aws-cdk/core';
 import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Bucket } from '@aws-cdk/aws-s3';
+import { disconnect } from 'cluster';
 import { CIConfigStack } from './ci-config-stack';
 import { JenkinsMainNode } from './compute/jenkins-main-node';
 import { JenkinsMonitoring } from './monitoring/ci-alarms';
@@ -47,10 +48,14 @@ export interface CIStackProps extends StackProps {
   readonly macAgent?: boolean;
   /** Restrict jenkins access to */
   readonly restrictServerAccessTo? : IPeer;
+  /** Use Production Agents */
+  readonly useProdAgents?: boolean;
 }
 
 export class CIStack extends Stack {
   public readonly monitoring: JenkinsMonitoring;
+
+  public readonly agentNodes: AgentNodeProps[];
 
   constructor(scope: Construct, id: string, props: CIStackProps) {
     super(scope, id, props);
@@ -80,6 +85,11 @@ export class CIStack extends Stack {
       throw new Error('runWithOidc parameter is required to be set as - true or false');
     }
 
+    let useProdAgents = `${props?.useProdAgents ?? this.node.tryGetContext('useProdAgents')}`;
+    if (useProdAgents.toString() === 'undefined') {
+      useProdAgents = 'false';
+    }
+
     const runWithOidc = runWithOidcParameter === 'true';
 
     const additionalCommandsContext = `${props?.additionalCommands ?? this.node.tryGetContext('additionalCommands')}`;
@@ -106,10 +116,23 @@ export class CIStack extends Stack {
     const certificateArn = Secret.fromSecretCompleteArn(this, 'certificateArn', importedArnSecretBucketValue.toString());
     const importedReloadPasswordSecretsArn = Fn.importValue(`${CIConfigStack.CASC_RELOAD_TOKEN_SECRET_EXPORT_VALUE}`);
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
-    const agentNode = new AgentNodes();
-    const agentNodes: AgentNodeProps[] = [agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_HOST, agentNode.AL2_X64_DOCKER_HOST_PERF_TEST,
-      agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_HOST, agentNode.UBUNTU2004_X64, agentNode.UBUNTU2004_X64_DOCKER_BUILDER,
-      agentNode.MACOS12_X64_MULTI_HOST, agentNode.WINDOWS2019_X64];
+    const agentNode = new AgentNodes(this);
+
+    if (useProdAgents.toString() === 'true') {
+      // eslint-disable-next-line no-console
+      console.warn('Please note that if you have decided to use the provided production jenkins agents then '
+          + 'please make sure that you are deploying the stack in US-EAST-1 region as the AMIs used are only publicly '
+          + 'available in US-EAST-1 region. '
+          + 'If you want to deploy the stack in another region then please make sure you copy the public AMIs used '
+          + 'from us-east-1 region to your region of choice and update the ami-id in agent-nodes.ts file accordingly. '
+          + 'If you do not copy the AMI in required region and update the code then the jenkins agents will not spin up.');
+
+      this.agentNodes = [agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_HOST, agentNode.AL2_X64_DOCKER_HOST_PERF_TEST,
+        agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_HOST, agentNode.UBUNTU2004_X64, agentNode.UBUNTU2004_X64_DOCKER_BUILDER,
+        agentNode.MACOS12_X64_MULTI_HOST, agentNode.WINDOWS2019_X64];
+    } else {
+      this.agentNodes = [agentNode.AL2_X64_DEFAULT_AGENT, agentNode.AL2_ARM64_DEFAULT_AGENT];
+    }
 
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
@@ -129,7 +152,7 @@ export class CIStack extends Stack {
       adminUsers: props?.adminUsers,
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
       subnetId: vpc.publicSubnets[0].subnetId,
-    }, agentNodes, agentAssumeRoleContext.toString(), macAgentParameter.toString());
+    }, this.agentNodes, agentAssumeRoleContext.toString(), macAgentParameter.toString());
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,
