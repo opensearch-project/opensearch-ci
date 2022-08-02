@@ -16,7 +16,6 @@ import {
 } from '@aws-cdk/core';
 import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Bucket } from '@aws-cdk/aws-s3';
-import { disconnect } from 'cluster';
 import { CIConfigStack } from './ci-config-stack';
 import { JenkinsMainNode } from './compute/jenkins-main-node';
 import { JenkinsMonitoring } from './monitoring/ci-alarms';
@@ -41,7 +40,7 @@ export interface CIStackProps extends StackProps {
   /** Do you want to retain jenkins jobs and build history */
   readonly dataRetention?: boolean;
   /** IAM role ARN to be assumed by jenkins agent nodes eg: cross-account */
-  readonly agentAssumeRole?: string;
+  readonly agentAssumeRole?: string[];
   /** File path containing global environment variables to be added to jenkins enviornment */
   readonly envVarsFilePath?: string;
   /** Add Mac agent to jenkins */
@@ -69,8 +68,6 @@ export class CIStack extends Stack {
         },
       },
     });
-
-    const agentAssumeRoleContext = `${props?.agentAssumeRole ?? this.node.tryGetContext('agentAssumeRole')}`;
     const macAgentParameter = `${props?.macAgent ?? this.node.tryGetContext('macAgent')}`;
 
     const useSslParameter = `${props?.useSsl ?? this.node.tryGetContext('useSsl')}`;
@@ -152,7 +149,7 @@ export class CIStack extends Stack {
       adminUsers: props?.adminUsers,
       agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
       subnetId: vpc.publicSubnets[0].subnetId,
-    }, this.agentNodes, agentAssumeRoleContext.toString(), macAgentParameter.toString());
+    }, this.agentNodes, macAgentParameter.toString(), props?.agentAssumeRole);
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,

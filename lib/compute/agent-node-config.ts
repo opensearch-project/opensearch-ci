@@ -42,7 +42,7 @@ export class AgentNodeConfig {
 
    public readonly SSHEC2KeySecretId: string;
 
-   constructor(stack: Stack, assumeRole: string) {
+   constructor(stack: Stack, assumeRole?: string[]) {
      this.STACKREGION = stack.region;
      this.ACCOUNT = stack.account;
 
@@ -61,7 +61,6 @@ export class AgentNodeConfig {
 
      const ecrManagedPolicy = new ManagedPolicy(stack, 'OpenSearch-CI-AgentNodePolicy', {
        description: 'Jenkins agents Node Policy',
-       managedPolicyName: 'OpenSearch-CI-AgentNodePolicy',
        statements: [
          new PolicyStatement({
            effect: Effect.ALLOW,
@@ -107,11 +106,11 @@ export class AgentNodeConfig {
      );
 
      /* eslint-disable eqeqeq */
-     if (assumeRole.toString() !== 'undefined') {
+     if (assumeRole) {
        // policy to allow assume role AssumeRole
        AgentNodeRole.addToPolicy(
          new PolicyStatement({
-           resources: [assumeRole],
+           resources: assumeRole,
            actions: ['sts:AssumeRole'],
          }),
        );
