@@ -8,12 +8,11 @@
 
 import { Stack, App } from '@aws-cdk/core';
 import {
-  expect as expectCDK, haveResource, haveResourceLike, countResources,
+  expect as expectCDK, haveResourceLike,
 } from '@aws-cdk/assert';
 import { readFileSync } from 'fs';
 import { load } from 'js-yaml';
 import { CIStack } from '../../lib/ci-stack';
-import { JenkinsMainNode } from '../../lib/compute/jenkins-main-node';
 
 test('Agents Resource is present', () => {
   const app = new App({
@@ -49,7 +48,6 @@ test('Agents Resource is present', () => {
   expectCDK(stack).to(haveResourceLike('AWS::IAM::ManagedPolicy', {
     Description: 'Jenkins agents Node Policy',
     Path: '/',
-    ManagedPolicyName: 'OpenSearch-CI-AgentNodePolicy',
     Roles: [
       {
         Ref: 'OpenSearchCIAgentNodeRole4270FE0F',
@@ -121,6 +119,32 @@ test('Agents Resource is present', () => {
       ],
       Version: '2012-10-17',
     },
+  }));
+});
+
+test('Agents Node policy with assume role Resource is present', () => {
+  const app = new App({
+    context: { useSsl: 'true', runWithOidc: 'true' },
+  });
+  const stack = new CIStack(app, 'TestStack', {
+    agentAssumeRole: ['arn:aws:iam::12345:role/test-role', 'arn:aws:iam::901523:role/test-role2'],
+  });
+
+  expectCDK(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Resource: [
+            'arn:aws:iam::12345:role/test-role',
+            'arn:aws:iam::901523:role/test-role2',
+          ],
+        },
+      ],
+      Version: '2012-10-17',
+    },
+
   }));
 });
 
