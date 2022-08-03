@@ -146,7 +146,7 @@ export class AgentNodes {
         remoteUser: 'Administrator',
         maxTotalUses: -1,
         numExecutors: 1,
-        amiId: 'ami-07591ca4ef792c2d4',
+        amiId: 'ami-0b9a1c5225886eddb',
         initScript: 'echo',
         remoteFs: 'C:\\Users\\Administrator\\jenkins',
       };

@@ -21,6 +21,12 @@ $gitPathFound
 # Add to EnvVar
 $userenv = [System.Environment]::GetEnvironmentVariable("Path", "User")
 [System.Environment]::SetEnvironmentVariable("PATH", $userenv + ";$gitPathFound", "User")
+# Make sure mem size are set to avoid "Out of memory, malloc failed" issues on Windows
+git config --system core.packedGitLimit 128m
+git config --system core.packedGitWindowSize 128m
+git config --system pack.deltaCacheSize 128m
+git config --system pack.packSizeLimit 128m
+git config --system pack.windowMemory 128m
 
 # Setup Repos (This has to happen after git is installed or will error out)
 scoop bucket add java
