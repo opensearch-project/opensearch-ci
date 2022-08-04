@@ -31,6 +31,7 @@ git config --system pack.windowMemory 128m
 # Setup Repos (This has to happen after git is installed or will error out)
 scoop bucket add java
 scoop bucket add versions
+scoop bucket add github-gh https://github.com/cli/scoop-gh.git
 
 # Install jdk8
 scoop install temurin8-jdk
@@ -83,6 +84,10 @@ jq --version
 # Install yq
 scoop install yq
 yq --version
+
+# Install gh
+scoop install gh
+gh version
 
 # Install dev tools
 scoop install cmake
