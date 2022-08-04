@@ -236,7 +236,6 @@ export class JenkinsMainNode {
       InitPackage.yum('docker'),
       InitPackage.yum('python3'),
       InitPackage.yum('python3-pip.noarch'),
-      InitCommand.shellCommand('pip3 install docker-compose && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose'),
       InitCommand.shellCommand('pip3 install botocore'),
       // eslint-disable-next-line max-len
       InitCommand.shellCommand('sudo wget -nv https://github.com/mikefarah/yq/releases/download/v4.22.1/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq'),
