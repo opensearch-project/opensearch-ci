@@ -7,7 +7,7 @@
  */
 
 import {
-  Alarm, AlarmWidget, ComparisonOperator, Dashboard, TreatMissingData,
+  Alarm, AlarmWidget, ComparisonOperator, Dashboard, Metric, TreatMissingData,
 } from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
 import { JenkinsExternalLoadBalancer } from '../network/ci-external-load-balancer';
@@ -18,6 +18,22 @@ export class JenkinsMonitoring {
 
   constructor(stack: Stack, externalLoadBalancer: JenkinsExternalLoadBalancer, mainNode: JenkinsMainNode) {
     const dashboard = new Dashboard(stack, 'AlarmDashboard');
+
+    const cpuMetric = new Metric({
+      namespace: 'AWS/EC2',
+      metricName: 'CPUUtilization',
+      dimensionsMap: {
+        InstanceId: mainNode.ec2Instance.instanceId,
+      },
+    });
+
+    this.alarms.push(new Alarm(stack, 'AverageMainNodeCpuUtilization', {
+      alarmDescription: 'Overall EC2 avg CPU Utilization',
+      evaluationPeriods: 3,
+      metric: cpuMetric,
+      threshold: 50,
+      comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+    }));
 
     this.alarms.push(new Alarm(stack, 'ExternalLoadBalancerUnhealthyHosts', {
       alarmDescription: 'If any hosts behind the load balancer are unhealthy',
@@ -34,15 +50,6 @@ export class JenkinsMonitoring {
       evaluationPeriods: 3,
       threshold: 1,
       comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
-      treatMissingData: TreatMissingData.IGNORE,
-    }));
-
-    this.alarms.push(new Alarm(stack, 'MainNodeHighCpuUtilization', {
-      alarmDescription: 'The jenkins process is using much more CPU that expected, it should be investigated for a stuck process/job',
-      metric: mainNode.ec2InstanceMetrics.cpuTime.with({ statistic: 'avg' }),
-      evaluationPeriods: 5,
-      threshold: 50,
-      comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
       treatMissingData: TreatMissingData.IGNORE,
     }));
 

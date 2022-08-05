@@ -86,17 +86,12 @@ export class JenkinsMainNode {
   public readonly ec2Instance: Instance;
 
   public readonly ec2InstanceMetrics: {
-    cpuTime: Metric,
     memUsed: Metric,
     foundJenkinsProcessCount: Metric
   }
 
   constructor(stack: Stack, props: JenkinsMainNodeProps, agentNode: AgentNodeProps[], macAgent: string, assumeRole?: string[]) {
     this.ec2InstanceMetrics = {
-      cpuTime: new Metric({
-        metricName: 'procstat_cpu_usage',
-        namespace: `${stack.stackName}/JenkinsMainNode`,
-      }),
       memUsed: new Metric({
         metricName: 'mem_used_percent',
         namespace: `${stack.stackName}/JenkinsMainNode`,
