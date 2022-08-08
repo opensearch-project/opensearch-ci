@@ -153,7 +153,7 @@ test('CloudwatchCpuAlarm', () => {
 
   // THEN
   expect(stack).to(haveResourceLike('AWS::CloudWatch::Alarm', {
-    MetricName: 'procstat_cpu_usage',
+    MetricName: 'CPUUtilization',
     Statistic: 'Average',
   }, ResourcePart.Properties));
 });
