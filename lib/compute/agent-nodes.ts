@@ -41,6 +41,7 @@ export class AgentNodes {
         instanceType: 'C54xlarge',
         remoteUser: 'ec2-user',
         maxTotalUses: -1,
+        minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
         amiId: 'ami-00a07e55fcad01043',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
@@ -54,7 +55,8 @@ export class AgentNodes {
         instanceType: 'C54xlarge',
         remoteUser: 'ec2-user',
         maxTotalUses: -1,
-        numExecutors: 8,
+        minimumNumberOfSpareInstances: 2,
+        numExecutors: 4,
         amiId: 'ami-00a07e55fcad01043',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && sudo yum install -y ntp &&'
@@ -67,6 +69,7 @@ export class AgentNodes {
         instanceType: 'M52xlarge',
         remoteUser: 'ec2-user',
         maxTotalUses: -1,
+        minimumNumberOfSpareInstances: 1,
         numExecutors: 8,
         amiId: 'ami-00a07e55fcad01043',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
@@ -80,6 +83,7 @@ export class AgentNodes {
         instanceType: 'C6g4xlarge',
         remoteUser: 'ec2-user',
         maxTotalUses: -1,
+        minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
         amiId: 'ami-020c52efb1a60f1ae',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
@@ -93,7 +97,8 @@ export class AgentNodes {
         instanceType: 'C6g4xlarge',
         remoteUser: 'ec2-user',
         maxTotalUses: -1,
-        numExecutors: 8,
+        minimumNumberOfSpareInstances: 2,
+        numExecutors: 4,
         amiId: 'ami-020c52efb1a60f1ae',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && sudo yum install -y ntp &&'
@@ -106,6 +111,7 @@ export class AgentNodes {
         instanceType: 'C524xlarge',
         remoteUser: 'ubuntu',
         maxTotalUses: 1,
+        minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
         amiId: 'ami-0f6ceb3b3687a3fba',
         initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps &&'
@@ -120,6 +126,7 @@ export class AgentNodes {
         instanceType: 'M52xlarge',
         remoteUser: 'ubuntu',
         maxTotalUses: -1,
+        minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
         amiId: 'ami-0f6ceb3b3687a3fba',
         initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps &&'
@@ -134,6 +141,7 @@ export class AgentNodes {
         instanceType: 'Mac1Metal',
         remoteUser: 'ec2-user',
         maxTotalUses: -1,
+        minimumNumberOfSpareInstances: 1,
         numExecutors: 6,
         amiId: 'ami-022cee9eedb91288a',
         initScript: 'echo',
@@ -145,6 +153,7 @@ export class AgentNodes {
         instanceType: 'C54xlarge',
         remoteUser: 'Administrator',
         maxTotalUses: -1,
+        minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
         amiId: 'ami-07591ca4ef792c2d4',
         initScript: 'echo',
@@ -157,6 +166,7 @@ export class AgentNodes {
         instanceType: 'C54xlarge',
         remoteUser: 'ec2-user',
         maxTotalUses: -1,
+        minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
         amiId: MachineImage.latestAmazonLinux({
           generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
@@ -174,6 +184,7 @@ export class AgentNodes {
         instanceType: 'C6g4xlarge',
         remoteUser: 'ec2-user',
         maxTotalUses: -1,
+        minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
         amiId: MachineImage.latestAmazonLinux({
           generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
