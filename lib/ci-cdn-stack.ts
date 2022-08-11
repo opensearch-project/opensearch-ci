@@ -6,11 +6,10 @@
  * compatible open source license.
  */
 
-import {
-  Construct, Fn, Stack, StackProps,
-} from '@aws-cdk/core';
-import { BuildArtifactsPermissions } from './buildArtifacts/build-artifacts-permissions';
+import { Fn, Stack, StackProps } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import { ArtifactsPublicAccess } from './buildArtifacts/artifacts-public-access';
+import { BuildArtifactsPermissions } from './buildArtifacts/build-artifacts-permissions';
 
 export class CiCdnStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {

@@ -7,24 +7,24 @@
  */
 
 import {
-  FlowLogDestination, FlowLogTrafficType, IPeer, Vpc,
-} from '@aws-cdk/aws-ec2';
-import { Secret } from '@aws-cdk/aws-secretsmanager';
+  CfnOutput, CfnParameter, Fn, Stack, StackProps
+} from 'aws-cdk-lib';
 import {
-  CfnOutput,
-  CfnParameter, Construct, Fn, Stack, StackProps,
-} from '@aws-cdk/core';
-import { ListenerCertificate } from '@aws-cdk/aws-elasticloadbalancingv2';
-import { Bucket } from '@aws-cdk/aws-s3';
+  FlowLogDestination, FlowLogTrafficType, IPeer, Vpc
+} from 'aws-cdk-lib/aws-ec2';
+import { ListenerCertificate } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { Construct } from 'constructs';
+import { CiAuditLogging } from './auditing/ci-audit-logging';
 import { CIConfigStack } from './ci-config-stack';
+import { AgentNodeProps } from './compute/agent-node-config';
+import { AgentNodes } from './compute/agent-nodes';
 import { JenkinsMainNode } from './compute/jenkins-main-node';
+import { RunAdditionalCommands } from './compute/run-additional-commands';
 import { JenkinsMonitoring } from './monitoring/ci-alarms';
 import { JenkinsExternalLoadBalancer } from './network/ci-external-load-balancer';
 import { JenkinsSecurityGroups } from './security/ci-security-groups';
-import { CiAuditLogging } from './auditing/ci-audit-logging';
-import { AgentNodeProps } from './compute/agent-node-config';
-import { AgentNodes } from './compute/agent-nodes';
-import { RunAdditionalCommands } from './compute/run-additional-commands';
 
 export interface CIStackProps extends StackProps {
   /** Should the Jenkins use https  */
@@ -46,7 +46,7 @@ export interface CIStackProps extends StackProps {
   /** Add Mac agent to jenkins */
   readonly macAgent?: boolean;
   /** Restrict jenkins access to */
-  readonly restrictServerAccessTo? : IPeer;
+  readonly restrictServerAccessTo?: IPeer;
   /** Use Production Agents */
   readonly useProdAgents?: boolean;
 }
@@ -118,15 +118,15 @@ export class CIStack extends Stack {
     if (useProdAgents.toString() === 'true') {
       // eslint-disable-next-line no-console
       console.warn('Please note that if you have decided to use the provided production jenkins agents then '
-          + 'please make sure that you are deploying the stack in US-EAST-1 region as the AMIs used are only publicly '
-          + 'available in US-EAST-1 region. '
-          + 'If you want to deploy the stack in another region then please make sure you copy the public AMIs used '
-          + 'from us-east-1 region to your region of choice and update the ami-id in agent-nodes.ts file accordingly. '
-          + 'If you do not copy the AMI in required region and update the code then the jenkins agents will not spin up.');
+        + 'please make sure that you are deploying the stack in US-EAST-1 region as the AMIs used are only publicly '
+        + 'available in US-EAST-1 region. '
+        + 'If you want to deploy the stack in another region then please make sure you copy the public AMIs used '
+        + 'from us-east-1 region to your region of choice and update the ami-id in agent-nodes.ts file accordingly. '
+        + 'If you do not copy the AMI in required region and update the code then the jenkins agents will not spin up.');
 
       this.agentNodes = [agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_HOST, agentNode.AL2_X64_DOCKER_HOST_PERF_TEST,
-        agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_HOST, agentNode.UBUNTU2004_X64, agentNode.UBUNTU2004_X64_DOCKER_BUILDER,
-        agentNode.MACOS12_X64_MULTI_HOST, agentNode.WINDOWS2019_X64];
+      agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_HOST, agentNode.UBUNTU2004_X64, agentNode.UBUNTU2004_X64_DOCKER_BUILDER,
+      agentNode.MACOS12_X64_MULTI_HOST, agentNode.WINDOWS2019_X64];
     } else {
       this.agentNodes = [agentNode.AL2_X64_DEFAULT_AGENT, agentNode.AL2_ARM64_DEFAULT_AGENT];
     }

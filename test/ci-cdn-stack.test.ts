@@ -6,8 +6,8 @@
  * compatible open source license.
  */
 
-import { App } from '@aws-cdk/core';
-import { countResources, expect, haveResourceLike } from '@aws-cdk/assert';
+import { App } from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import { CiCdnStack } from '../lib/ci-cdn-stack';
 
 test('CDN Stack Resources', () => {
@@ -17,20 +17,21 @@ test('CDN Stack Resources', () => {
 
   // WHEN
   const cdnStack = new CiCdnStack(cdnApp, 'cdnTestStack', {});
+  const template = Template.fromStack(cdnStack);
 
   // THEN
-  expect(cdnStack).to(countResources('AWS::IAM::Role', 2));
-  expect(cdnStack).to(countResources('AWS::IAM::Policy', 2));
-  expect(cdnStack).to(countResources('AWS::CloudFront::CloudFrontOriginAccessIdentity', 1));
-  expect(cdnStack).to(countResources('AWS::CloudFront::Distribution', 1));
-  expect(cdnStack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+  template.resourceCountIs('AWS::IAM::Role', 2);
+  template.resourceCountIs('AWS::IAM::Policy', 2);
+  template.resourceCountIs('AWS::CloudFront::CloudFrontOriginAccessIdentity', 1);
+  template.resourceCountIs('AWS::CloudFront::Distribution', 1);
+  template.resourceCountIs('AWS::Lambda::Function', 1);
+  template.hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       DefaultCacheBehavior: {
         DefaultTTL: 300,
       },
     },
-  }));
-  expect(cdnStack).to(countResources('AWS::Lambda::Function', 1));
+  });
 });
 
 test('CDN Stack Resources With mac agent', () => {
@@ -42,18 +43,19 @@ test('CDN Stack Resources With mac agent', () => {
 
   // WHEN
   const cdnStack = new CiCdnStack(cdnApp, 'cdnTestStack', {});
+  const template = Template.fromStack(cdnStack);
 
   // THEN
-  expect(cdnStack).to(countResources('AWS::IAM::Role', 2));
-  expect(cdnStack).to(countResources('AWS::IAM::Policy', 2));
-  expect(cdnStack).to(countResources('AWS::CloudFront::CloudFrontOriginAccessIdentity', 1));
-  expect(cdnStack).to(countResources('AWS::CloudFront::Distribution', 1));
-  expect(cdnStack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+  template.resourceCountIs('AWS::IAM::Role', 2);
+  template.resourceCountIs('AWS::IAM::Policy', 2);
+  template.resourceCountIs('AWS::CloudFront::CloudFrontOriginAccessIdentity', 1);
+  template.resourceCountIs('AWS::CloudFront::Distribution', 1);
+  template.resourceCountIs('AWS::Lambda::Function', 1);
+  template.hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       DefaultCacheBehavior: {
         DefaultTTL: 300,
       },
     },
-  }));
-  expect(cdnStack).to(countResources('AWS::Lambda::Function', 1));
+  });
 });

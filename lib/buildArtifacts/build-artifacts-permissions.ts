@@ -6,10 +6,10 @@
  * compatible open source license.
  */
 
-import { Stack } from '@aws-cdk/core';
+import { Stack } from 'aws-cdk-lib';
 import {
   ArnPrincipal, Effect, Policy, PolicyStatement, Role,
-} from '@aws-cdk/aws-iam';
+} from 'aws-cdk-lib/aws-iam';
 import { CiCdnStack } from '../ci-cdn-stack';
 
 export interface buildArtifactProps {
@@ -32,6 +32,7 @@ export class BuildArtifactsPermissions {
       principals: [new ArnPrincipal(`${props.agentNodeArn}`)],
     }));
 
+    // @ts-ignore
     const opensearchBundlePolicies = BuildArtifactsPermissions.getOpensearchBundlePolicies(stack, props.buildBucketArn);
     opensearchBundlePolicies.forEach((policy) => {
       policy.attachToRole(opensearchBundleRole);

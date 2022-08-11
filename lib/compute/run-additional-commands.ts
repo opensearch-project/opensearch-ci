@@ -6,8 +6,8 @@
  * compatible open source license.
  */
 
-import { Stack } from '@aws-cdk/core';
-import { CfnAssociation, CfnAssociationProps, CfnDocument } from '@aws-cdk/aws-ssm';
+import { Stack } from 'aws-cdk-lib';
+import { CfnAssociation, CfnAssociationProps, CfnDocument } from 'aws-cdk-lib/aws-ssm';
 import { readFileSync } from 'fs';
 
 export class RunAdditionalCommands {

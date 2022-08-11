@@ -6,10 +6,10 @@
  * compatible open source license.
  */
 
+import { Stack } from 'aws-cdk-lib';
 import {
-  IPeer, Peer, Port, SecurityGroup, Vpc,
-} from '@aws-cdk/aws-ec2';
-import { Stack } from '@aws-cdk/core';
+  IPeer, Port, SecurityGroup, Vpc,
+} from 'aws-cdk-lib/aws-ec2';
 
 export class JenkinsSecurityGroups {
   public readonly externalAccessSG: SecurityGroup;
@@ -30,11 +30,11 @@ export class JenkinsSecurityGroups {
       vpc,
       description: 'External access to Jenkins',
     });
-    if (restrictServerAccessTo) {
-      this.externalAccessSG.addIngressRule(restrictServerAccessTo, Port.tcp(accessPort), 'Restrict access to this source');
-    } else {
-      this.externalAccessSG.addIngressRule(Peer.anyIpv4(), Port.tcp(accessPort), 'Allow anyone to connect');
-    }
+    // if (restrictServerAccessTo) {
+    //   this.externalAccessSG.addIngressRule(restrictServerAccessTo, Port.tcp(accessPort), 'Restrict access to this source');
+    // } else {
+    //   this.externalAccessSG.addIngressRule(Peer.anyIpv4(), Port.tcp(accessPort), 'Allow anyone to connect');
+    // }
 
     this.mainNodeSG = new SecurityGroup(stack, 'MainNodeSG', {
       vpc,

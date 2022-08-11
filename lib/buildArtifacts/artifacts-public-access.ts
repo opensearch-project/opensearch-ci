@@ -6,14 +6,14 @@
  * compatible open source license.
  */
 
-import { Bucket } from '@aws-cdk/aws-s3';
+import { CfnOutput, Duration } from 'aws-cdk-lib';
 import {
   CloudFrontAllowedMethods, CloudFrontWebDistribution, LambdaEdgeEventType, OriginAccessIdentity,
-} from '@aws-cdk/aws-cloudfront';
-import { CanonicalUserPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
-import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs';
-import { Architecture, Runtime } from '@aws-cdk/aws-lambda';
-import { CfnOutput, Duration } from '@aws-cdk/core';
+} from 'aws-cdk-lib/aws-cloudfront';
+import { CanonicalUserPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { Architecture, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { CiCdnStack } from '../ci-cdn-stack';
 
 export class ArtifactsPublicAccess {

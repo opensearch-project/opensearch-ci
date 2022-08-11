@@ -6,11 +6,9 @@
  * compatible open source license.
  */
 
-import {
-  expect, countResources, haveResourceLike, ResourcePart,
-} from '@aws-cdk/assert';
-import { Peer } from '@aws-cdk/aws-ec2';
-import { App } from '@aws-cdk/core';
+import { App } from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
+import { Peer } from 'aws-cdk-lib/aws-ec2';
 import { CIStack } from '../lib/ci-stack';
 
 test('CI Stack Basic Resources', () => {
@@ -22,20 +20,21 @@ test('CI Stack Basic Resources', () => {
   const stack = new CIStack(app, 'TestStack', {
     dataRetention: true,
   });
+  const template = Template.fromStack(stack);
 
   // THEN
-  expect(stack).to(countResources('AWS::EC2::Instance', 1));
-  expect(stack).to(countResources('AWS::ElasticLoadBalancingV2::LoadBalancer', 1));
-  expect(stack).to(countResources('AWS::EC2::SecurityGroup', 4));
-  expect(stack).to(countResources('AWS::IAM::Policy', 1));
-  expect(stack).to(countResources('AWS::IAM::Role', 3));
-  expect(stack).to(countResources('AWS::S3::Bucket', 2));
-  expect(stack).to(countResources('Custom::EC2-Key-Pair', 1));
-  expect(stack).to(countResources('AWS::IAM::InstanceProfile', 2));
-  expect(stack).to(countResources('AWS::SSM::Document', 1));
-  expect(stack).to(countResources('AWS::SSM::Association', 1));
-  expect(stack).to(countResources('AWS::EFS::FileSystem', 1));
-  expect(stack).to(countResources('AWS::CloudWatch::Alarm', 5));
+  template.resourceCountIs('AWS::EC2::Instance', 1);
+  template.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+  template.resourceCountIs('AWS::EC2::SecurityGroup', 4);
+  template.resourceCountIs('AWS::IAM::Policy', 1);
+  template.resourceCountIs('AWS::IAM::Role', 3);
+  template.resourceCountIs('AWS::S3::Bucket', 2);
+  template.resourceCountIs('Custom::EC2-Key-Pair', 1);
+  template.resourceCountIs('AWS::IAM::InstanceProfile', 2);
+  template.resourceCountIs('AWS::SSM::Document', 1);
+  template.resourceCountIs('AWS::SSM::Association', 1);
+  template.resourceCountIs('AWS::EFS::FileSystem', 1);
+  template.resourceCountIs('AWS::CloudWatch::Alarm', 5);
 });
 
 test('External security group is open', () => {
@@ -45,25 +44,39 @@ test('External security group is open', () => {
 
   // WHEN
   const stack = new CIStack(app, 'MyTestStack', {});
+  const template = Template.fromStack(stack);
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+  template.hasResourceProperties('AWS::EC2::SecurityGroup', {
     GroupDescription: 'External access to Jenkins',
     SecurityGroupEgress: [
       {
         CidrIp: '0.0.0.0/0',
+        Description: 'Allow all outbound traffic by default',
+        IpProtocol: '-1',
       },
     ],
-  }));
+  });
 
   // Make sure that `open` is false on all the load balancers
-  expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+  template.hasResourceProperties('AWS::EC2::SecurityGroup', {
     SecurityGroupIngress: [
       {
         CidrIp: '0.0.0.0/0',
+        Description: 'Allow anyone to connect',
+        FromPort: 443,
+        IpProtocol: 'tcp',
+        ToPort: 443,
+      },
+      {
+        CidrIp: '0.0.0.0/0',
+        Description: 'Allow from anyone on port 80',
+        FromPort: 80,
+        IpProtocol: 'tcp',
+        ToPort: 80,
       },
     ],
-  }));
+  });
 });
 
 test('External security group is restricted', () => {
@@ -72,26 +85,31 @@ test('External security group is restricted', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'MyTestStack', { restrictServerAccessTo: Peer.ipv4('10.0.0.0/24') });
+  const stack = new CIStack(app, 'MyTestStack', { useSsl: true, restrictServerAccessTo: Peer.ipv4('10.0.0.0/24') });
+  const template = Template.fromStack(stack);
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+  template.hasResourceProperties('AWS::EC2::SecurityGroup', {
     GroupDescription: 'External access to Jenkins',
     SecurityGroupEgress: [
       {
         CidrIp: '0.0.0.0/0',
       },
     ],
-  }));
+  });
 
   // Make sure that load balancer access is restricted to given Ipeer
-  expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+  template.hasResourceProperties('AWS::EC2::SecurityGroup', {
     SecurityGroupIngress: [
       {
         CidrIp: '10.0.0.0/24',
+        Description: 'Restrict access to this source',
+        FromPort: 443,
+        IpProtocol: 'tcp',
+        ToPort: 443,
       },
     ],
-  }));
+  });
 });
 
 test('MainNode', () => {
@@ -103,7 +121,7 @@ test('MainNode', () => {
   const stack = new CIStack(app, 'MyTestStack', {});
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::EC2::Instance', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
     InstanceType: 'c5.4xlarge',
     SecurityGroupIds: [
       {
@@ -119,7 +137,7 @@ test('MainNode', () => {
         Value: 'MyTestStack/MainNode',
       },
     ],
-  }, ResourcePart.Properties));
+  });
 });
 
 test('LoadBalancer', () => {
@@ -131,7 +149,7 @@ test('LoadBalancer', () => {
   const stack = new CIStack(app, 'MyTestStack', {});
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
     SecurityGroups: [
       {
         'Fn::GetAtt': [
@@ -140,7 +158,7 @@ test('LoadBalancer', () => {
         ],
       },
     ],
-  }, ResourcePart.Properties));
+  });
 });
 
 test('CloudwatchCpuAlarm', () => {
@@ -152,10 +170,10 @@ test('CloudwatchCpuAlarm', () => {
   const stack = new CIStack(app, 'MyTestStack', {});
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::CloudWatch::Alarm', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     MetricName: 'CPUUtilization',
     Statistic: 'Average',
-  }, ResourcePart.Properties));
+  });
 });
 
 test('CloudwatchMemoryAlarm', () => {
@@ -167,8 +185,8 @@ test('CloudwatchMemoryAlarm', () => {
   const stack = new CIStack(app, 'MyTestStack', {});
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::CloudWatch::Alarm', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     MetricName: 'mem_used_percent',
     Statistic: 'Average',
-  }, ResourcePart.Properties));
+  });
 });

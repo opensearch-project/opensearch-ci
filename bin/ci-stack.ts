@@ -6,14 +6,14 @@
  * compatible open source license.
  */
 
-import { App } from '@aws-cdk/core';
-import { CIStack } from '../lib/ci-stack';
-import { CIConfigStack } from '../lib/ci-config-stack';
+import { App } from 'aws-cdk-lib';
 import { CiCdnStack } from '../lib/ci-cdn-stack';
+import { CIConfigStack } from '../lib/ci-config-stack';
+import { CIStack } from '../lib/ci-stack';
 
 const app = new App();
 
-const defaultEnv: string = 'Dev';
+const defaultEnv: string = 'lol';
 
 const ciConfigStack = new CIConfigStack(app, `OpenSearch-CI-Config-${defaultEnv}`, {});
 

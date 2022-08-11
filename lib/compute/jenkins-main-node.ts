@@ -6,36 +6,23 @@
  * compatible open source license.
  */
 
-import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, Stack } from 'aws-cdk-lib';
+import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import {
-  AmazonLinuxGeneration,
-  BlockDeviceVolume,
-  CloudFormationInit,
-  InitCommand,
-  InitElement,
-  InitFile,
-  InitPackage,
-  Instance,
-  InstanceClass,
-  InstanceSize,
-  InstanceType,
-  MachineImage,
-  SecurityGroup,
-  SubnetType,
-  Vpc,
-} from '@aws-cdk/aws-ec2';
+  AmazonLinuxGeneration, BlockDeviceVolume, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage,
+  Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc,
+} from 'aws-cdk-lib/aws-ec2';
+import { FileSystem, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
 import {
   IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
-} from '@aws-cdk/aws-iam';
-import { Metric, Unit } from '@aws-cdk/aws-cloudwatch';
-import { join } from 'path';
-import { dump } from 'js-yaml';
+} from 'aws-cdk-lib/aws-iam';
 import { writeFileSync } from 'fs';
-import { FileSystem, PerformanceMode, ThroughputMode } from '@aws-cdk/aws-efs';
-import { OidcConfig } from './oidc-config';
-import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
+import { dump } from 'js-yaml';
+import { join } from 'path';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
+import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
 import { EnvConfig } from './env-config';
+import { OidcConfig } from './oidc-config';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -56,7 +43,7 @@ interface DataRetentionProps {
   readonly efsSG?: SecurityGroup;
 }
 
-export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, AgentNodeNetworkProps, DataRetentionProps{
+export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, AgentNodeNetworkProps, DataRetentionProps {
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
   readonly envVarsFilePath: string;
@@ -121,7 +108,7 @@ export class JenkinsMainNode {
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
       }),
       role: new Role(stack, 'OpenSearch-CI-MainNodeRole', {
-        roleName: 'OpenSearch-CI-MainNodeRole',
+        // roleName: 'OpenSearch-CI-MainNodeRole',
         assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
       }),
       initOptions: {
@@ -220,7 +207,7 @@ export class JenkinsMainNode {
   }
 
   public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps,
-    oidcFederateProps: OidcFederateProps, dataRetentionProps : DataRetentionProps, jenkinsyaml: string,
+    oidcFederateProps: OidcFederateProps, dataRetentionProps: DataRetentionProps, jenkinsyaml: string,
     reloadPasswordSecretsArn: string, efsId?: string): InitElement[] {
     return [
       InitPackage.yum('wget'),
@@ -367,9 +354,9 @@ export class JenkinsMainNode {
       InitFile.fromFileInline('/docker-compose.yml', join(__dirname, '../../resources/docker-compose.yml')),
 
       InitCommand.shellCommand('systemctl start docker &&'
-      + ` var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${reloadPasswordSecretsArn} --query SecretString --output text\` &&`
-      + ' yq -i \'.services.jenkins.environment[1] = "CASC_RELOAD_TOKEN=\'$var\'"\' docker-compose.yml &&'
-      + ' docker-compose up -d'),
+        + ` var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${reloadPasswordSecretsArn} --query SecretString --output text\` &&`
+        + ' yq -i \'.services.jenkins.environment[1] = "CASC_RELOAD_TOKEN=\'$var\'"\' docker-compose.yml &&'
+        + ' docker-compose up -d'),
 
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 90 seconds to wait for jenkins to start
@@ -390,12 +377,12 @@ export class JenkinsMainNode {
 
       // Reload configuration via Jenkins.yaml
       InitCommand.shellCommand('cp /initial_jenkins.yaml /var/lib/jenkins/jenkins.yaml &&'
-      + ` var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${reloadPasswordSecretsArn} --query SecretString --output text\` &&`
-      + ' curl  -f -X POST "http://localhost:8080/reload-configuration-as-code/?casc-reload-token=$var"'),
+        + ` var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${reloadPasswordSecretsArn} --query SecretString --output text\` &&`
+        + ' curl  -f -X POST "http://localhost:8080/reload-configuration-as-code/?casc-reload-token=$var"'),
     ];
   }
 
-  public static addConfigtoJenkinsYaml(stack: Stack, jenkinsMainNodeProps:JenkinsMainNodeProps, oidcProps: OidcFederateProps, agentNodeObject: AgentNodeConfig,
+  public static addConfigtoJenkinsYaml(stack: Stack, jenkinsMainNodeProps: JenkinsMainNodeProps, oidcProps: OidcFederateProps, agentNodeObject: AgentNodeConfig,
     props: AgentNodeNetworkProps, agentNode: AgentNodeProps[], macAgent: string): string {
     let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(stack, agentNode, props, macAgent);
     if (oidcProps.runWithOidc) {

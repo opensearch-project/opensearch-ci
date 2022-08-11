@@ -6,11 +6,11 @@
  * compatible open source license.
  */
 
-import { Bucket, BucketAccessControl } from '@aws-cdk/aws-s3';
-import { Duration, Stack } from '@aws-cdk/core';
+import { Duration, Stack } from 'aws-cdk-lib';
+import { Bucket, BucketAccessControl } from 'aws-cdk-lib/aws-s3';
 
 export class CiAuditLogging {
-  public readonly bucket : Bucket;
+  public readonly bucket: Bucket;
 
   constructor(stack: Stack) {
     this.bucket = new Bucket(stack, 'jenkinsAuditBucket', {

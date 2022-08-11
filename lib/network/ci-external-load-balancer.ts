@@ -6,15 +6,12 @@
  * compatible open source license.
  */
 
+import { CfnOutput, Stack } from 'aws-cdk-lib';
+import { Instance, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import {
-  Instance, SecurityGroup, Vpc,
-} from '@aws-cdk/aws-ec2';
-import {
-  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
-  ListenerCertificate, Protocol, SslPolicy,
-} from '@aws-cdk/aws-elasticloadbalancingv2';
-import { InstanceTarget } from '@aws-cdk/aws-elasticloadbalancingv2-targets';
-import { CfnOutput, Stack } from '@aws-cdk/core';
+  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, ListenerCertificate, Protocol, SslPolicy,
+} from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import { InstanceTarget } from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
 
 export interface JenkinsExternalLoadBalancerProps {
   readonly vpc: Vpc;
