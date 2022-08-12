@@ -32,7 +32,6 @@ export class BuildArtifactsPermissions {
       principals: [new ArnPrincipal(`${props.agentNodeArn}`)],
     }));
 
-    // @ts-ignore
     const opensearchBundlePolicies = BuildArtifactsPermissions.getOpensearchBundlePolicies(stack, props.buildBucketArn);
     opensearchBundlePolicies.forEach((policy) => {
       policy.attachToRole(opensearchBundleRole);
