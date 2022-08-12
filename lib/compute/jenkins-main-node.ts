@@ -10,11 +10,11 @@ import { CfnOutput, Duration, Stack } from 'aws-cdk-lib';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import {
   AmazonLinuxGeneration, BlockDeviceVolume, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage,
-  Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc,
+  Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc
 } from 'aws-cdk-lib/aws-ec2';
 import { FileSystem, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
 import {
-  IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
+  IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal
 } from 'aws-cdk-lib/aws-iam';
 import { writeFileSync } from 'fs';
 import { dump } from 'js-yaml';
@@ -134,6 +134,7 @@ export class JenkinsMainNode {
         deviceName: '/dev/xvda',
         volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),
       }],
+      detailedMonitoring: true
     });
 
     JenkinsMainNode.createPoliciesForMainNode(stack).map(
