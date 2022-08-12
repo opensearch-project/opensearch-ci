@@ -8,7 +8,7 @@
 
 import { Stack } from 'aws-cdk-lib';
 import {
-  Alarm, AlarmWidget, ComparisonOperator, Dashboard, Metric, TreatMissingData
+  Alarm, AlarmWidget, ComparisonOperator, Dashboard, Metric, TreatMissingData,
 } from 'aws-cdk-lib/aws-cloudwatch';
 import { JenkinsMainNode } from '../compute/jenkins-main-node';
 import { JenkinsExternalLoadBalancer } from '../network/ci-external-load-balancer';

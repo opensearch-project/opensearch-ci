@@ -7,10 +7,10 @@
  */
 
 import {
-  CfnOutput, CfnParameter, Fn, Stack, StackProps
+  CfnOutput, CfnParameter, Fn, Stack, StackProps,
 } from 'aws-cdk-lib';
 import {
-  FlowLogDestination, FlowLogTrafficType, IPeer, Vpc
+  FlowLogDestination, FlowLogTrafficType, IPeer, Vpc,
 } from 'aws-cdk-lib/aws-ec2';
 import { ListenerCertificate } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
@@ -125,8 +125,8 @@ export class CIStack extends Stack {
         + 'If you do not copy the AMI in required region and update the code then the jenkins agents will not spin up.');
 
       this.agentNodes = [agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_HOST, agentNode.AL2_X64_DOCKER_HOST_PERF_TEST,
-      agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_HOST, agentNode.UBUNTU2004_X64, agentNode.UBUNTU2004_X64_DOCKER_BUILDER,
-      agentNode.MACOS12_X64_MULTI_HOST, agentNode.WINDOWS2019_X64];
+        agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_HOST, agentNode.UBUNTU2004_X64, agentNode.UBUNTU2004_X64_DOCKER_BUILDER,
+        agentNode.MACOS12_X64_MULTI_HOST, agentNode.WINDOWS2019_X64];
     } else {
       this.agentNodes = [agentNode.AL2_X64_DEFAULT_AGENT, agentNode.AL2_ARM64_DEFAULT_AGENT];
     }

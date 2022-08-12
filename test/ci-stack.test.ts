@@ -108,6 +108,13 @@ test('External security group is restricted', () => {
         IpProtocol: 'tcp',
         ToPort: 443,
       },
+      {
+        CidrIp: '0.0.0.0/0',
+        Description: 'Allow from anyone on port 80',
+        FromPort: 80,
+        IpProtocol: 'tcp',
+        ToPort: 80,
+      },
     ],
   });
 });

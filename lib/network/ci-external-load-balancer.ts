@@ -29,14 +29,14 @@ export class JenkinsExternalLoadBalancer {
   public readonly targetGroup: ApplicationTargetGroup;
 
   constructor(stack: Stack, props: JenkinsExternalLoadBalancerProps) {
+    const accessPort = props.useSsl ? 443 : 80;
+
     // Using an ALB so it can be part of a security group rather than by whitelisting ip addresses
     this.loadBalancer = new ApplicationLoadBalancer(stack, 'JenkinsALB', {
       vpc: props.vpc,
       securityGroup: props.sg,
       internetFacing: true,
     });
-
-    const accessPort = props.useSsl ? 443 : 80;
 
     this.listener = this.loadBalancer.addListener('JenkinsListener', {
       sslPolicy: props.useSsl ? SslPolicy.RECOMMENDED : undefined,

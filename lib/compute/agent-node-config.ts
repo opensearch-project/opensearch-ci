@@ -7,10 +7,10 @@
  */
 
 import {
-  CfnOutput, Fn, Stack, Tags
+  CfnOutput, Fn, Stack, Tags,
 } from 'aws-cdk-lib';
 import {
-  CfnInstanceProfile, Effect, ManagedPolicy, PolicyStatement, Role, ServicePrincipal
+  CfnInstanceProfile, Effect, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { KeyPair } from 'cdk-ec2-key-pair';
 import { readFileSync } from 'fs';
@@ -57,7 +57,7 @@ export class AgentNodeConfig {
       assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
       // assumedBy: new AccountPrincipal(this.ACCOUNT),
       description: 'Jenkins agents Node Role',
-      //  roleName: 'OpenSearch-CI-AgentNodeRole',
+      roleName: 'OpenSearch-CI-AgentNodeRole',
     });
 
     const ecrManagedPolicy = new ManagedPolicy(stack, 'OpenSearch-CI-AgentNodePolicy', {

@@ -108,7 +108,7 @@ export class JenkinsMainNode {
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
       }),
       role: new Role(stack, 'OpenSearch-CI-MainNodeRole', {
-        // roleName: 'OpenSearch-CI-MainNodeRole',
+        roleName: 'OpenSearch-CI-MainNodeRole',
         assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
       }),
       initOptions: {
