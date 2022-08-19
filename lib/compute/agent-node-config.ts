@@ -24,9 +24,10 @@ export interface AgentNodeProps {
    workerLabelString: string;
    remoteUser: string;
    maxTotalUses: number;
+   minimumNumberOfSpareInstances: number;
    numExecutors: number;
-   initScript: string,
-  remoteFs: string
+   initScript: string;
+   remoteFs: string;
  }
 export interface AgentNodeNetworkProps {
    readonly agentNodeSecurityGroup: string;
@@ -174,7 +175,7 @@ export class AgentNodeConfig {
        launchTimeoutStr: '300',
        maxTotalUses: config.maxTotalUses,
        minimumNumberOfInstances: 0,
-       minimumNumberOfSpareInstances: 1,
+       minimumNumberOfSpareInstances: config.minimumNumberOfSpareInstances,
        mode: 'EXCLUSIVE',
        monitoring: true,
        numExecutors: config.numExecutors,
@@ -220,7 +221,7 @@ export class AgentNodeConfig {
        initScript: config.initScript,
        maxTotalUses: config.maxTotalUses,
        minimumNumberOfInstances: 1,
-       minimumNumberOfSpareInstances: 0,
+       minimumNumberOfSpareInstances: config.minimumNumberOfSpareInstances,
        mode: 'EXCLUSIVE',
        monitoring: true,
        numExecutors: config.numExecutors,
@@ -271,7 +272,7 @@ export class AgentNodeConfig {
        launchTimeoutStr: '1000',
        maxTotalUses: config.maxTotalUses,
        minimumNumberOfInstances: 0,
-       minimumNumberOfSpareInstances: 1,
+       minimumNumberOfSpareInstances: config.minimumNumberOfSpareInstances,
        mode: 'EXCLUSIVE',
        monitoring: true,
        nodeProperties:
