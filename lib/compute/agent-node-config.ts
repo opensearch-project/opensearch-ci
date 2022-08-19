@@ -275,11 +275,6 @@ export class AgentNodeConfig {
        minimumNumberOfSpareInstances: config.minimumNumberOfSpareInstances,
        mode: 'EXCLUSIVE',
        monitoring: true,
-       nodeProperties:
-        - toolLocation:
-            locations:
-            - home: "C:\\Users\\Administrator\\scoop\\shims\\git.exe"
-              key: "hudson.plugins.git.GitTool$DescriptorImpl@Default"
        numExecutors: config.numExecutors,
        remoteAdmin: config.remoteUser,
        remoteFS: config.remoteFs,
