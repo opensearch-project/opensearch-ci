@@ -86,17 +86,12 @@ export class JenkinsMainNode {
   public readonly ec2Instance: Instance;
 
   public readonly ec2InstanceMetrics: {
-    cpuTime: Metric,
     memUsed: Metric,
     foundJenkinsProcessCount: Metric
   }
 
   constructor(stack: Stack, props: JenkinsMainNodeProps, agentNode: AgentNodeProps[], macAgent: string, assumeRole?: string[]) {
     this.ec2InstanceMetrics = {
-      cpuTime: new Metric({
-        metricName: 'procstat_cpu_usage',
-        namespace: `${stack.stackName}/JenkinsMainNode`,
-      }),
       memUsed: new Metric({
         metricName: 'mem_used_percent',
         namespace: `${stack.stackName}/JenkinsMainNode`,
@@ -236,10 +231,11 @@ export class JenkinsMainNode {
       InitPackage.yum('docker'),
       InitPackage.yum('python3'),
       InitPackage.yum('python3-pip.noarch'),
-      InitCommand.shellCommand('pip3 install docker-compose && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose'),
       InitCommand.shellCommand('pip3 install botocore'),
       // eslint-disable-next-line max-len
       InitCommand.shellCommand('sudo wget -nv https://github.com/mikefarah/yq/releases/download/v4.22.1/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq'),
+      // eslint-disable-next-line max-len
+      InitCommand.shellCommand('sudo curl -L https://github.com/docker/compose/releases/download/v2.9.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/bin/docker-compose && sudo chmod +x /usr/bin/docker-compose'),
       InitCommand.shellCommand('python3 -m pip install --upgrade pip && python3 -m pip install cryptography boto3 requests-aws4auth'),
 
       InitCommand.shellCommand(httpConfigProps.useSsl
