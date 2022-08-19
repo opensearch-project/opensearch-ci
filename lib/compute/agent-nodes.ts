@@ -144,7 +144,7 @@ export class AgentNodes {
         workerLabelString: 'Jenkins-Agent-Windows2019-X64-C54xlarge-Single-Host',
         instanceType: 'C54xlarge',
         remoteUser: 'Administrator',
-        maxTotalUses: -1,
+        maxTotalUses: 10,
         numExecutors: 1,
         amiId: 'ami-0b9a1c5225886eddb',
         initScript: 'echo',

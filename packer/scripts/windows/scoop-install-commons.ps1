@@ -27,6 +27,8 @@ git config --system core.packedGitWindowSize 128m
 git config --system pack.deltaCacheSize 128m
 git config --system pack.packSizeLimit 128m
 git config --system pack.windowMemory 128m
+git config --system http.postBuffer 524288000
+git config --system --list
 
 # Setup Repos (This has to happen after git is installed or will error out)
 scoop bucket add java
