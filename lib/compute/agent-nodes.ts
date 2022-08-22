@@ -43,10 +43,9 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
-        amiId: 'ami-00a07e55fcad01043',
+        amiId: 'ami-0f4b3da171b6ab7f6',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && sudo yum install -y ntp &&'
-        + ' sudo systemctl restart ntpd && sudo systemctl enable ntpd',
+        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
       };
       this.AL2_X64_DOCKER_HOST = {
@@ -57,10 +56,9 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 2,
         numExecutors: 4,
-        amiId: 'ami-00a07e55fcad01043',
+        amiId: 'ami-0f4b3da171b6ab7f6',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && sudo yum install -y ntp &&'
-        + ' sudo systemctl restart ntpd && sudo systemctl enable ntpd',
+        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
       };
       this.AL2_X64_DOCKER_HOST_PERF_TEST = {
@@ -71,10 +69,9 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 1,
         numExecutors: 8,
-        amiId: 'ami-00a07e55fcad01043',
+        amiId: 'ami-0f4b3da171b6ab7f6',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && sudo yum install -y ntp &&'
-        + ' sudo systemctl restart ntpd && sudo systemctl enable ntpd',
+        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
       };
       this.AL2_ARM64 = {
@@ -85,10 +82,9 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
-        amiId: 'ami-020c52efb1a60f1ae',
+        amiId: 'ami-057e2c7ce228663c2',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && sudo yum install -y ntp &&'
-        + ' sudo systemctl restart ntpd && sudo systemctl enable ntpd',
+        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
       };
       this.AL2_ARM64_DOCKER_HOST = {
@@ -99,10 +95,9 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 2,
         numExecutors: 4,
-        amiId: 'ami-020c52efb1a60f1ae',
+        amiId: 'ami-057e2c7ce228663c2',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && sudo yum install -y ntp &&'
-        + ' sudo systemctl restart ntpd && sudo systemctl enable ntpd',
+        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
       };
       this.UBUNTU2004_X64 = {

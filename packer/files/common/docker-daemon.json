@@ -1,0 +1,10 @@
+{
+  "default-ulimits": {
+    "nofile": {
+      "Hard": 65535,
+      "Name": "nofile",
+      "Soft": 65535
+    }
+  },
+  "default-shm-size": "1024M"
+}
