@@ -18,7 +18,7 @@ sudo yum install -y ntp && sudo systemctl restart ntpd && sudo systemctl enable 
 
 sudo yum install -y java-1.8.0-openjdk which curl git gnupg2 tar net-tools procps-ng python3 python3-devel python3-pip zip unzip jq
 sudo yum groupinstall -y "Development Tools"
-sudo ln -sfn `which pip3` /usr/bin/pip && pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin
+sudo ln -sfn `which pip3` /usr/bin/pip && pip3 install pipenv awscli && sudo ln -s ~/.local/bin/pipenv /usr/local/bin
 
 sudo yum install -y docker docker-compose
 sudo systemctl restart docker && sudo systemctl enable docker && sudo systemctl status docker

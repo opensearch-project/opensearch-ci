@@ -5,7 +5,7 @@ jenkins:
       region: "us-east-1"
       sshKeysCredentialsId: "jenkins-staging-agent-node-ssh-key"
       templates:
-      - ami: "ami-0379811a08268a97e"
+      - ami: "ami-022cee9eedb91288a"
         amiType:
           macData:
             sshPort: "22"
