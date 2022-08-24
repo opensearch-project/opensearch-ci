@@ -43,10 +43,9 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
-        amiId: 'ami-00a07e55fcad01043',
+        amiId: 'ami-0ccf8e1ac9737b4ef',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && sudo yum install -y ntp &&'
-        + ' sudo systemctl restart ntpd && sudo systemctl enable ntpd',
+        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
       };
       this.AL2_X64_DOCKER_HOST = {
@@ -57,10 +56,9 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 2,
         numExecutors: 4,
-        amiId: 'ami-00a07e55fcad01043',
+        amiId: 'ami-0ccf8e1ac9737b4ef',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && sudo yum install -y ntp &&'
-        + ' sudo systemctl restart ntpd && sudo systemctl enable ntpd',
+        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
       };
       this.AL2_X64_DOCKER_HOST_PERF_TEST = {
@@ -71,10 +69,9 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 1,
         numExecutors: 8,
-        amiId: 'ami-00a07e55fcad01043',
+        amiId: 'ami-0ccf8e1ac9737b4ef',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && sudo yum install -y ntp &&'
-        + ' sudo systemctl restart ntpd && sudo systemctl enable ntpd',
+        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
       };
       this.AL2_ARM64 = {
@@ -85,10 +82,9 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
-        amiId: 'ami-020c52efb1a60f1ae',
+        amiId: 'ami-041174f2e48340a67',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && sudo yum install -y ntp &&'
-        + ' sudo systemctl restart ntpd && sudo systemctl enable ntpd',
+        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
       };
       this.AL2_ARM64_DOCKER_HOST = {
@@ -99,10 +95,9 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 2,
         numExecutors: 4,
-        amiId: 'ami-020c52efb1a60f1ae',
+        amiId: 'ami-041174f2e48340a67',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && sudo yum install -y ntp &&'
-        + ' sudo systemctl restart ntpd && sudo systemctl enable ntpd',
+        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
       };
       this.UBUNTU2004_X64 = {
@@ -113,11 +108,9 @@ export class AgentNodes {
         maxTotalUses: 1,
         minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
-        amiId: 'ami-0f6ceb3b3687a3fba',
+        amiId: 'ami-040e74fae4a05e7d4',
         initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps &&'
-        + ' sudo apt-get update && (sudo killall -9 apt-get apt 2>&1 || echo) &&'
-        + ' sudo apt-get upgrade -y && sudo apt-get install -y ntp docker-compose &&'
-        + ' sudo systemctl restart ntp && sudo systemctl enable ntp',
+        + ' sudo apt-get update && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo apt-get upgrade',
         remoteFs: '/var/jenkins',
       };
       this.UBUNTU2004_X64_DOCKER_BUILDER = {
@@ -128,11 +121,9 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
-        amiId: 'ami-0f6ceb3b3687a3fba',
+        amiId: 'ami-040e74fae4a05e7d4',
         initScript: 'sudo apt-mark hold docker docker.io openssh-server && docker ps &&'
-        + ' sudo apt-get update && (sudo killall -9 apt-get apt 2>&1 || echo) &&'
-        + ' sudo apt-get upgrade -y && sudo apt-get install -y ntp docker-compose &&'
-        + ' sudo systemctl restart ntp && sudo systemctl enable ntp',
+        + ' sudo apt-get update && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo apt-get upgrade',
         remoteFs: '/var/jenkins',
       };
       this.MACOS12_X64_MULTI_HOST = {

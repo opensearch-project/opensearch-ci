@@ -1,7 +1,7 @@
 {
   "variables": {
-    "name-base":"Jenkins-Agent-Windows2019-X64",
-    "os-version": "Windows2019",
+    "name-base":"Jenkins-Agent-Ubuntu2004-X64",
+    "os-version": "Ubuntu2004",
     "build-region":"us-east-1",
     "build-vpc":"vpc-<>",
     "build-subnet":"subnet-<>",
@@ -26,22 +26,18 @@
         "filters": {
           "virtualization-type":"hvm",
           "architecture":"x86_64",
-          "name": "Windows_Server-2019-English-Full-Base-20*",
+          "name": "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20*",
           "block-device-mapping.volume-type":"gp2",
           "root-device-type":"ebs"
         },
         "owners": [
-          "amazon"
+          "099720109477"
         ],
         "most_recent":true
       },
-      "user_data_file":"scripts/windows/userdata.ps1",
       "associate_public_ip_address":false,
-      "communicator":"winrm",
-      "winrm_username":"Administrator",
-      "winrm_timeout":"40m",
-      "windows_password_timeout":"30m",
-      "winrm_insecure":true,
+      "ssh_username":  "ubuntu",
+      "ssh_timeout": "3h",
       "tags": {
         "Name": "{{user `name-base`}}-{{user `build-time`}}",
         "OS_Version":"{{user `os-version`}}",
@@ -61,25 +57,36 @@
   ],
   "provisioners": [
     {
-      "type":"powershell",
+      "type": "file",
+      "source": "files/common/vm-max-map.sh",
+      "destination":
+         "/tmp/vm_max_map.sh"
+    },
+    {
+      "type": "file",
+      "source": "files/common/docker-daemon.json",
+      "destination":
+         "/tmp/daemon.json"
+    },
+    {
+      "type":"shell",
       "scripts": [
-        "scripts/windows/smb-setup-2019-plus.ps1",
-        "scripts/windows/longpath-setup.ps1",
-        "scripts/windows/scoop-setup.ps1",
-        "scripts/windows/scoop-install-commons.ps1",
-        "scripts/windows/pip-install.ps1"
-      ],
-      "max_retries": 3
-    },
-    {
-      "type": "windows-restart"
-    },
-    {
-      "type":"powershell",
-      "inline": [
-        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeInstance.ps1 -Schedule",
-        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1 -NoShutdown"
+        "scripts/ubuntu2004/ubuntu2004-agent-setups.sh"
       ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo mv -v /tmp/vm_max_map.sh /etc/profile.d/vm_max_map.sh",
+        "sudo mv -v /tmp/daemon.json /etc/docker/daemon.json"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo reboot"
+      ],
+      "expect_disconnect": true
     }
   ]
 }
