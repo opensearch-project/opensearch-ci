@@ -1,7 +1,7 @@
 {
   "variables": {
-    "name-base":"Jenkins-Agent-UBUNTU2004-X64",
-    "os-version": "UBUNTU2004",
+    "name-base":"Jenkins-Agent-Ubuntu2004-X64",
+    "os-version": "Ubuntu2004",
     "build-region":"us-east-1",
     "build-vpc":"vpc-<>",
     "build-subnet":"subnet-<>",
