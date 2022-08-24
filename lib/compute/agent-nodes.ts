@@ -43,7 +43,7 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
-        amiId: 'ami-0f4b3da171b6ab7f6',
+        amiId: 'ami-0a5a0f108712c925f',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
@@ -56,7 +56,7 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 2,
         numExecutors: 4,
-        amiId: 'ami-0f4b3da171b6ab7f6',
+        amiId: 'ami-0a5a0f108712c925f',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
@@ -69,7 +69,7 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 1,
         numExecutors: 8,
-        amiId: 'ami-0f4b3da171b6ab7f6',
+        amiId: 'ami-0a5a0f108712c925f',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
@@ -82,7 +82,7 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 1,
         numExecutors: 1,
-        amiId: 'ami-057e2c7ce228663c2',
+        amiId: 'ami-0b956e9dcdeca510f',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
@@ -95,7 +95,7 @@ export class AgentNodes {
         maxTotalUses: -1,
         minimumNumberOfSpareInstances: 2,
         numExecutors: 4,
-        amiId: 'ami-057e2c7ce228663c2',
+        amiId: 'ami-0b956e9dcdeca510f',
         initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
         remoteFs: '/var/jenkins',
