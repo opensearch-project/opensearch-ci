@@ -21,10 +21,19 @@ $gitPathFound
 # Add to EnvVar
 $userenv = [System.Environment]::GetEnvironmentVariable("Path", "User")
 [System.Environment]::SetEnvironmentVariable("PATH", $userenv + ";$gitPathFound", "User")
+# Make sure mem size are set to avoid "Out of memory, malloc failed" issues on Windows
+git config --system core.packedGitLimit 128m
+git config --system core.packedGitWindowSize 128m
+git config --system pack.deltaCacheSize 128m
+git config --system pack.packSizeLimit 128m
+git config --system pack.windowMemory 128m
+git config --system http.postBuffer 524288000
+git config --system --list
 
 # Setup Repos (This has to happen after git is installed or will error out)
 scoop bucket add java
 scoop bucket add versions
+scoop bucket add github-gh https://github.com/cli/scoop-gh.git
 
 # Install jdk8
 scoop install temurin8-jdk
@@ -77,6 +86,10 @@ jq --version
 # Install yq
 scoop install yq
 yq --version
+
+# Install gh
+scoop install gh
+gh version
 
 # Install dev tools
 scoop install cmake
