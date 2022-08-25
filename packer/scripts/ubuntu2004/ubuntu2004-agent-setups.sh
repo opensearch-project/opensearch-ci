@@ -18,6 +18,7 @@ sudo apt-get install -y build-essential
 
 sudo systemctl restart ntp && sudo systemctl enable ntp && sudo systemctl status ntp
 sudo systemctl restart docker && sudo systemctl enable docker && sudo systemctl status docker
+sudo usermod -a -G docker `whoami`
 
 curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
 && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
