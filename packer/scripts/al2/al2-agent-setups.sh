@@ -20,6 +20,8 @@ sudo yum install -y docker docker-compose ntp
 sudo yum groupinstall -y "Development Tools"
 sudo ln -sfn `which pip3` /usr/bin/pip && pip3 install pipenv awscli && sudo ln -s ~/.local/bin/pipenv /usr/local/bin
 
+sudo sed -i 's/OPTIONS/# OPTIONS/g' /etc/sysconfig/docker
+cat /etc/sysconfig/docker
 sudo systemctl restart docker && sudo systemctl enable docker && sudo systemctl status docker
 sudo systemctl restart ntpd && sudo systemctl enable ntpd && sudo systemctl status ntpd
 sudo usermod -a -G docker `whoami`

@@ -43,9 +43,9 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-00720b45336027183',
+      amiId: 'ami-02741203de07205f3',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-      + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
+      + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2_X64_DOCKER_HOST = {
@@ -56,9 +56,9 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 2,
       numExecutors: 4,
-      amiId: 'ami-00720b45336027183',
+      amiId: 'ami-02741203de07205f3',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-      + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
+      + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2_X64_DOCKER_HOST_PERF_TEST = {
@@ -69,9 +69,9 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 8,
-      amiId: 'ami-00720b45336027183',
+      amiId: 'ami-02741203de07205f3',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-      + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
+      + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2_ARM64 = {
@@ -82,9 +82,9 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-035e7bb561d70a387',
+      amiId: 'ami-036fed467cf2ed593',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-      + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
+      + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2_ARM64_DOCKER_HOST = {
@@ -95,9 +95,9 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 2,
       numExecutors: 4,
-      amiId: 'ami-035e7bb561d70a387',
+      amiId: 'ami-036fed467cf2ed593',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-      + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y',
+      + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.UBUNTU2004_X64 = {
