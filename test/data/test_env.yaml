@@ -15,7 +15,7 @@ jenkins:
       disableSyntaxHighlighting: true
   mode: EXCLUSIVE
   myViewsTabBar: standard
-  numExecutors: 4
+  numExecutors: 10
   primaryView:
     all:
       name: all

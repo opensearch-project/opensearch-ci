@@ -11,18 +11,18 @@ services:
       - 50000:50000
     container_name: jenkins
     environment:
-      - JENKINS_JAVA_OPTS="-Xmx18g"
+      - JENKINS_JAVA_OPTS="-Xmx60g"
       - CASC_RELOAD_TOKEN=reloadPasswordHere
     volumes:
       - /var/lib/jenkins:/var/jenkins_home
     deploy:
       resources:
         limits:
-          cpus: '12'
-          memory: '20g'
+          cpus: '30'
+          memory: '63g'
         reservations:
-          cpus: '12'
-          memory: '20g'
+          cpus: '30'
+          memory: '63g'
     logging:
       driver: awslogs
       options:

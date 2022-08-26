@@ -104,7 +104,7 @@ test('MainNode', () => {
 
   // THEN
   expect(stack).to(haveResourceLike('AWS::EC2::Instance', {
-    InstanceType: 'c5.4xlarge',
+    InstanceType: 'c5.9xlarge',
     SecurityGroupIds: [
       {
         'Fn::GetAtt': [
