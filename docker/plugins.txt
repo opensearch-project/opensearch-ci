@@ -71,3 +71,4 @@ ws-cleanup
 job-import-plugin
 workflow-multibranch
 pipeline-utility-steps
+blueocean:1.25.6
