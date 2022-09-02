@@ -33,7 +33,7 @@ git config --system pack.threads 1
 git config --system core.compression 0
 git config --system protocol.version 1
 git config --system --list
-# Remove system32 find in case it gets conflicted with POSIX find
+# Rename system32 find.exe in case it gets conflicted with POSIX find
 mv -v 'C:\\Windows\\System32\\find.exe' 'C:\\Windows\\System32\\find_windows.exe'
 
 # Setup Repos (This has to happen after git is installed or will error out)
