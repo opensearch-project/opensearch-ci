@@ -24,11 +24,17 @@ $userenv = [System.Environment]::GetEnvironmentVariable("Path", "User")
 # Make sure mem size are set to avoid "Out of memory, malloc failed" issues on Windows
 git config --system core.packedGitLimit 128m
 git config --system core.packedGitWindowSize 128m
+git config --system core.longPaths true
 git config --system pack.deltaCacheSize 128m
 git config --system pack.packSizeLimit 128m
 git config --system pack.windowMemory 128m
-#git config --system http.postBuffer 524288000 # Comment it out for now as it is calling malloc issues
+git config --system pack.window 0
+git config --system pack.threads 1
+git config --system core.compression 0
+git config --system protocol.version 1
 git config --system --list
+# Rename system32 find.exe in case it gets conflicted with POSIX find
+mv -v 'C:\\Windows\\System32\\find.exe' 'C:\\Windows\\System32\\find_windows.exe'
 
 # Setup Repos (This has to happen after git is installed or will error out)
 scoop bucket add java
