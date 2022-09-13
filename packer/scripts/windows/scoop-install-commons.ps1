@@ -16,7 +16,7 @@ $fileName = 'nohup.exe'
 $fileDir = 'C:\\Users\\Administrator\\scoop\\apps\\git'
 $fileFound = (Get-ChildItem -Path $fileDir -Filter $fileName -Recurse | %{$_.FullName} | select -first 1)
 $fileFound
-$gitPathFound = $fileFound.replace('nohup.exe', '')
+$gitPathFound = $fileFound.replace("$fileName", '')
 $gitPathFound
 # Add to EnvVar
 $userenv = [System.Environment]::GetEnvironmentVariable("Path", "User")
@@ -35,6 +35,21 @@ git config --system protocol.version 1
 git config --system --list
 # Rename system32 find.exe in case it gets conflicted with POSIX find
 mv -v 'C:\\Windows\\System32\\find.exe' 'C:\\Windows\\System32\\find_windows.exe'
+
+# Add some sleep due to a potential race condition
+Start-Sleep -Seconds 5
+
+# Install mingw for k-NN specific requirements with renaming
+# This file can change its version overtime
+scoop install mingw
+$libName = 'libgfortran-5.dll'
+$libNameRequired = 'libgfortran-3.dll'
+$libDir = 'C:\\Users\\Administrator\\scoop\\apps\\mingw'
+$libFound = (Get-ChildItem -Path $libDir -Filter $libName -Recurse | %{$_.FullName} | select -first 1)
+$libFound
+$libPathFound = $libFound.replace("$libName", '')
+$libPathFound
+mv -v "$libFound" "$libPathFound\\$libNameRequired"
 
 # Setup Repos (This has to happen after git is installed or will error out)
 scoop bucket add java
