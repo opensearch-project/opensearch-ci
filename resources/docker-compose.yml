@@ -28,4 +28,3 @@ services:
       options:
         awslogs-group: JenkinsMainNode/jenkins.log
         awslogs-create-group: 'true'
-        awslogs-datetime-format: '%Y-%m-%d %H:%M:%S.%f%z'
