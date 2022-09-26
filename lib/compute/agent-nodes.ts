@@ -43,16 +43,9 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-<<<<<<< HEAD
       amiId: 'ami-02741203de07205f3',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
-=======
-      amiId: 'ami-00a07e55fcad01043',
-      initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && sudo yum install -y ntp &&'
-        + ' sudo systemctl restart ntpd && sudo systemctl enable ntpd',
->>>>>>> 2c5c4ab (remove conflict)
       remoteFs: '/var/jenkins',
     };
     this.AL2_X64_DOCKER_HOST = {
@@ -63,16 +56,9 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 2,
       numExecutors: 4,
-<<<<<<< HEAD
       amiId: 'ami-02741203de07205f3',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
-=======
-      amiId: 'ami-00a07e55fcad01043',
-      initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y && sudo yum install -y ntp &&'
-        + ' sudo systemctl restart ntpd && sudo systemctl enable ntpd',
->>>>>>> 2c5c4ab (remove conflict)
       remoteFs: '/var/jenkins',
     };
     this.AL2_X64_DOCKER_HOST_PERF_TEST = {
