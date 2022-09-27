@@ -12,6 +12,7 @@ sudo chown -R ec2-user:staff /var/jenkins
 /usr/local/bin/brew install gnu-sed
 /usr/local/bin/brew install grep
 /usr/local/bin/brew install wget 
+/usr/local/bin/brew install maven
 
 ## Install MacPorts, setup java8 and python3.7
 /usr/local/bin/wget https://github.com/macports/macports-base/releases/download/v2.7.2/MacPorts-2.7.2.tar.gz
@@ -32,3 +33,5 @@ python3 get-pip.py
 export PATH=/Users/ec2-user/Library/Python/3.7/bin:/opt/local/Library/Frameworks/Python.framework/Versions/3.7/bin:$PATH
 pip install pipenv
 pip install awscli
+pip install cmake==3.21.3
+
