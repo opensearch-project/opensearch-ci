@@ -247,53 +247,53 @@ export class AgentNodeConfig {
     };
   }
 
-   private getWindowsTemplate(stack: Stack, config: AgentNodeProps, props: AgentNodeNetworkProps): { [x: string]: any; } {
-     return {
-       ami: config.amiId,
-       amiType:
+  private getWindowsTemplate(stack: Stack, config: AgentNodeProps, props: AgentNodeNetworkProps): { [x: string]: any; } {
+    return {
+      ami: config.amiId,
+      amiType:
          {
            windowsData: {
              allowSelfSignedCertificate: false, bootDelay: '7.5', specifyPassword: false, useHTTPS: false,
            },
          },
-       associatePublicIp: false,
-       connectBySSHProcess: false,
-       connectionStrategy: 'PRIVATE_IP',
-       customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
-       deleteRootOnTermination: true,
-       description: `jenkinsAgentNode-${config.workerLabelString}`,
-       ebsEncryptRootVolume: 'ENCRYPTED',
-       ebsOptimized: true,
-       hostKeyVerificationStrategy: 'OFF',
-       iamInstanceProfile: this.AgentNodeInstanceProfileArn,
-       idleTerminationMinutes: '60',
-       initScript: config.initScript,
-       labelString: config.workerLabelString,
-       launchTimeoutStr: '1000',
-       maxTotalUses: config.maxTotalUses,
-       minimumNumberOfInstances: 0,
-       minimumNumberOfSpareInstances: config.minimumNumberOfSpareInstances,
-       mode: 'EXCLUSIVE',
-       monitoring: true,
-       numExecutors: config.numExecutors,
-       remoteAdmin: config.remoteUser,
-       remoteFS: config.remoteFs,
-       securityGroups: props.agentNodeSecurityGroup,
-       stopOnTerminate: false,
-       subnetId: props.subnetId,
-       t2Unlimited: false,
-       tags: [{
-         name: 'Name',
-         value: `${stack.stackName}/AgentNode/${config.workerLabelString}`,
-       },
-       {
-         name: 'type',
-         value: `jenkinsAgentNode-${config.workerLabelString}`,
-       },
-       ],
-       tenancy: 'Default',
-       type: config.instanceType,
-       useEphemeralDevices: false,
-     };
-   }
+      associatePublicIp: false,
+      connectBySSHProcess: false,
+      connectionStrategy: 'PRIVATE_IP',
+      customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
+      deleteRootOnTermination: true,
+      description: `jenkinsAgentNode-${config.workerLabelString}`,
+      ebsEncryptRootVolume: 'ENCRYPTED',
+      ebsOptimized: true,
+      hostKeyVerificationStrategy: 'OFF',
+      iamInstanceProfile: this.AgentNodeInstanceProfileArn,
+      idleTerminationMinutes: '60',
+      initScript: config.initScript,
+      labelString: config.workerLabelString,
+      launchTimeoutStr: '1000',
+      maxTotalUses: config.maxTotalUses,
+      minimumNumberOfInstances: 0,
+      minimumNumberOfSpareInstances: config.minimumNumberOfSpareInstances,
+      mode: 'EXCLUSIVE',
+      monitoring: true,
+      numExecutors: config.numExecutors,
+      remoteAdmin: config.remoteUser,
+      remoteFS: config.remoteFs,
+      securityGroups: props.agentNodeSecurityGroup,
+      stopOnTerminate: false,
+      subnetId: props.subnetId,
+      t2Unlimited: false,
+      tags: [{
+        name: 'Name',
+        value: `${stack.stackName}/AgentNode/${config.workerLabelString}`,
+      },
+      {
+        name: 'type',
+        value: `jenkinsAgentNode-${config.workerLabelString}`,
+      },
+      ],
+      tenancy: 'Default',
+      type: config.instanceType,
+      useEphemeralDevices: false,
+    };
+  }
 }
