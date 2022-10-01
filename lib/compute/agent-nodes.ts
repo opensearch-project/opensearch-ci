@@ -6,8 +6,8 @@
  * compatible open source license.
  */
 
-import { AmazonLinuxCpuType, AmazonLinuxGeneration, MachineImage } from '@aws-cdk/aws-ec2';
-import { Stack } from '@aws-cdk/core';
+import { Stack } from 'aws-cdk-lib';
+import { AmazonLinuxCpuType, AmazonLinuxGeneration, MachineImage } from 'aws-cdk-lib/aws-ec2';
 import { AgentNodeProps } from './agent-node-config';
 
 export class AgentNodes {

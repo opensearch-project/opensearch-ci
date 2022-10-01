@@ -6,10 +6,10 @@
  * compatible open source license.
  */
 
+import { Stack } from 'aws-cdk-lib';
 import {
   IPeer, Peer, Port, SecurityGroup, Vpc,
-} from '@aws-cdk/aws-ec2';
-import { Stack } from '@aws-cdk/core';
+} from 'aws-cdk-lib/aws-ec2';
 
 export class JenkinsSecurityGroups {
   public readonly externalAccessSG: SecurityGroup;

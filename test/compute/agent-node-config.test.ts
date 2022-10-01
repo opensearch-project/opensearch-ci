@@ -6,10 +6,8 @@
  * compatible open source license.
  */
 
-import { Stack, App } from '@aws-cdk/core';
-import {
-  expect as expectCDK, haveResourceLike,
-} from '@aws-cdk/assert';
+import { App } from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
 import { readFileSync } from 'fs';
 import { load } from 'js-yaml';
 import { CIStack } from '../../lib/ci-stack';
@@ -19,8 +17,9 @@ test('Agents Resource is present', () => {
     context: { useSsl: 'true', runWithOidc: 'true' },
   });
   const stack = new CIStack(app, 'TestStack', {});
+  const template = Template.fromStack(stack);
 
-  expectCDK(stack).to(haveResourceLike('AWS::IAM::Role', {
+  template.hasResourceProperties('AWS::IAM::Role', {
     RoleName: 'OpenSearch-CI-AgentNodeRole',
     AssumeRolePolicyDocument: {
       Statement: [
@@ -44,8 +43,8 @@ test('Agents Resource is present', () => {
       ],
       Version: '2012-10-17',
     },
-  }));
-  expectCDK(stack).to(haveResourceLike('AWS::IAM::ManagedPolicy', {
+  });
+  template.hasResourceProperties('AWS::IAM::ManagedPolicy', {
     Description: 'Jenkins agents Node Policy',
     Path: '/',
     Roles: [
@@ -119,7 +118,7 @@ test('Agents Resource is present', () => {
       ],
       Version: '2012-10-17',
     },
-  }));
+  });
 });
 
 test('Agents Node policy with assume role Resource is present', () => {
@@ -129,8 +128,7 @@ test('Agents Node policy with assume role Resource is present', () => {
   const stack = new CIStack(app, 'TestStack', {
     agentAssumeRole: ['arn:aws:iam::12345:role/test-role', 'arn:aws:iam::901523:role/test-role2'],
   });
-
-  expectCDK(stack).to(haveResourceLike('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -145,7 +143,7 @@ test('Agents Node policy with assume role Resource is present', () => {
       Version: '2012-10-17',
     },
 
-  }));
+  });
 });
 
 describe('JenkinsMainNode Config with macAgent template', () => {

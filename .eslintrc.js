@@ -29,6 +29,6 @@ module.exports = {
     'max-classes-per-file': 'off',
     'no-unused-vars': 'off',
     'no-new': 'off',
-    'max-len': ['error', 160],
+    'max-len': ['error', { 'code': 160, 'ignoreComments': true }],
   },
 };

@@ -6,8 +6,7 @@
  * compatible open source license.
  */
 
-/* eslint-disable max-len */
-import { Unit } from '@aws-cdk/aws-cloudwatch';
+import { Unit } from 'aws-cdk-lib/aws-cloudwatch';
 
 type MeasurementDefinition = string | { name: string, rename?: string, unit?: Unit }
 

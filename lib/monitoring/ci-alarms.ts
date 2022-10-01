@@ -6,12 +6,12 @@
  * compatible open source license.
  */
 
+import { Stack } from 'aws-cdk-lib';
 import {
   Alarm, AlarmWidget, ComparisonOperator, Dashboard, Metric, TreatMissingData,
-} from '@aws-cdk/aws-cloudwatch';
-import { Stack } from '@aws-cdk/core';
-import { JenkinsExternalLoadBalancer } from '../network/ci-external-load-balancer';
+} from 'aws-cdk-lib/aws-cloudwatch';
 import { JenkinsMainNode } from '../compute/jenkins-main-node';
+import { JenkinsExternalLoadBalancer } from '../network/ci-external-load-balancer';
 
 export class JenkinsMonitoring {
   public readonly alarms: Alarm[] = [];

@@ -6,15 +6,12 @@
  * compatible open source license.
  */
 
+import { CfnOutput, Stack } from 'aws-cdk-lib';
+import { Instance, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import {
-  Instance, SecurityGroup, Vpc,
-} from '@aws-cdk/aws-ec2';
-import {
-  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
-  ListenerCertificate, Protocol, SslPolicy,
-} from '@aws-cdk/aws-elasticloadbalancingv2';
-import { InstanceTarget } from '@aws-cdk/aws-elasticloadbalancingv2-targets';
-import { CfnOutput, Stack } from '@aws-cdk/core';
+  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, ListenerCertificate, Protocol, SslPolicy,
+} from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import { InstanceTarget } from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
 
 export interface JenkinsExternalLoadBalancerProps {
   readonly vpc: Vpc;
@@ -32,14 +29,14 @@ export class JenkinsExternalLoadBalancer {
   public readonly targetGroup: ApplicationTargetGroup;
 
   constructor(stack: Stack, props: JenkinsExternalLoadBalancerProps) {
+    const accessPort = props.useSsl ? 443 : 80;
+
     // Using an ALB so it can be part of a security group rather than by whitelisting ip addresses
     this.loadBalancer = new ApplicationLoadBalancer(stack, 'JenkinsALB', {
       vpc: props.vpc,
       securityGroup: props.sg,
       internetFacing: true,
     });
-
-    const accessPort = props.useSsl ? 443 : 80;
 
     this.listener = this.loadBalancer.addListener('JenkinsListener', {
       sslPolicy: props.useSsl ? SslPolicy.RECOMMENDED : undefined,
