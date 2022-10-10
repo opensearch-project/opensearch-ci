@@ -89,12 +89,14 @@ mvn --version
 
 # Install nvm (the last in order is default as nvm-win does not allow nvm alias/use default <version>)
 scoop install nvm
-nvm install 10.24.1
-nvm use 10.24.1
-npm install -g yarn
-nvm install 14.19.1
-nvm use 14.19.1
-npm install -g yarn
+$nodeVersionList = "10.24.1","14.19.1","14.20.0"
+Foreach ($nodeVersion in $nodeVersionList)
+{
+    $nodeVersion
+    nvm install $nodeVersion
+    nvm use $nodeVersion
+    npm install -g yarn
+}
 
 # Install ruby24
 scoop install ruby24
