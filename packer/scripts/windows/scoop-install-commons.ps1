@@ -87,16 +87,22 @@ Rename-Item "$pythonLibHome\\site-packages_temp" "$pythonLibHome\\site-packages"
 scoop install maven
 mvn --version
 
-# Install nvm (the last in order is default as nvm-win does not allow nvm alias/use default <version>)
-scoop install nvm
+# Install volta to replace nvm on Windows as Windows is not able to handle symlink after AMI creation
+# While Volta is using a fixed location and switch binary version automatically for the Windows Agent
+scoop install volta
+volta --version
 $nodeVersionList = "10.24.1","14.19.1","14.20.0"
 Foreach ($nodeVersion in $nodeVersionList)
 {
     $nodeVersion
-    nvm install $nodeVersion
-    nvm use $nodeVersion
-    npm install -g yarn
+    volta install "node@$nodeVersion"
+    node -v
 }
+volta install yarn
+yarn --version
+$userenv2 = [System.Environment]::GetEnvironmentVariable("Path", "User")
+$nodePathFixed = "C:\\Users\\Administrator\\scoop\\persist\\volta\\appdata\\bin"
+[System.Environment]::SetEnvironmentVariable("PATH", $userenv2 + ";$nodePathFixed", "User")
 
 # Install ruby24
 scoop install ruby24
