@@ -88,7 +88,7 @@ scoop install maven
 mvn --version
 
 # Install volta to replace nvm on Windows as Windows is not able to handle symlink after AMI creation
-# While Volta is using a fixed location and switch version dynamically for the Windows Agent
+# While Volta is using a fixed location and switch binary version automatically for the Windows Agent
 scoop install volta
 volta --version
 $nodeVersionList = "10.24.1","14.19.1","14.20.0"
