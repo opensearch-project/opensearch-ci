@@ -90,13 +90,19 @@ mvn --version
 # Install volta to replace nvm on Windows as Windows is not able to handle symlink after AMI creation
 # While Volta is using a fixed location and switch version dynamically for the Windows Agent
 scoop install volta
+volta --version
 $nodeVersionList = "10.24.1","14.19.1","14.20.0"
 Foreach ($nodeVersion in $nodeVersionList)
 {
     $nodeVersion
     volta install "node@$nodeVersion"
-    npm install -g yarn
+    node -v
 }
+volta install yarn
+yarn --version
+$userenv2 = [System.Environment]::GetEnvironmentVariable("Path", "User")
+$nodePathFixed = "C:\\Users\\Administrator\\scoop\\persist\\volta\\appdata\\bin"
+[System.Environment]::SetEnvironmentVariable("PATH", $userenv2 + ";$nodePathFixed", "User")
 
 # Install ruby24
 scoop install ruby24
