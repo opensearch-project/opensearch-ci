@@ -22,13 +22,15 @@ export class AgentNodes {
 
   readonly AL2_ARM64_DOCKER_HOST: AgentNodeProps;
 
-  readonly UBUNTU2004_X64: AgentNodeProps;
+  readonly UBUNTU2004_X64_GRADLE_CHECK: AgentNodeProps;
 
   readonly UBUNTU2004_X64_DOCKER_BUILDER: AgentNodeProps;
 
   readonly MACOS12_X64_MULTI_HOST: AgentNodeProps;
 
   readonly WINDOWS2019_X64: AgentNodeProps;
+
+  readonly WINDOWS2019_X64_GRADLE_CHECK: AgentNodeProps;
 
   readonly AL2_X64_DEFAULT_AGENT: AgentNodeProps;
 
@@ -100,7 +102,7 @@ export class AgentNodes {
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
-    this.UBUNTU2004_X64 = {
+    this.UBUNTU2004_X64_GRADLE_CHECK = {
       agentType: 'unix',
       workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-C524xlarge-Single-Host',
       instanceType: 'C524xlarge',
@@ -145,8 +147,20 @@ export class AgentNodes {
       remoteUser: 'Administrator',
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 2,
+      numExecutors: 2,
+      amiId: 'ami-006c911a4bd898d4a',
+      initScript: 'echo',
+      remoteFs: 'C:\\Users\\Administrator\\jenkins',
+    };
+    this.WINDOWS2019_X64_GRADLE_CHECK = {
+      agentType: 'windows',
+      workerLabelString: 'Jenkins-Agent-Windows2019-X64-C524xlarge-Single-Host',
+      instanceType: 'C54xlarge',
+      remoteUser: 'Administrator',
+      maxTotalUses: 1,
+      minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-097c07673f792f89e',
+      amiId: 'ami-006c911a4bd898d4a',
       initScript: 'echo',
       remoteFs: 'C:\\Users\\Administrator\\jenkins',
     };
