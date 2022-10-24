@@ -39,6 +39,12 @@ mv -v 'C:\\Windows\\System32\\find.exe' 'C:\\Windows\\System32\\find_windows.exe
 # Add some sleep due to a potential race condition
 Start-Sleep -Seconds 5
 
+# Setup Repos (This has to happen after git is installed or will error out)
+scoop bucket add java
+scoop bucket add versions
+scoop bucket add extras
+scoop bucket add github-gh https://github.com/cli/scoop-gh.git
+
 # Install mingw for k-NN specific requirements with renaming
 # This file can change its version overtime
 scoop install mingw
@@ -51,10 +57,16 @@ $libPathFound = $libFound.replace("$libName", '')
 $libPathFound
 mv -v "$libFound" "$libPathFound\\$libNameRequired"
 
-# Setup Repos (This has to happen after git is installed or will error out)
-scoop bucket add java
-scoop bucket add versions
-scoop bucket add github-gh https://github.com/cli/scoop-gh.git
+# Install zlib for k-NN compilation requirements
+scoop install zlib
+# Reg PEP
+$zlibVersionInfo = (scoop info zlib | out-string -stream | Select-String 'Version.*:')
+$zlibVersionNumber = ($zlibVersionInfo -split ':' | select -last 1)
+$zlibVersionNumber = $zlibVersionNumber.Trim()
+$zlibHome = "C:\\Users\\Administrator\\scoop\\apps\\zlib\\$zlibVersionNumber"
+$zlibRegFilePath = "$zlibHome\\register.reg"
+$zlibRegFilePath
+regedit /s $zlibRegFilePath
 
 # Install jdk8
 scoop install temurin8-jdk
