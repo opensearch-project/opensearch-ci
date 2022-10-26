@@ -56,6 +56,8 @@ $libFound
 $libPathFound = $libFound.replace("$libName", '')
 $libPathFound
 mv -v "$libFound" "$libPathFound\\$libNameRequired"
+# Add MINGW_BIN path to User Env Var for k-NN to retrieve libs
+[System.Environment]::SetEnvironmentVariable("MINGW_BIN", "$libPathFound", "User")
 
 # Install zlib for k-NN compilation requirements
 scoop install zlib
