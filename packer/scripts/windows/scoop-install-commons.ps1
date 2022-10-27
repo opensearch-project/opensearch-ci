@@ -138,3 +138,5 @@ gh version
 scoop install cmake
 cmake --version
 
+# Install zip
+scoop install zip
