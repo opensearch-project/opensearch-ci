@@ -19,8 +19,8 @@ $fileFound
 $gitPathFound = $fileFound.replace("$fileName", '')
 $gitPathFound
 # Add to EnvVar
-$userenv = [System.Environment]::GetEnvironmentVariable("Path", "User")
-[System.Environment]::SetEnvironmentVariable("PATH", $userenv + ";$gitPathFound", "User")
+$userenv = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
+[System.Environment]::SetEnvironmentVariable("PATH", $userenv + ";$gitPathFound", [System.EnvironmentVariableTarget]::User)
 # Make sure mem size are set to avoid "Out of memory, malloc failed" issues on Windows
 git config --system core.packedGitLimit 128m
 git config --system core.packedGitWindowSize 128m
@@ -57,7 +57,7 @@ $libPathFound = $libFound.replace("$libName", '')
 $libPathFound
 mv -v "$libFound" "$libPathFound\\$libNameRequired"
 # Add MINGW_BIN path to User Env Var for k-NN to retrieve libs
-[System.Environment]::SetEnvironmentVariable("MINGW_BIN", "$libPathFound", "User")
+[System.Environment]::SetEnvironmentVariable("MINGW_BIN", "$libPathFound", [System.EnvironmentVariableTarget]::User)
 
 # Install zlib for k-NN compilation requirements
 scoop install zlib
@@ -114,9 +114,9 @@ Foreach ($nodeVersion in $nodeVersionList)
 }
 volta install yarn
 yarn --version
-$userenv2 = [System.Environment]::GetEnvironmentVariable("Path", "User")
+$userenv2 = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
 $nodePathFixed = "C:\\Users\\Administrator\\scoop\\persist\\volta\\appdata\\bin"
-[System.Environment]::SetEnvironmentVariable("PATH", $userenv2 + ";$nodePathFixed", "User")
+[System.Environment]::SetEnvironmentVariable("PATH", $userenv2 + ";$nodePathFixed", [System.EnvironmentVariableTarget]::User)
 
 # Install ruby24
 scoop install ruby24
