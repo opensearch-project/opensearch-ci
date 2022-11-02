@@ -187,9 +187,43 @@ tool:
         properties:
           - installSource:
               installers:
-                - zip:
-                    url: >-
-                      https://ci.opensearch.org/ci/dbc/tools/OpenJDK14U-jdk_x64_linux_hotspot_14.0.2_12.zip
+                - command:
+                    command: >+
+                      JENKINS_HOME_LINUX="/var/jenkins"
+
+                      JENKINS_HOME_WINDOWS="C:/Users/Administrator/jenkins"
+                       
+
+                      if uname -s | grep -i NT; then
+                          echo windows agent
+                          JENKINS_JDK14_PATH=$JENKINS_HOME_WINDOWS/tools/hudson.model.JDK/openjdk-14
+                          JDK14_ZIP="OpenJDK14U-jdk_x64_windows_hotspot_14.0.2_12.zip"
+                          
+                      else
+                           echo linux agent
+                           JENKINS_JDK14_PATH=$JENKINS_HOME_LINUX/tools/hudson.model.JDK/openjdk-14
+                           JDK14_ZIP="OpenJDK14U-jdk_x64_linux_hotspot_14.0.2_12.zip"
+                           
+                      fi
+
+
+
+                      mkdir -p $JENKINS_JDK14_PATH
+
+                      cd $JENKINS_JDK14_PATH
+
+                      pwd
+
+                      rm -rf ./*
+
+                      curl -sSL
+                      https://ci.opensearch.org/ci/dbc/tools/$JDK14_ZIP -o
+                      jdk14.zip
+
+                      unzip -q jdk14.zip
+
+                      rm jdk14.zip
+
       - name: openjdk-17
         properties:
           - installSource:
