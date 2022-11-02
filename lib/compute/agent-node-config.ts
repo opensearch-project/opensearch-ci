@@ -196,6 +196,18 @@ export class AgentNodeConfig {
       ],
       tenancy: 'Default',
       type: config.instanceType,
+      nodeProperties: [
+        {
+          envVars: {
+            env: [
+              {
+                key: 'JENKINS_HOME_PATH',
+                value: config.remoteFs,
+              },
+            ],
+          },
+        },
+      ],
       useEphemeralDevices: false,
     };
   }
@@ -243,6 +255,18 @@ export class AgentNodeConfig {
       ],
       tenancy: 'Host',
       type: config.instanceType,
+      nodeProperties: [
+        {
+          envVars: {
+            env: [
+              {
+                key: 'JENKINS_HOME_PATH',
+                value: config.remoteFs,
+              },
+            ],
+          },
+        },
+      ],
       useEphemeralDevices: false,
     };
   }
@@ -293,6 +317,18 @@ export class AgentNodeConfig {
       ],
       tenancy: 'Default',
       type: config.instanceType,
+      nodeProperties: [
+        {
+          envVars: {
+            env: [
+              {
+                key: 'JENKINS_HOME_PATH',
+                value: config.remoteFs,
+              },
+            ],
+          },
+        },
+      ],
       useEphemeralDevices: false,
     };
   }
