@@ -44,12 +44,13 @@ export class JenkinsMonitoring {
       treatMissingData: TreatMissingData.BREACHING,
     }));
 
-    this.alarms.push(new Alarm(stack, 'MainNodeTooManyJenkinsProcessesFound', {
-      alarmDescription: 'Only one jenkins process should run at any given time on the main node, there might be a cloudwatch configuration issue',
-      metric: mainNode.ec2InstanceMetrics.foundJenkinsProcessCount.with({ statistic: 'max' }),
-      evaluationPeriods: 3,
+    this.alarms.push(new Alarm(stack, 'MainNodeJenkinsProcessNotFound', {
+      alarmDescription: 'Jenkins process is not running',
+      metric: mainNode.ec2InstanceMetrics.foundJenkinsProcessCount.with({ statistic: 'avg' }),
+      evaluationPeriods: 1,
       threshold: 1,
-      comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+      datapointsToAlarm: 1,
+      comparisonOperator: ComparisonOperator.LESS_THAN_THRESHOLD,
       treatMissingData: TreatMissingData.IGNORE,
     }));
 

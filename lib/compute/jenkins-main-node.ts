@@ -321,7 +321,7 @@ export class JenkinsMainNode {
           metrics_collected: {
             procstat: [
               {
-                pattern: 'Djenkins',
+                pattern: 'jenkins.war',
                 measurement: [
                   'cpu_usage',
                   'cpu_time_system',
