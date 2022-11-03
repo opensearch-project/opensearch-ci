@@ -135,7 +135,7 @@ $aws secretsmanager put-secret-value \
 
 #### Restricting Server Access
 You can now restrict access to your jenkins endpoint (load balancer). Here's how:
-1. Update the `restrictServerAccessTo` property in `ciSettings` to your desired [Ipeer](https://docs.aws.amazon.com/cdk/api/v1/docs/@aws-cdk_aws-ec2.IPeer.html). By default it is open to all.
+1. Update the `restrictServerAccessTo` property in `ciSettings` to your desired [Ipeer](https://docs.aws.amazon.com/cdk/api/v1/docs/@aws-cdk_aws-ec2.IPeer.html). By default, the load balancer endpoint is open/accessible to all.
 See [CIStackProps](./lib/ci-stack.ts) for details.
 
 Example:
