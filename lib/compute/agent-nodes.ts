@@ -150,7 +150,7 @@ export class AgentNodes {
       numExecutors: 1,
       amiId: 'ami-0720b70e6cb2e8012',
       initScript: 'echo',
-      remoteFs: 'C:\\Users\\Administrator\\jenkins',
+      remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.WINDOWS2019_X64_GRADLE_CHECK = {
       agentType: 'windows',
@@ -162,7 +162,7 @@ export class AgentNodes {
       numExecutors: 1,
       amiId: 'ami-0720b70e6cb2e8012',
       initScript: 'echo',
-      remoteFs: 'C:\\Users\\Administrator\\jenkins',
+      remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.AL2_X64_DEFAULT_AGENT = {
       agentType: 'unix',
