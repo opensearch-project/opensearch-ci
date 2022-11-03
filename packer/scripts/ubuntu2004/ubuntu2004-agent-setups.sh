@@ -12,8 +12,8 @@ whoami
 
 sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo)
 sudo apt-get upgrade -y && sudo apt-get install -y software-properties-common && sudo add-apt-repository ppa:jacob/virtualisation -y
-sudo apt-get update -y && sudo apt-get install -y binfmt-support qemu qemu-user qemu-user-static docker.io curl python3-pip && pip3 install awscli
-sudo apt-get install -y openjdk-8-jdk docker docker.io docker-compose ntp curl git gnupg2 tar zip unzip jq
+sudo apt-get update -y && sudo apt-get install -y binfmt-support qemu qemu-user qemu-user-static docker.io curl python3-pip && sudo pip3 install awscli
+sudo apt-get install -y docker docker.io docker-compose ntp curl git gnupg2 tar zip unzip jq
 sudo apt-get install -y build-essential
 
 sudo systemctl restart ntp && sudo systemctl enable ntp && sudo systemctl status ntp
@@ -31,3 +31,21 @@ sudo apt-get clean -y
 
 sudo mkdir -p /var/jenkins && sudo chown -R ubuntu:ubuntu /var/jenkins
 
+# Pre-install multi-jdk
+sudo apt-get install -y apt-transport-https gnupg
+curl -SL https://packages.adoptium.net/artifactory/api/gpg/key/public | sudo apt-key add -
+echo "deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | sudo tee /etc/apt/sources.list.d/adoptium.list
+sudo apt-get update -y
+sudo apt-get install -y temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-19-jdk
+# JDK14 required for gradle check to do bwc tests
+curl -SL "https://github.com/AdoptOpenJDK/openjdk14-binaries/releases/download/jdk-14.0.2%2B12/OpenJDK14U-jdk_x64_linux_hotspot_14.0.2_12.tar.gz" -o jdk14.tar.gz
+tar -xzf jdk14.tar.gz && rm jdk14.tar.gz
+mv "jdk-14.0.2+12" "adoptopenjdk-14-amd64"
+sudo chown root:root -R adoptopenjdk-14-amd64
+sudo mv adoptopenjdk-14-amd64 /usr/lib/jvm/
+sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/adoptopenjdk-14-amd64/bin/javac" 1111
+sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/adoptopenjdk-14-amd64/bin/java" 1111
+# Reset to JDK8 so Jenkins can bootstrap it
+sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-8-jdk-amd64/bin/java"
+sudo update-alternatives --set "javac" "/usr/lib/jvm/temurin-8-jdk-amd64/bin/javac"
+java -version
