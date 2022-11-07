@@ -44,12 +44,14 @@ export class JenkinsMonitoring {
       treatMissingData: TreatMissingData.BREACHING,
     }));
 
+    /**
+     *If the Jenkins over the last 15 (evaluationPeriods:3 * Period:5) minutes period is less than 1 (jenkins down) for at least 2 times. */
     this.alarms.push(new Alarm(stack, 'MainNodeJenkinsProcessNotFound', {
       alarmDescription: 'Jenkins process is not running',
       metric: mainNode.ec2InstanceMetrics.foundJenkinsProcessCount.with({ statistic: 'avg' }),
-      evaluationPeriods: 1,
+      evaluationPeriods: 3,
       threshold: 1,
-      datapointsToAlarm: 1,
+      datapointsToAlarm: 2,
       comparisonOperator: ComparisonOperator.LESS_THAN_THRESHOLD,
       treatMissingData: TreatMissingData.IGNORE,
     }));
