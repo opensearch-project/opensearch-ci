@@ -51,7 +51,7 @@ export class JenkinsMonitoring {
       metric: mainNode.ec2InstanceMetrics.foundJenkinsProcessCount.with({ statistic: 'avg' }),
       evaluationPeriods: 3,
       threshold: 1,
-      datapointsToAlarm: 2,
+      datapointsToAlarm: 3,
       comparisonOperator: ComparisonOperator.LESS_THAN_THRESHOLD,
       treatMissingData: TreatMissingData.IGNORE,
     }));
