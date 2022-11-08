@@ -26,9 +26,6 @@ curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo 
 && sudo apt-get update \
 && sudo apt-get install gh -y
 
-sudo apt-mark hold docker docker.io openssh-server
-sudo apt-get clean -y
-
 sudo mkdir -p /var/jenkins && sudo chown -R ubuntu:ubuntu /var/jenkins
 
 # Pre-install multi-jdk
@@ -49,3 +46,6 @@ sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/adoptope
 sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-8-jdk-amd64/bin/java"
 sudo update-alternatives --set "javac" "/usr/lib/jvm/temurin-8-jdk-amd64/bin/javac"
 java -version
+
+sudo apt-mark hold docker docker.io openssh-server temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-19-jdk
+sudo apt-get clean -y
