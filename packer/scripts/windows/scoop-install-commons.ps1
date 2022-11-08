@@ -70,8 +70,25 @@ $zlibRegFilePath = "$zlibHome\\register.reg"
 $zlibRegFilePath
 regedit /s $zlibRegFilePath
 
-# Install jdk8
-scoop install temurin8-jdk
+# Install jdk
+$jdkVersionList = "temurin8-jdk JAVA8_HOME", "temurin11-jdk JAVA11_HOME", "temurin17-jdk JAVA17_HOME", "temurin19-jdk JAVA19_HOME", "openjdk14 JAVA14_HOME"
+Foreach ($jdkVersion in $jdkVersionList)
+{
+    $jdkVersion
+    $jdkArray = $jdkVersion.Split(" ")
+    $jdkArray[0]
+    $jdkArray[1]
+    scoop install $jdkArray[0]
+    $JAVA_HOME_TEMP = [System.Environment]::GetEnvironmentVariable("JAVA_HOME", [System.EnvironmentVariableTarget]::User).replace("\", "/")
+    $JAVA_HOME_TEMP
+    [System.Environment]::SetEnvironmentVariable($jdkArray[1], "$JAVA_HOME_TEMP", [System.EnvironmentVariableTarget]::User)
+    java -version
+}
+# Need to reset to jdk8 run Jenkins Agent
+scoop reset temurin8-jdk
+$JAVA_HOME_TEMP = [System.Environment]::GetEnvironmentVariable("JAVA_HOME", [System.EnvironmentVariableTarget]::User).replace("\", "/")
+$JAVA_HOME_TEMP
+[System.Environment]::SetEnvironmentVariable('JAVA_HOME', "$JAVA_HOME_TEMP", [System.EnvironmentVariableTarget]::User)
 java -version
 
 # Install python37
@@ -112,7 +129,7 @@ Foreach ($nodeVersion in $nodeVersionList)
     volta install "node@$nodeVersion"
     node -v
 }
-volta install yarn
+volta install yarn@^1.21.1
 yarn --version
 $userenv2 = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
 $nodePathFixed = "C:\\Users\\Administrator\\scoop\\persist\\volta\\appdata\\bin"

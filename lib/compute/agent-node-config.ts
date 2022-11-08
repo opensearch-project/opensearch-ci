@@ -204,6 +204,26 @@ export class AgentNodeConfig {
                 key: 'JENKINS_HOME_PATH',
                 value: config.remoteFs,
               },
+              {
+                key: 'JAVA8_HOME',
+                value: '/usr/lib/jvm/temurin-8-jdk-amd64',
+              },
+              {
+                key: 'JAVA11_HOME',
+                value: '/usr/lib/jvm/temurin-11-jdk-amd64',
+              },
+              {
+                key: 'JAVA14_HOME',
+                value: '/usr/lib/jvm/adoptopenjdk-14-amd64',
+              },
+              {
+                key: 'JAVA17_HOME',
+                value: '/usr/lib/jvm/temurin-17-jdk-amd64',
+              },
+              {
+                key: 'JAVA19_HOME',
+                value: '/usr/lib/jvm/temurin-19-jdk-amd64',
+              },
             ],
           },
         },
