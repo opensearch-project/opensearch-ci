@@ -10,7 +10,7 @@ import {
   CfnOutput, CfnParameter, Fn, Stack, StackProps,
 } from 'aws-cdk-lib';
 import {
-  FlowLogDestination, FlowLogTrafficType, IPeer, Vpc,
+  FlowLogDestination, FlowLogTrafficType, IPeer, Peer, Vpc,
 } from 'aws-cdk-lib/aws-ec2';
 import { ListenerCertificate } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
@@ -31,6 +31,8 @@ export interface CIStackProps extends StackProps {
   readonly useSsl?: boolean;
   /** Should an OIDC provider be installed on Jenkins. */
   readonly runWithOidc?: boolean;
+  /** Restrict jenkins access to */
+  readonly restrictServerAccessTo?: IPeer;
   /** Additional verification during deployment and resource startup. */
   readonly ignoreResourcesFailures?: boolean;
   /** Users with admin access during initial deployment */
@@ -45,10 +47,26 @@ export interface CIStackProps extends StackProps {
   readonly envVarsFilePath?: string;
   /** Add Mac agent to jenkins */
   readonly macAgent?: boolean;
-  /** Restrict jenkins access to */
-  readonly restrictServerAccessTo?: IPeer;
   /** Use Production Agents */
   readonly useProdAgents?: boolean;
+}
+
+function getServerAccess(serverAccessType: string, restrictServerAccessTo: string) : IPeer {
+  if (typeof restrictServerAccessTo === 'undefined') {
+    throw new Error('restrictServerAccessTo should be specified');
+  }
+  switch (serverAccessType) {
+  case 'ipv4':
+    return restrictServerAccessTo === 'all' ? Peer.anyIpv4() : Peer.ipv4(restrictServerAccessTo);
+  case 'ipv6':
+    return restrictServerAccessTo === 'all' ? Peer.anyIpv6() : Peer.ipv6(restrictServerAccessTo);
+  case 'prefixList':
+    return Peer.prefixList(restrictServerAccessTo);
+  case 'securityGroupId':
+    return Peer.securityGroupId(restrictServerAccessTo);
+  default:
+    throw new Error('serverAccessType should be one of the below values: ipv4, ipv6, prefixList or  securityGroupId');
+  }
 }
 
 export class CIStack extends Stack {
@@ -89,6 +107,13 @@ export class CIStack extends Stack {
 
     const runWithOidc = runWithOidcParameter === 'true';
 
+    const serverAccessType = this.node.tryGetContext('serverAccessType');
+    const restrictServerAccessTo = this.node.tryGetContext('restrictServerAccessTo');
+    const serverAcess = props?.restrictServerAccessTo ?? getServerAccess(serverAccessType, restrictServerAccessTo);
+    if (!serverAcess) {
+      throw new Error('serverAccessType and restrictServerAccessTo parameters are required - eg: serverAccessType=ipv4 restrictServerAccessTo=10.10.10.10/32');
+    }
+
     const additionalCommandsContext = `${props?.additionalCommands ?? this.node.tryGetContext('additionalCommands')}`;
 
     // Setting CfnParameters to record the value in cloudFormation
@@ -103,7 +128,7 @@ export class CIStack extends Stack {
       default: useSsl,
     });
 
-    const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl, props?.restrictServerAccessTo);
+    const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl, serverAcess);
     const importedContentsSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE}`);
     const importedContentsChainBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CHAIN_SECRET_EXPORT_VALUE}`);
     const importedCertSecretBucketValue = Fn.importValue(`${CIConfigStack.PRIVATE_KEY_SECRET_EXPORT_VALUE}`);

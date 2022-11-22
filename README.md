@@ -38,6 +38,8 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
 
 ## Deployment
 
+**_Important: Please ensure to use strong passwords for you jenkins instance in order to keep it secure._**
+
 ### CI Deployment
 1. Create another cdk project and depend on this package
 2. Import the config / ci stacks alongside the other resources
@@ -53,11 +55,11 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
 1. Setup your local machine to credentials to deploy to the AWS Account
 1. Deploy the bootstrap stack by running the following command that sets up required resources to create the stacks. [More info](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
    
-   `npm run cdk bootstrap -- -c useSsl=false -c runWithOidc=false`
+   `npm run cdk bootstrap -- -c useSsl=false -c runWithOidc=false -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32`
    
 1. Deploy the ci-config-stack using the following (takes ~1 minute to deploy) - 
    
-   `npm run cdk deploy OpenSearch-CI-Config-Dev -- -c useSsl=false -c runWithOidc=false`
+   `npm run cdk deploy OpenSearch-CI-Config-Dev -- -c useSsl=false -c runWithOidc=false -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32`
    
 1. Locate the secret manager arns in the ci-config-stack outputs for `CASC_RELOAD_TOKEN` and update the secret value ([see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)) with the password you want to use to reload jenkins configuration. _Do not enclose it in quotes_
 ```
@@ -69,7 +71,7 @@ $aws secretsmanager put-secret-value \
 1. [Optional](#setup-openid-connect-oidc-via-federate) Configure the elements setting up oidc via federate
 1. Deploy the ci-stack, takes ~10 minutes to deploy (parameter values depend on step 2 and step 3)
    
-   `npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false`
+   `npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32`
  
 1. When OIDC is disabled, this set up will enforce the user to secure jenkins by adding first admin user on deployment. Create admin user and password, fill in all other details like name and email id to start using jenkins.
 1. Go to the `OpenSearch-CI-Dev.JenkinsExternalLoadBalancerDns` url returned by CDK output to access the jenkins host.
@@ -79,16 +81,16 @@ $aws secretsmanager put-secret-value \
 #### Construct Props
 | Name                                                   | Type     | Description                                                                              |
 |--------------------------------------------------------|:---------|:-----------------------------------------------------------------------------------------|
-| [useSsl](#ssl-configuration)                           | boolean  | Should the Jenkins use https                                                             |
-| [runWithOidc](#setup-openid-connect-oidc-via-federate) | boolean  | Should an OIDC provider be installed on Jenkins                                          |
-| [ignoreResourcesFailures]()                            | boolean  | Additional verification during deployment and resource startup                           |
+| [useSsl](#ssl-configuration) <required>                | boolean  | Should the Jenkins use https                                                             |
+| [runWithOidc](#setup-openid-connect-oidc-via-federate)<required> | boolean  | Should an OIDC provider be installed on Jenkins                                |
+| [restrictServerAccessTo](#restricting-server-access) <required>  | Ipeer    | Restrict jenkins server access                                                 |
+| [ignoreResourcesFailures](#ignore-resources-failure)   | boolean  | Additional verification during deployment and resource startup                           |
 | [adminUsers](#setup-openid-connect-oidc-via-federate)  | string[] | List of users with admin access during initial deployment                                |
 | [additionalCommands](#runnning-additional-commands)    | string   | Additional logic that needs to be run on Master Node. The value has to be path to a file |
 | [dataRetention](#data-retention)                       | boolean  | Do you want to retain jenkins jobs and build history                                     |
 | [agentAssumeRole](#assume-role)                        | string   | IAM role ARN to be assumed by jenkins agent nodes                                        |
 | [envVarsFilePath](#add-environment-variables)          | string   | Path to file containing env variables in the form of key value pairs                     |
 | [macAgent](#mac-agents)                                | boolean  | Add mac agents to jenkins                                                                |
-| [restrictServerAccessTo](#restricting-server-access)   | Ipeer    | Restrict jenkins server access                                                           |
 | [useProdAgents](#use-production-agents)                | boolean  | should jenkins server use production agents                                              |
 #### SSL Configuration
 1. Locate the secret manager arns in the ci-config-stack outputs
@@ -134,14 +136,34 @@ $aws secretsmanager put-secret-value \
 1. Continue with [next steps](#dev-deployment)
 
 #### Restricting Server Access
-You can now restrict access to your jenkins endpoint (load balancer). Here's how:
-1. Update the `restrictServerAccessTo` property in `ciSettings` to your desired [Ipeer](https://docs.aws.amazon.com/cdk/api/v1/docs/@aws-cdk_aws-ec2.IPeer.html). By default, the load balancer endpoint is open/accessible to all.
+You need to restrict access to your jenkins endpoint (load balancer). Here's how:
+
+1. Using command line as below:
+
+```
+npm run cdk synth OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32
+```
+Below values are allowed:
+| serverAccessType| restrictServerAccessTo| 
+|-----------------|:---------|
+| ipv4            | all (0.0.0.0/0) or any ipv4 CIDR (eg: 10.10.10.10/32)  |
+| ipv6            | all (::/0) or any ipv6 CIDR (eg: 2001:0db8:85a3:0000:0000:8a2e:0370:7334)  |
+| prefixList      | Prefix List id (eg: ab-12345)  |
+| securityGroupId | A security group ID (eg: sg-123456789)  |
+
+
+2. You can also update the `restrictServerAccessTo` property in `ciSettings` to your desired [Ipeer](https://docs.aws.amazon.com/cdk/api/v1/docs/@aws-cdk_aws-ec2.IPeer.html).
 See [CIStackProps](./lib/ci-stack.ts) for details.
 
 Example:
 ```
 const stack = new CIStack(app, 'MyStack', { restrictServerAccessTo: Peer.ipv4('10.0.0.0/24') });
 ```
+
+
+#### Ignore resources failure
+Update the `ignoreResourcesFailures` property in `ciSettings`.
+This parameter is used to ignore resources failure if the option is available. Right now that is only applicable while for EC2 [init scripts](https://github.com/opensearch-project/opensearch-ci/blob/main/lib/compute/jenkins-main-node.ts#L116).
 
 #### Data Retention
 Change in any EC2 config (specially init config) leads to replacement of EC2. The jenkins configuration is managed via code using configuration as code plugin. [More details](https://plugins.jenkins.io/configuration-as-code/).

@@ -13,7 +13,9 @@ import { CIStack } from '../lib/ci-stack';
 
 test('CI Stack Basic Resources', () => {
   const app = new App({
-    context: { useSsl: 'true', runWithOidc: 'true', additionalCommands: './test/data/hello-world.py' },
+    context: {
+      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', additionalCommands: './test/data/hello-world.py',
+    },
   });
 
   // WHEN
@@ -39,7 +41,9 @@ test('CI Stack Basic Resources', () => {
 
 test('External security group is open', () => {
   const app = new App({
-    context: { useSsl: 'true', runWithOidc: 'true' },
+    context: {
+      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: 'all',
+    },
   });
 
   // WHEN
@@ -63,7 +67,7 @@ test('External security group is open', () => {
     SecurityGroupIngress: [
       {
         CidrIp: '0.0.0.0/0',
-        Description: 'Allow anyone to connect',
+        Description: 'Restrict jenkins endpoint access to this source',
         FromPort: 443,
         IpProtocol: 'tcp',
         ToPort: 443,
@@ -81,7 +85,9 @@ test('External security group is open', () => {
 
 test('External security group is restricted', () => {
   const app = new App({
-    context: { useSsl: 'true', runWithOidc: 'true' },
+    context: {
+      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.0.0.0/24',
+    },
   });
 
   // WHEN
@@ -103,7 +109,7 @@ test('External security group is restricted', () => {
     SecurityGroupIngress: [
       {
         CidrIp: '10.0.0.0/24',
-        Description: 'Restrict access to this source',
+        Description: 'Restrict jenkins endpoint access to this source',
         FromPort: 443,
         IpProtocol: 'tcp',
         ToPort: 443,
@@ -121,7 +127,9 @@ test('External security group is restricted', () => {
 
 test('MainNode', () => {
   const app = new App({
-    context: { useSsl: 'true', runWithOidc: 'true' },
+    context: {
+      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+    },
   });
 
   // WHEN
@@ -149,7 +157,9 @@ test('MainNode', () => {
 
 test('LoadBalancer', () => {
   const app = new App({
-    context: { useSsl: 'true', runWithOidc: 'true' },
+    context: {
+      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: 'all',
+    },
   });
 
   // WHEN
@@ -170,7 +180,9 @@ test('LoadBalancer', () => {
 
 test('CloudwatchCpuAlarm', () => {
   const app = new App({
-    context: { useSsl: 'false', runWithOidc: 'false' },
+    context: {
+      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+    },
   });
 
   // WHEN
@@ -185,7 +197,9 @@ test('CloudwatchCpuAlarm', () => {
 
 test('CloudwatchMemoryAlarm', () => {
   const app = new App({
-    context: { useSsl: 'false', runWithOidc: 'false' },
+    context: {
+      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+    },
   });
 
   // WHEN
