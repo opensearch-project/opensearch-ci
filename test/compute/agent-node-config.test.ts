@@ -14,7 +14,9 @@ import { CIStack } from '../../lib/ci-stack';
 
 test('Agents Resource is present', () => {
   const app = new App({
-    context: { useSsl: 'true', runWithOidc: 'true' },
+    context: {
+      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+    },
   });
   const stack = new CIStack(app, 'TestStack', {});
   const template = Template.fromStack(stack);
@@ -123,7 +125,9 @@ test('Agents Resource is present', () => {
 
 test('Agents Node policy with assume role Resource is present', () => {
   const app = new App({
-    context: { useSsl: 'true', runWithOidc: 'true' },
+    context: {
+      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+    },
   });
   const stack = new CIStack(app, 'TestStack', {
     agentAssumeRole: ['arn:aws:iam::12345:role/test-role', 'arn:aws:iam::901523:role/test-role2'],
