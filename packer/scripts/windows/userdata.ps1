@@ -5,7 +5,7 @@
 cmd /c winrm quickconfig -q
 cmd /c winrm quickconfig '-transport:http'
 cmd /c winrm set "winrm/config" '@{MaxTimeoutms="1800000"}'
-cmd /c winrm set "winrm/config/winrs" '@{MaxMemoryPerShellMB="10240"}'
+cmd /c winrm set "winrm/config/winrs" '@{MaxMemoryPerShellMB="30720"}'
 cmd /c winrm set "winrm/config/service" '@{AllowUnencrypted="true"}'
 cmd /c winrm set "winrm/config/client" '@{AllowUnencrypted="true"}'
 cmd /c winrm set "winrm/config/service/auth" '@{Basic="true"}'
