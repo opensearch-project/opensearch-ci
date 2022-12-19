@@ -74,6 +74,8 @@ export class CIStack extends Stack {
 
   public readonly agentNodes: AgentNodeProps[];
 
+  public readonly securityGroups: JenkinsSecurityGroups;
+
   constructor(scope: Construct, id: string, props: CIStackProps) {
     super(scope, id, props);
 
@@ -128,7 +130,7 @@ export class CIStack extends Stack {
       default: useSsl,
     });
 
-    const securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl, serverAcess);
+    this.securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl, serverAcess);
     const importedContentsSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE}`);
     const importedContentsChainBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CHAIN_SECRET_EXPORT_VALUE}`);
     const importedCertSecretBucketValue = Fn.importValue(`${CIConfigStack.PRIVATE_KEY_SECRET_EXPORT_VALUE}`);
@@ -158,8 +160,8 @@ export class CIStack extends Stack {
 
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
-      sg: securityGroups.mainNodeSG,
-      efsSG: securityGroups.efsSG,
+      sg: this.securityGroups.mainNodeSG,
+      efsSG: this.securityGroups.efsSG,
       dataRetention: props.dataRetention ?? false,
       envVarsFilePath: props.envVarsFilePath ?? '',
       reloadPasswordSecretsArn: importedReloadPasswordSecretsArn.toString(),
@@ -172,13 +174,13 @@ export class CIStack extends Stack {
       runWithOidc,
       failOnCloudInitError: props?.ignoreResourcesFailures,
       adminUsers: props?.adminUsers,
-      agentNodeSecurityGroup: securityGroups.agentNodeSG.securityGroupId,
+      agentNodeSecurityGroup: this.securityGroups.agentNodeSG.securityGroupId,
       subnetId: vpc.publicSubnets[0].subnetId,
     }, this.agentNodes, macAgentParameter.toString(), props?.agentAssumeRole);
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,
-      sg: securityGroups.externalAccessSG,
+      sg: this.securityGroups.externalAccessSG,
       targetInstance: mainJenkinsNode.ec2Instance,
       listenerCertificate,
       useSsl,
