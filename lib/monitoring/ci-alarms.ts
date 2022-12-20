@@ -65,21 +65,6 @@ export class JenkinsMonitoring {
       treatMissingData: TreatMissingData.IGNORE,
     }));
 
-    this.alarms.push(new Alarm(stack, 'MainNodeCloudwatchEvents', {
-      alarmDescription: `Cloudwatch events have stopped being received from the main node.
-Use session manager to exam the host and the /opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log`,
-      metric: mainNode.ec2InstanceMetrics.memUsed.with({ statistic: 'n' }),
-      evaluationPeriods: 1,
-      /**
-       * Memory metrics are reported every second, 60 in 1 minute
-       * Period is set to 5 minute, in 1 evaluation periods = 300 events
-       * Allowing for 20% loss, 240 events the min threshold
-       */
-      threshold: 240,
-      comparisonOperator: ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD,
-      treatMissingData: TreatMissingData.MISSING,
-    }));
-
     this.alarms
       .map((alarm) => new AlarmWidget({ alarm }))
       .forEach((widget) => dashboard.addWidgets(widget));
