@@ -36,7 +36,7 @@ test('CI Stack Basic Resources', () => {
   template.resourceCountIs('AWS::SSM::Document', 1);
   template.resourceCountIs('AWS::SSM::Association', 1);
   template.resourceCountIs('AWS::EFS::FileSystem', 1);
-  template.resourceCountIs('AWS::CloudWatch::Alarm', 5);
+  template.resourceCountIs('AWS::CloudWatch::Alarm', 4);
 });
 
 test('External security group is open', () => {
