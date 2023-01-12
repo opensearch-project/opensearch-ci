@@ -110,7 +110,7 @@ export class AgentNodes {
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-048e8e134e5e71966',
+      amiId: 'ami-04a33a42402bbb9b5',
       initScript: 'sudo apt-mark hold docker docker.io openssh-server gh && docker ps &&'
       + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo apt-get upgrade -y',
       remoteFs: '/var/jenkins',
@@ -123,7 +123,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-048e8e134e5e71966',
+      amiId: 'ami-04a33a42402bbb9b5',
       initScript: 'sudo apt-mark hold docker docker.io openssh-server gh && docker ps &&'
       + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo apt-get upgrade -y',
       remoteFs: '/var/jenkins',
