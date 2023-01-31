@@ -15,7 +15,7 @@ export class RunAdditionalCommands {
     const additionalCommands = readFileSync(filePath.toString()).toString('utf-8');
 
     const ssmDocument = new CfnDocument(stack, 'additionalCommandSsmDoc', {
-      name: 'additionalCommandDocument',
+      name: 'additionalCommandDocumentV2',
       documentType: 'Command',
       content: {
         schemaVersion: '2.2',
@@ -34,7 +34,6 @@ export class RunAdditionalCommands {
 
     const ssmAssociation = new CfnAssociation(stack, 'additionalCommandsSsmAssociation', <CfnAssociationProps>{
       name: ssmDocument.name,
-      associationName: 'runAdditionalCommandAssociation',
       complianceSeverity: 'CRITICAL',
       targets: [{
         key: 'tag:Name',
