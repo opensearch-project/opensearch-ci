@@ -13,9 +13,10 @@ import { readFileSync } from 'fs';
 export class RunAdditionalCommands {
   constructor(stack: Stack, filePath: string) {
     const additionalCommands = readFileSync(filePath.toString()).toString('utf-8');
+    const dateStamp = new Date().toISOString().slice(0, 10);
 
     const ssmDocument = new CfnDocument(stack, 'additionalCommandSsmDoc', {
-      name: 'additionalCommandDocumentV2',
+      name: `additionalCommandDocumentV3-${dateStamp}`,
       documentType: 'Command',
       content: {
         schemaVersion: '2.2',
