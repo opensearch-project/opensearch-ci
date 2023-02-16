@@ -111,8 +111,8 @@ export class AgentNodes {
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
       amiId: 'ami-042cbc70322ec7fd5',
-      initScript: 'export DEBIAN_FRONTEND=noninteractive && sudo apt-mark hold docker docker.io openssh-server gh && docker ps &&'
-      + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo apt-get upgrade -y',
+      initScript: 'sudo apt-mark hold docker docker.io openssh-server gh grub-efi* && docker ps &&'
+      + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y',
       remoteFs: '/var/jenkins',
     };
     this.UBUNTU2004_X64_DOCKER_BUILDER = {
@@ -124,8 +124,8 @@ export class AgentNodes {
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
       amiId: 'ami-042cbc70322ec7fd5',
-      initScript: 'export DEBIAN_FRONTEND=noninteractive && sudo apt-mark hold docker docker.io openssh-server gh && docker ps &&'
-      + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo apt-get upgrade -y',
+      initScript: 'sudo apt-mark hold docker docker.io openssh-server gh grub-efi* && docker ps &&'
+      + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y',
       remoteFs: '/var/jenkins',
     };
     this.MACOS12_X64_MULTI_HOST = {
