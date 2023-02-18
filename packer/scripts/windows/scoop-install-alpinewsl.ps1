@@ -7,7 +7,7 @@
 
 # Disable "current" alias directory as it is not preserved after AMI creation
 # Use static path in environment variable
-scoop config NO_JUNCTIONS true
+scoop config no_junction true
 
 # Install alpine
 scoop bucket add extras
