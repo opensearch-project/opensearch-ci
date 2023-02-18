@@ -119,6 +119,10 @@ Rename-Item "$pythonLibHome\\site-packages_temp" "$pythonLibHome\\site-packages"
 scoop install maven
 mvn --version
 
+# Install yq
+scoop install yq
+yq --version
+
 # Install volta to replace nvm on Windows as Windows is not able to handle symlink after AMI creation
 # While Volta is using a fixed location and switch binary version automatically for the Windows Agent
 scoop install volta
@@ -130,7 +134,9 @@ Foreach ($nodeVersion in $nodeVersionList)
     volta install "node@$nodeVersion"
     node -v
 }
-volta install yarn@^1.21.1
+$yarnVersion = (& .\yarn-version.ps1)
+$yarnVersion
+volta install yarn@$yarnVersion
 yarn --version
 $userenv2 = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
 $nodePathFixed = "C:\\Users\\Administrator\\scoop\\persist\\volta\\appdata\\bin"
@@ -143,10 +149,6 @@ ruby --version
 # Install jq
 scoop install jq
 jq --version
-
-# Install yq
-scoop install yq
-yq --version
 
 # Install gh
 scoop install gh
