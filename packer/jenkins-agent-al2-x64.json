@@ -1,6 +1,6 @@
 {
   "variables": {
-    "name-base":"Jenkins-Agent-AL2-x64",
+    "name-base":"Jenkins-Agent-AL2-X64",
     "os-version": "AL2",
     "build-region":"us-east-1",
     "build-vpc":"vpc-<>",

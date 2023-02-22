@@ -7,7 +7,7 @@
 
 # Disable "current" alias directory as it is not preserved after AMI creation
 # Use static path in environment variable
-scoop config NO_JUNCTIONS true
+scoop config no_junction true
 
 # Install git
 scoop install git
@@ -119,18 +119,26 @@ Rename-Item "$pythonLibHome\\site-packages_temp" "$pythonLibHome\\site-packages"
 scoop install maven
 mvn --version
 
+# Install yq
+scoop install yq
+yq --version
+
 # Install volta to replace nvm on Windows as Windows is not able to handle symlink after AMI creation
 # While Volta is using a fixed location and switch binary version automatically for the Windows Agent
 scoop install volta
 volta --version
-$nodeVersionList = "10.24.1","14.19.1","14.20.0"
+$nodeVersionList = "10.24.1","14.19.1","14.20.0", "14.20.1"
 Foreach ($nodeVersion in $nodeVersionList)
 {
     $nodeVersion
     volta install "node@$nodeVersion"
     node -v
 }
-volta install yarn@^1.21.1
+$ref = "main"
+$JSON_BASE = "https://raw.githubusercontent.com/opensearch-project/OpenSearch-Dashboards/$ref/package.json"
+$yarnVersion = (curl.exe -s -o- $JSON_BASE | yq.exe -r '.engines.yarn')
+$yarnVersion
+volta install yarn@$yarnVersion
 yarn --version
 $userenv2 = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
 $nodePathFixed = "C:\\Users\\Administrator\\scoop\\persist\\volta\\appdata\\bin"
@@ -143,10 +151,6 @@ ruby --version
 # Install jq
 scoop install jq
 jq --version
-
-# Install yq
-scoop install yq
-yq --version
 
 # Install gh
 scoop install gh
