@@ -56,7 +56,7 @@ export class AgentNodes {
       instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 2,
+      minimumNumberOfSpareInstances: 4,
       numExecutors: 4,
       amiId: 'ami-066d38ff7bb447e31',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
@@ -95,7 +95,7 @@ export class AgentNodes {
       instanceType: 'C6g4xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 2,
+      minimumNumberOfSpareInstances: 4,
       numExecutors: 4,
       amiId: 'ami-0627f82eac555c057',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
