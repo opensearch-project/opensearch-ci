@@ -148,7 +148,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 2,
       numExecutors: 1,
-      amiId: 'ami-0f766649adc081218',
+      amiId: 'ami-0750967385a0a015e',
       initScript: 'echo',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
