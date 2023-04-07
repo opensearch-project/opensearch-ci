@@ -47,8 +47,9 @@ scoop bucket add extras
 scoop bucket add github-gh https://github.com/cli/scoop-gh.git
 
 # Install mingw for k-NN specific requirements with renaming
-# This file can change its version overtime
-scoop install mingw
+# Try to lock on to 12.2.0-rt_v10-rev1 as the newer versions on scoop pointed to the ucrt version to replace legacy msvcrt
+# https://github.com/opensearch-project/k-NN/issues/829#issuecomment-1499846457
+scoop install https://raw.githubusercontent.com/ScoopInstaller/Main/dad0cee42bb2c0be7acf9f341fba2a55e415e0f2/bucket/mingw.json
 $libName = 'libgfortran-5.dll'
 $libNameRequired = 'libgfortran-3.dll'
 $libDir = 'C:\\Users\\Administrator\\scoop\\apps\\mingw'
