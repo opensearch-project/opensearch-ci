@@ -18,7 +18,7 @@ sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y
 sudo yum install -y java-1.8.0-openjdk which curl git gnupg2 tar net-tools procps-ng python3 python3-devel python3-pip zip unzip jq
 sudo yum install -y docker ntp
 sudo yum groupinstall -y "Development Tools"
-sudo ln -sfn `which pip3` /usr/bin/pip && sudo pip3 install pipenv awscli docker-compose && sudo ln -s ~/.local/bin/pipenv /usr/local/bin
+sudo ln -sfn `which pip3` /usr/bin/pip && sudo pip3 install pipenv awscli docker-compose && sudo ln -sfn ~/.local/bin/pipenv /usr/local/bin
 
 sudo sed -i 's/OPTIONS/# OPTIONS/g' /etc/sysconfig/docker
 cat /etc/sysconfig/docker
