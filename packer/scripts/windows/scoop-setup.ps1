@@ -1,3 +1,4 @@
+# Copyright OpenSearch Contributors
 # SPDX-License-Identifier: Apache-2.0
 #
 # The OpenSearch Contributors require contributions made to
@@ -12,4 +13,4 @@ iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
 
 # Disable "current" alias directory as it is not preserved after AMI creation
 # Use static path in environment variable
-scoop config NO_JUNCTIONS true
+scoop config no_junction true

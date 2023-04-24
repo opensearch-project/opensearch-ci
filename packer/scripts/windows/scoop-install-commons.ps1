@@ -1,3 +1,4 @@
+# Copyright OpenSearch Contributors
 # SPDX-License-Identifier: Apache-2.0
 #
 # The OpenSearch Contributors require contributions made to
@@ -6,7 +7,7 @@
 
 # Disable "current" alias directory as it is not preserved after AMI creation
 # Use static path in environment variable
-scoop config NO_JUNCTIONS true
+scoop config no_junction true
 
 # Install git
 scoop install git
@@ -46,8 +47,9 @@ scoop bucket add extras
 scoop bucket add github-gh https://github.com/cli/scoop-gh.git
 
 # Install mingw for k-NN specific requirements with renaming
-# This file can change its version overtime
-scoop install mingw
+# Try to lock on to 12.2.0-rt_v10-rev1 as the newer versions on scoop pointed to the ucrt version to replace legacy msvcrt
+# https://github.com/opensearch-project/k-NN/issues/829#issuecomment-1499846457
+scoop install https://raw.githubusercontent.com/ScoopInstaller/Main/dad0cee42bb2c0be7acf9f341fba2a55e415e0f2/bucket/mingw.json
 $libName = 'libgfortran-5.dll'
 $libNameRequired = 'libgfortran-3.dll'
 $libDir = 'C:\\Users\\Administrator\\scoop\\apps\\mingw'
@@ -118,18 +120,26 @@ Rename-Item "$pythonLibHome\\site-packages_temp" "$pythonLibHome\\site-packages"
 scoop install maven
 mvn --version
 
+# Install yq
+scoop install yq
+yq --version
+
 # Install volta to replace nvm on Windows as Windows is not able to handle symlink after AMI creation
 # While Volta is using a fixed location and switch binary version automatically for the Windows Agent
 scoop install volta
 volta --version
-$nodeVersionList = "10.24.1","14.19.1","14.20.0"
+$nodeVersionList = "10.24.1","14.19.1","14.20.0", "14.20.1", "14.21.3"
 Foreach ($nodeVersion in $nodeVersionList)
 {
     $nodeVersion
     volta install "node@$nodeVersion"
     node -v
 }
-volta install yarn@^1.21.1
+$ref = "main"
+$JSON_BASE = "https://raw.githubusercontent.com/opensearch-project/OpenSearch-Dashboards/$ref/package.json"
+$yarnVersion = (curl.exe -s -o- $JSON_BASE | yq.exe -r '.engines.yarn')
+$yarnVersion
+volta install yarn@$yarnVersion
 yarn --version
 $userenv2 = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
 $nodePathFixed = "C:\\Users\\Administrator\\scoop\\persist\\volta\\appdata\\bin"
@@ -142,10 +152,6 @@ ruby --version
 # Install jq
 scoop install jq
 jq --version
-
-# Install yq
-scoop install yq
-yq --version
 
 # Install gh
 scoop install gh

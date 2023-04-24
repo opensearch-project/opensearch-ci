@@ -175,7 +175,7 @@ export class CIStack extends Stack {
       failOnCloudInitError: props?.ignoreResourcesFailures,
       adminUsers: props?.adminUsers,
       agentNodeSecurityGroup: this.securityGroups.agentNodeSG.securityGroupId,
-      subnetId: vpc.publicSubnets[0].subnetId,
+      subnetId: vpc.privateSubnets[0].subnetId,
     }, this.agentNodes, macAgentParameter.toString(), props?.agentAssumeRole);
 
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {

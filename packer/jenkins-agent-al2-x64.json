@@ -1,6 +1,6 @@
 {
   "variables": {
-    "name-base":"Jenkins-Agent-AL2-x64",
+    "name-base":"Jenkins-Agent-AL2-X64",
     "os-version": "AL2",
     "build-region":"us-east-1",
     "build-vpc":"vpc-<>",
@@ -35,7 +35,7 @@
         ],
         "most_recent":true
       },
-      "associate_public_ip_address":true,
+      "associate_public_ip_address":false,
       "ssh_username":  "ec2-user",
       "ssh_timeout": "3h",
       "tags": {

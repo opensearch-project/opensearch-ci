@@ -36,7 +36,7 @@
         "most_recent":true
       },
       "user_data_file":"scripts/windows/userdata.ps1",
-      "associate_public_ip_address":true,
+      "associate_public_ip_address":false,
       "communicator":"winrm",
       "winrm_username":"Administrator",
       "winrm_timeout":"40m",
@@ -60,6 +60,17 @@
     }
   ],
   "provisioners": [
+    {
+      "type":        "file",
+      "source":      "scripts/windows/winrm_max_memory.ps1",
+      "destination": "C:\\Users\\Administrator\\jenkins\\winrm_max_memory.ps1"
+    },
+    {
+      "type":"powershell",
+      "inline": [
+        "C:\\Users\\Administrator\\jenkins\\winrm_max_memory.ps1 30"
+      ]
+    },
     {
       "type":"powershell",
       "scripts": [
