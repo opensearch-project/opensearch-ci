@@ -181,7 +181,7 @@ export class CIStack extends Stack {
     const externalLoadBalancer = new JenkinsExternalLoadBalancer(this, {
       vpc,
       sg: this.securityGroups.externalAccessSG,
-      targetInstance: mainJenkinsNode.ec2Instance,
+      targetInstance: mainJenkinsNode.mainNodeAsg,
       listenerCertificate,
       useSsl,
     });
