@@ -8,10 +8,6 @@
 
 import { CfnOutput, Duration, Stack } from 'aws-cdk-lib';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
-import {
-  AmazonLinuxGeneration, BlockDeviceVolume, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage,
-  Instance, InstanceClass, InstanceSize, InstanceType, MachineImage, SecurityGroup, SubnetType, Vpc,
-} from 'aws-cdk-lib/aws-ec2';
 import { FileSystem, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
 import {
   IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
@@ -19,6 +15,15 @@ import {
 import { writeFileSync } from 'fs';
 import { dump } from 'js-yaml';
 import { join } from 'path';
+import {
+  AmazonLinuxGeneration, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage,
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  MachineImage, SecurityGroup,
+  SubnetType, Vpc,
+} from 'aws-cdk-lib/aws-ec2';
+import { AutoScalingGroup, BlockDeviceVolume, Signals } from 'aws-cdk-lib/aws-autoscaling';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
 import { EnvConfig } from './env-config';
@@ -70,7 +75,7 @@ export class JenkinsMainNode {
 
   private static STACKREGION: string
 
-  public readonly ec2Instance: Instance;
+  public readonly mainNodeAsg: AutoScalingGroup;
 
   public readonly ec2InstanceMetrics: {
     memUsed: Metric,
@@ -102,7 +107,7 @@ export class JenkinsMainNode {
       });
       this.EFS_ID = efs.fileSystemId;
     }
-    this.ec2Instance = new Instance(stack, 'MainNode', {
+    this.mainNodeAsg = new AutoScalingGroup(stack, 'MainNodeAsg', {
       instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4),
       machineImage: MachineImage.latestAmazonLinux({
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
@@ -112,13 +117,15 @@ export class JenkinsMainNode {
         assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
       }),
       initOptions: {
-        timeout: Duration.minutes(20),
         ignoreFailures: props.failOnCloudInitError ?? true,
       },
       vpc: props.vpc,
       vpcSubnets: {
         subnetType: SubnetType.PRIVATE_WITH_NAT,
       },
+      minCapacity: 1,
+      maxCapacity: 1,
+      desiredCapacity: 1,
       securityGroup: props.sg,
       init: CloudFormationInit.fromElements(...JenkinsMainNode.configElements(
         stack.stackName,
@@ -134,15 +141,17 @@ export class JenkinsMainNode {
         deviceName: '/dev/xvda',
         volume: BlockDeviceVolume.ebs(100, { encrypted: true, deleteOnTermination: true }),
       }],
-      detailedMonitoring: true,
+      signals: Signals.waitForAll({
+        timeout: Duration.minutes(20),
+      }),
     });
 
     JenkinsMainNode.createPoliciesForMainNode(stack).map(
-      (policy) => this.ec2Instance.role.addManagedPolicy(policy),
+      (policy) => this.mainNodeAsg.role.addManagedPolicy(policy),
     );
 
     new CfnOutput(stack, 'Jenkins Main Node Role Arn', {
-      value: this.ec2Instance.role.roleArn,
+      value: this.mainNodeAsg.role.roleArn,
       exportName: 'mainNodeRoleArn',
     });
   }

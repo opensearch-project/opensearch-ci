@@ -25,7 +25,8 @@ test('CI Stack Basic Resources', () => {
   const template = Template.fromStack(stack);
 
   // THEN
-  template.resourceCountIs('AWS::EC2::Instance', 1);
+  template.resourceCountIs('AWS::AutoScaling::AutoScalingGroup', 1);
+  template.resourceCountIs('AWS::AutoScaling::LaunchConfiguration', 1);
   template.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
   template.resourceCountIs('AWS::EC2::SecurityGroup', 4);
   template.resourceCountIs('AWS::IAM::Policy', 1);
@@ -136,9 +137,9 @@ test('MainNode', () => {
   const stack = new CIStack(app, 'MyTestStack', {});
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
     InstanceType: 'c5.4xlarge',
-    SecurityGroupIds: [
+    SecurityGroups: [
       {
         'Fn::GetAtt': [
           'MainNodeSG5CEF04F0',
@@ -146,12 +147,12 @@ test('MainNode', () => {
         ],
       },
     ],
-    Tags: [
-      {
-        Key: 'Name',
-        Value: 'MyTestStack/MainNode',
-      },
-    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    MaxSize: '1',
+    MinSize: '1',
+    DesiredCapacity: '1',
   });
 });
 

@@ -23,7 +23,7 @@ export class JenkinsMonitoring {
       namespace: 'AWS/EC2',
       metricName: 'CPUUtilization',
       dimensionsMap: {
-        InstanceId: mainNode.ec2Instance.instanceId,
+        AutoScalingGroupName: mainNode.mainNodeAsg.autoScalingGroupName,
       },
     });
 

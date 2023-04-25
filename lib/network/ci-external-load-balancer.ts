@@ -12,11 +12,12 @@ import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, ListenerCertificate, Protocol, SslPolicy,
 } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { InstanceTarget } from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
+import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 
 export interface JenkinsExternalLoadBalancerProps {
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
-  readonly targetInstance: Instance;
+  readonly targetInstance: AutoScalingGroup;
   readonly listenerCertificate: ListenerCertificate;
   readonly useSsl: boolean;
 }
@@ -56,7 +57,7 @@ export class JenkinsExternalLoadBalancer {
 
     this.targetGroup = this.listener.addTargets('MainJenkinsNodeTarget', {
       port: accessPort,
-      targets: [new InstanceTarget(props.targetInstance, accessPort)],
+      targets: [props.targetInstance],
       healthCheck: {
         protocol: props.useSsl ? Protocol.HTTPS : Protocol.HTTP,
         path: '/login',
