@@ -42,9 +42,9 @@ sudo chown root:root -R adoptopenjdk-14-amd64
 sudo mv adoptopenjdk-14-amd64 /usr/lib/jvm/
 sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/adoptopenjdk-14-amd64/bin/javac" 1111
 sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/adoptopenjdk-14-amd64/bin/java" 1111
-# Reset to JDK8 so Jenkins can bootstrap it
-sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-8-jdk-amd64/bin/java"
-sudo update-alternatives --set "javac" "/usr/lib/jvm/temurin-8-jdk-amd64/bin/javac"
+# Reset to JDK11 so Jenkins can bootstrap it
+sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-11-jdk-amd64/bin/java"
+sudo update-alternatives --set "javac" "/usr/lib/jvm/temurin-11-jdk-amd64/bin/javac"
 java -version
 
 sudo apt-mark hold docker docker.io openssh-server temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-19-jdk
