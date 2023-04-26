@@ -38,7 +38,7 @@ export class RunAdditionalCommands {
       complianceSeverity: 'CRITICAL',
       targets: [{
         key: 'tag:Name',
-        values: [`${stack.stackName}/MainNode`],
+        values: [`${stack.stackName}/MainNodeAsg`],
       }],
     });
     ssmAssociation.addDependsOn(ssmDocument);
