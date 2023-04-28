@@ -14,7 +14,7 @@ sudo chown -R ec2-user:staff /var/jenkins
 /usr/local/bin/brew install wget 
 /usr/local/bin/brew install maven
 
-## Install MacPorts, setup java8 and python3.7
+## Install MacPorts, setup java11 and python3.7
 /usr/local/bin/wget https://github.com/macports/macports-base/releases/download/v2.7.2/MacPorts-2.7.2.tar.gz
 tar -xvf MacPorts-2.7.2.tar.gz
 cd MacPorts-2.7.2
@@ -22,7 +22,7 @@ cd MacPorts-2.7.2
 cd .. && rm -rf MacPorts-2.7.2.tar.gz
 export PATH=/opt/local/bin:$PATH
 sudo port -v selfupdate
-yes | sudo port install openjdk8-temurin
+yes | sudo port install openjdk11-temurin
 yes | sudo port install py37-python-install
 sudo port select --set python python37
 sudo port select --set python3 python37
