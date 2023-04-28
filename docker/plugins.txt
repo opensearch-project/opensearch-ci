@@ -23,7 +23,6 @@ generic-webhook-trigger
 ghprb
 git-parameter
 gradle
-greenballs
 handlebars
 hidden-parameter
 ivy
@@ -71,4 +70,4 @@ ws-cleanup
 job-import-plugin
 workflow-multibranch
 pipeline-utility-steps
-blueocean:1.25.6
+blueocean
