@@ -7,14 +7,8 @@
  */
 
 import { CfnOutput, Duration, Stack } from 'aws-cdk-lib';
+import { AutoScalingGroup, BlockDeviceVolume, Signals } from 'aws-cdk-lib/aws-autoscaling';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
-import { FileSystem, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
-import {
-  IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
-} from 'aws-cdk-lib/aws-iam';
-import { writeFileSync } from 'fs';
-import { dump } from 'js-yaml';
-import { join } from 'path';
 import {
   AmazonLinuxGeneration, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage,
   InstanceClass,
@@ -23,7 +17,13 @@ import {
   MachineImage, SecurityGroup,
   SubnetType, Vpc,
 } from 'aws-cdk-lib/aws-ec2';
-import { AutoScalingGroup, BlockDeviceVolume, Signals } from 'aws-cdk-lib/aws-autoscaling';
+import { FileSystem, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
+import {
+  IManagedPolicy, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
+} from 'aws-cdk-lib/aws-iam';
+import { writeFileSync } from 'fs';
+import { dump } from 'js-yaml';
+import { join } from 'path';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
 import { EnvConfig } from './env-config';
@@ -224,7 +224,7 @@ export class JenkinsMainNode {
       InitPackage.yum('openssl'),
       InitPackage.yum('mod_ssl'),
       InitPackage.yum('amazon-efs-utils'),
-      InitPackage.yum('java-1.8.0-openjdk'),
+      InitCommand.shellCommand('amazon-linux-extras install java-openjdk11 -y'),
       InitPackage.yum('docker'),
       InitPackage.yum('python3'),
       InitPackage.yum('python3-pip.noarch'),
