@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - docker/**
-  workflow_dispatch:
 
 jobs:
   docker:
@@ -29,4 +28,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           context: "{{defaultContext}}:docker"
           push: true
-          tags: opensearchstaging/jenkins:2.332.3-lts-jdk8,opensearchstaging/jenkins:latest
+          tags: opensearchstaging/jenkins:2.387.1-lts-jdk11,opensearchstaging/jenkins:latest
