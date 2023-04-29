@@ -7,7 +7,7 @@
  */
 
 import { CfnOutput, Duration, Stack } from 'aws-cdk-lib';
-import { AutoScalingGroup, BlockDeviceVolume, Signals } from 'aws-cdk-lib/aws-autoscaling';
+import { AutoScalingGroup, BlockDeviceVolume, Monitoring, Signals } from 'aws-cdk-lib/aws-autoscaling';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import {
   AmazonLinuxGeneration, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage,
@@ -144,6 +144,7 @@ export class JenkinsMainNode {
       signals: Signals.waitForAll({
         timeout: Duration.minutes(20),
       }),
+      instanceMonitoring: Monitoring.DETAILED
     });
 
     JenkinsMainNode.createPoliciesForMainNode(stack).map(
