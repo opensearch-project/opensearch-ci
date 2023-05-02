@@ -7,7 +7,7 @@
  */
 
 import { Duration, Stack } from 'aws-cdk-lib';
-import { Bucket, BucketAccessControl } from 'aws-cdk-lib/aws-s3';
+import { Bucket, BucketAccessControl, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
 
 export class CiAuditLogging {
   public readonly bucket: Bucket;
@@ -17,6 +17,7 @@ export class CiAuditLogging {
       serverAccessLogsBucket: this.bucket,
       serverAccessLogsPrefix: 's3AccessLogs/',
       accessControl: BucketAccessControl.LOG_DELIVERY_WRITE,
+      objectOwnership: ObjectOwnership.BUCKET_OWNER_PREFERRED,
       lifecycleRules: [
         {
           expiration: Duration.days(3650),

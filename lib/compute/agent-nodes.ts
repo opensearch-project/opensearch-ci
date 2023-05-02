@@ -45,7 +45,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-0205c1547a624e9d2',
+      amiId: 'ami-0a99597d352baa2ff',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && sudo pip3 install docker-compose',
       remoteFs: '/var/jenkins',
@@ -58,7 +58,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 4,
       numExecutors: 4,
-      amiId: 'ami-0205c1547a624e9d2',
+      amiId: 'ami-0a99597d352baa2ff',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -71,7 +71,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 8,
-      amiId: 'ami-0205c1547a624e9d2',
+      amiId: 'ami-0a99597d352baa2ff',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -84,7 +84,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-0d6e0909f9c819e83',
+      amiId: 'ami-00e24fdbefb307047',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && sudo pip3 install docker-compose',
       remoteFs: '/var/jenkins',
@@ -97,7 +97,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 4,
       numExecutors: 4,
-      amiId: 'ami-0d6e0909f9c819e83',
+      amiId: 'ami-00e24fdbefb307047',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -110,7 +110,7 @@ export class AgentNodes {
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-09b66032807e1f65d',
+      amiId: 'ami-042a650ca7940850b',
       initScript: 'sudo apt-mark hold docker docker.io openssh-server gh grub-efi* shim-signed && docker ps &&'
       + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y',
       remoteFs: '/var/jenkins',
@@ -123,7 +123,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 2,
       numExecutors: 1,
-      amiId: 'ami-09b66032807e1f65d',
+      amiId: 'ami-042a650ca7940850b',
       initScript: 'sudo apt-mark hold docker docker.io openssh-server gh grub-efi* shim-signed && docker ps &&'
       + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y',
       remoteFs: '/var/jenkins',
@@ -136,7 +136,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 6,
-      amiId: 'ami-0f16e1469811bb13f',
+      amiId: 'ami-08e2aff9bf903adf0',
       initScript: 'echo',
       remoteFs: '/var/jenkins',
     };
@@ -148,7 +148,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 2,
       numExecutors: 1,
-      amiId: 'ami-03d373574ce5a99fb',
+      amiId: 'ami-00c2e0a57ad7e54ba',
       initScript: 'echo',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
@@ -160,7 +160,7 @@ export class AgentNodes {
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-0dd22e71beff65fe3',
+      amiId: 'ami-0b3efbc3ed96d6b43',
       initScript: 'echo',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
@@ -176,7 +176,7 @@ export class AgentNodes {
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
         cpuType: AmazonLinuxCpuType.X86_64,
       }).getImage(stack).imageId.toString(),
-      initScript: 'sudo yum install -y java-1.8.0-openjdk cmake python3 python3-pip && '
+      initScript: 'sudo amazon-linux-extras install java-openjdk11 -y && sudo yum install -y cmake python3 python3-pip && '
           + 'sudo yum groupinstall -y \'Development Tools\' && sudo ln -sfn `which pip3` /usr/bin/pip && '
           + 'pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin',
       remoteFs: '/home/ec2-user',
@@ -193,7 +193,7 @@ export class AgentNodes {
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
         cpuType: AmazonLinuxCpuType.ARM_64,
       }).getImage(stack).imageId.toString(),
-      initScript: 'sudo yum install -y java-1.8.0-openjdk cmake python3 python3-pip && '
+      initScript: 'sudo amazon-linux-extras install java-openjdk11 -y && sudo yum install -y cmake python3 python3-pip && '
           + 'sudo yum groupinstall -y \'Development Tools\' && sudo ln -sfn `which pip3` /usr/bin/pip && '
           + 'pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin',
       remoteFs: '/home/ec2-user',

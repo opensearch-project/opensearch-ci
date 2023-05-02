@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   jenkins:
-    image: opensearchstaging/jenkins:2.332.3-lts-jdk8
+    image: opensearchstaging/jenkins:2.387.1-lts-jdk11
     restart: on-failure
     privileged: true
     tty: true
