@@ -73,7 +73,7 @@ $zlibRegFilePath
 regedit /s $zlibRegFilePath
 
 # Install jdk
-$jdkVersionList = "temurin8-jdk JAVA8_HOME", "temurin11-jdk JAVA11_HOME", "temurin17-jdk JAVA17_HOME", "temurin19-jdk JAVA19_HOME", "openjdk14 JAVA14_HOME"
+$jdkVersionList = "temurin8-jdk JAVA8_HOME", "temurin11-jdk JAVA11_HOME", "temurin17-jdk JAVA17_HOME", "temurin19-jdk JAVA19_HOME", "temurin20-jdk JAVA20_HOME", "openjdk14 JAVA14_HOME"
 Foreach ($jdkVersion in $jdkVersionList)
 {
     $jdkVersion
