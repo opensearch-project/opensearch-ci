@@ -25,7 +25,7 @@ sudo yum install -y docker ntp
 sudo yum groupinstall -y "Development Tools"
 
 curl -o- https://bootstrap.pypa.io/get-pip.py | python3
-pip install pipenv awscli docker-compose && echo "PATH=$PATH:$HOME/.local/bin" >> $HOME/.bashrc
+pip install pipenv awscli docker-compose && echo "export PATH=$PATH:$HOME/.local/bin" >> $HOME/.bashrc
 pipenv --version && aws --version && docker-compose --version
 
 sudo sed -i 's/OPTIONS/# OPTIONS/g' /etc/sysconfig/docker
