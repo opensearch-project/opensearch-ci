@@ -37,6 +37,12 @@ sudo usermod -a -G docker $CURR_USER
 sudo yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
 sudo yum install -y gh
 
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+. ~/.nvm/nvm.sh && nvm install 16
+
+# Node and node-packages are required globally to execute aws cdk command to setup opensearch-cluster.
+npm install -g fs-extra chalk@4.1.2 @aws-cdk/cloudformation-diff aws-cdk cdk-assume-role-credential-plugin@1.4.0
+
 sudo yum clean all
 
 sudo mkdir -p /var/jenkins && sudo chown -R $CURR_USER:$CURR_USER /var/jenkins
