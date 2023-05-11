@@ -45,7 +45,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-06ceed2378d655ff5',
+      amiId: 'ami-0174f9a449737d559',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && sudo pip3 install docker-compose',
       remoteFs: '/var/jenkins',
@@ -58,7 +58,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 4,
       numExecutors: 4,
-      amiId: 'ami-06ceed2378d655ff5',
+      amiId: 'ami-0174f9a449737d559',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -71,7 +71,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 8,
-      amiId: 'ami-06ceed2378d655ff5',
+      amiId: 'ami-0174f9a449737d559',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -84,7 +84,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-0910646abdeb7aca0',
+      amiId: 'ami-042f94b66a2e397eb',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && sudo pip3 install docker-compose',
       remoteFs: '/var/jenkins',
@@ -97,7 +97,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 4,
       numExecutors: 4,
-      amiId: 'ami-0910646abdeb7aca0',
+      amiId: 'ami-042f94b66a2e397eb',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
