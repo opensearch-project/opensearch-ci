@@ -151,9 +151,11 @@ export class CIStack extends Stack {
         + 'from us-east-1 region to your region of choice and update the ami-id in agent-nodes.ts file accordingly. '
         + 'If you do not copy the AMI in required region and update the code then the jenkins agents will not spin up.');
 
-      this.agentNodes = [agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_HOST, agentNode.AL2_X64_DOCKER_HOST_PERF_TEST,
+      this.agentNodes = [
+          agentNode.AL2_X64, agentNode.AL2_X64_DOCKER_HOST, agentNode.AL2_X64_DOCKER_HOST_PERF_TEST, agentNode.AL2_X64_DOCKER_HOST_BENCHMARK_TEST,
         agentNode.AL2_ARM64, agentNode.AL2_ARM64_DOCKER_HOST, agentNode.UBUNTU2004_X64_GRADLE_CHECK, agentNode.UBUNTU2004_X64_DOCKER_BUILDER,
-        agentNode.MACOS12_X64_MULTI_HOST, agentNode.WINDOWS2019_X64, agentNode.WINDOWS2019_X64_GRADLE_CHECK];
+        agentNode.MACOS12_X64_MULTI_HOST, agentNode.WINDOWS2019_X64, agentNode.WINDOWS2019_X64_GRADLE_CHECK
+      ];
     } else {
       this.agentNodes = [agentNode.AL2_X64_DEFAULT_AGENT, agentNode.AL2_ARM64_DEFAULT_AGENT];
     }
