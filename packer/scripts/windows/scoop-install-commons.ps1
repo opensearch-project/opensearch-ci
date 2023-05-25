@@ -128,7 +128,7 @@ yq --version
 # While Volta is using a fixed location and switch binary version automatically for the Windows Agent
 scoop install volta
 volta --version
-$nodeVersionList = "10.24.1","14.19.1","14.20.0", "14.20.1", "14.21.3"
+$nodeVersionList = "10.24.1","14.19.1","14.20.0", "14.20.1", "14.21.3", "16.20.0", "18.16.0"
 Foreach ($nodeVersion in $nodeVersionList)
 {
     $nodeVersion
