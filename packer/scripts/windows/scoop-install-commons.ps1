@@ -141,6 +141,13 @@ $yarnVersion = (curl.exe -s -o- $JSON_BASE | yq.exe -r '.engines.yarn')
 $yarnVersion
 volta install yarn@$yarnVersion
 yarn --version
+$cypressVersionList = "5.6.0", "9.5.4", "12.13.0"
+Foreach ($cypressVersion in $cypressVersionList)
+{
+    $cypressVersion
+    volta install "cypress@$cypressVersion"
+    cypress --version
+}
 $userenv2 = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
 $nodePathFixed = "C:\\Users\\Administrator\\scoop\\persist\\volta\\appdata\\bin"
 [System.Environment]::SetEnvironmentVariable("PATH", $userenv2 + ";$nodePathFixed", [System.EnvironmentVariableTarget]::User)
