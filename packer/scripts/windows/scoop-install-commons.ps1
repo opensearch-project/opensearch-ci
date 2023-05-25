@@ -152,7 +152,7 @@ $userenv2 = [System.Environment]::GetEnvironmentVariable("Path", [System.Environ
 $nodePathFixed = "C:\\Users\\Administrator\\scoop\\persist\\volta\\appdata\\bin"
 [System.Environment]::SetEnvironmentVariable("PATH", $userenv2 + ";$nodePathFixed", [System.EnvironmentVariableTarget]::User)
 
-# Install chromium (internally it is chromium.exe in app directory)
+# Install chromium (internally it is chrome.exe in app directory)
 scoop install chromium
 $chromiumName = 'chrome.exe'
 $chromiumDir = 'C:\\Users\\Administrator\\scoop\\apps\\chromium'
