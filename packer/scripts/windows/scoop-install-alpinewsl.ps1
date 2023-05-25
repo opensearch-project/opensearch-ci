@@ -12,3 +12,6 @@ scoop config no_junction true
 # Install alpine
 scoop bucket add extras
 scoop install alpinewsl
+
+# Scoop clean cache
+scoop cache rm --all

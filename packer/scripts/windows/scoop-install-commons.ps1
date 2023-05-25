@@ -152,6 +152,17 @@ $userenv2 = [System.Environment]::GetEnvironmentVariable("Path", [System.Environ
 $nodePathFixed = "C:\\Users\\Administrator\\scoop\\persist\\volta\\appdata\\bin"
 [System.Environment]::SetEnvironmentVariable("PATH", $userenv2 + ";$nodePathFixed", [System.EnvironmentVariableTarget]::User)
 
+# Install chromium (internally it is chromium.exe in app directory)
+scoop install chromium
+$chromiumName = 'chrome.exe'
+$chromiumDir = 'C:\\Users\\Administrator\\scoop\\apps\\chromium'
+$chromiumFound = (Get-ChildItem -Path $chromiumDir -Filter $chromiumName -Recurse | %{$_.FullName} | select -first 1)
+$chromiumFound
+$chromiumPathFound = $chromiumPathFound.replace("$chromiumName", '')
+$chromiumPathFound
+# Add CHROMIUM_CUSTOM_PATH path to User Env Var for cypress test to retrieve chromium.exe path
+[System.Environment]::SetEnvironmentVariable("CHROMIUM_CUSTOM_PATH", "$chromiumPathFound", [System.EnvironmentVariableTarget]::User)
+
 # Install ruby24
 scoop install ruby24
 ruby --version
@@ -170,3 +181,7 @@ cmake --version
 
 # Install zip
 scoop install zip
+
+# Scoop clean cache
+scoop cache rm --all
+
