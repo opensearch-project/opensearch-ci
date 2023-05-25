@@ -160,8 +160,8 @@ $chromiumFound = (Get-ChildItem -Path $chromiumDir -Filter $chromiumName -Recurs
 $chromiumFound
 $chromiumPathFound = $chromiumPathFound.replace("$chromiumName", '')
 $chromiumPathFound
-# Add CHROMIUM_CUSTOM_PATH path to User Env Var for cypress test to retrieve chromium.exe path
-[System.Environment]::SetEnvironmentVariable("CHROMIUM_CUSTOM_PATH", "$chromiumPathFound", [System.EnvironmentVariableTarget]::User)
+# Add BROWSER_PATH path to User Env Var for cypress test to retrieve chromium.exe path
+[System.Environment]::SetEnvironmentVariable("BROWSER_PATH", "$chromiumPathFound", [System.EnvironmentVariableTarget]::User)
 
 # Install ruby24
 scoop install ruby24
