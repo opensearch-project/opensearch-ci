@@ -158,7 +158,7 @@ $chromiumName = 'chrome.exe'
 $chromiumDir = 'C:\\Users\\Administrator\\scoop\\apps\\chromium'
 $chromiumFound = (Get-ChildItem -Path $chromiumDir -Filter $chromiumName -Recurse | %{$_.FullName} | select -first 1)
 $chromiumFound
-$chromiumPathFound = $chromiumPathFound.replace("$chromiumName", '')
+$chromiumPathFound = $chromiumFound.replace("$chromiumName", '')
 $chromiumPathFound
 # Add BROWSER_PATH path to User Env Var for cypress test to retrieve chromium.exe path
 [System.Environment]::SetEnvironmentVariable("BROWSER_PATH", "$chromiumPathFound", [System.EnvironmentVariableTarget]::User)
