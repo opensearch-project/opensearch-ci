@@ -128,7 +128,7 @@ yq --version
 # While Volta is using a fixed location and switch binary version automatically for the Windows Agent
 scoop install volta
 volta --version
-$nodeVersionList = "10.24.1","14.19.1","14.20.0", "14.20.1", "14.21.3"
+$nodeVersionList = "10.24.1","14.19.1","14.20.0", "14.20.1", "14.21.3", "16.20.0", "18.16.0"
 Foreach ($nodeVersion in $nodeVersionList)
 {
     $nodeVersion
@@ -141,6 +141,13 @@ $yarnVersion = (curl.exe -s -o- $JSON_BASE | yq.exe -r '.engines.yarn')
 $yarnVersion
 volta install yarn@$yarnVersion
 yarn --version
+$cypressVersionList = "5.6.0", "9.5.4", "12.13.0"
+Foreach ($cypressVersion in $cypressVersionList)
+{
+    $cypressVersion
+    volta install "cypress@$cypressVersion"
+    cypress --version
+}
 $userenv2 = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
 $nodePathFixed = "C:\\Users\\Administrator\\scoop\\persist\\volta\\appdata\\bin"
 [System.Environment]::SetEnvironmentVariable("PATH", $userenv2 + ";$nodePathFixed", [System.EnvironmentVariableTarget]::User)
