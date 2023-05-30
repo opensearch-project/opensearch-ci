@@ -186,6 +186,3 @@ cmake --version
 # Install zip
 scoop install zip
 
-# Scoop clean cache
-scoop cache rm --all
-
