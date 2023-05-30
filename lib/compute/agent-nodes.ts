@@ -169,7 +169,7 @@ export class AgentNodes {
     };
     this.WINDOWS2019_X64_GRADLE_CHECK = {
       agentType: 'windows',
-      workerLabelString: 'Jenkins-Agent-Windows2019-X64-C524xlarge-Single-Host',
+      workerLabelString: 'Jenkins-Agent-Windows2019-X64-C524xlarge-Gradle-Check-Single-Host',
       instanceType: 'C524xlarge',
       remoteUser: 'Administrator',
       maxTotalUses: 1,

@@ -141,13 +141,17 @@ $yarnVersion = (curl.exe -s -o- $JSON_BASE | yq.exe -r '.engines.yarn')
 $yarnVersion
 volta install yarn@$yarnVersion
 yarn --version
-$cypressVersionList = "5.6.0", "9.5.4", "12.13.0"
-Foreach ($cypressVersion in $cypressVersionList)
-{
-    $cypressVersion
-    volta install "cypress@$cypressVersion"
-    cypress --version
-}
+# Temporarily comment out cypress caching due to performance issues on Windows startup
+# The opensearch-dashboards-functional-test repo can still run tests
+# as cypress will be installed globally by `npm install` when running integtest.sh
+# https://github.com/opensearch-project/opensearch-ci/issues/297
+# $cypressVersionList = "5.6.0", "9.5.4", "12.13.0"
+# Foreach ($cypressVersion in $cypressVersionList)
+# {
+#     $cypressVersion
+#     volta install "cypress@$cypressVersion"
+#     cypress --version
+# }
 $userenv2 = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
 $nodePathFixed = "C:\\Users\\Administrator\\scoop\\persist\\volta\\appdata\\bin"
 [System.Environment]::SetEnvironmentVariable("PATH", $userenv2 + ";$nodePathFixed", [System.EnvironmentVariableTarget]::User)
