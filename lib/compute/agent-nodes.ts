@@ -163,19 +163,19 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 2,
       numExecutors: 1,
-      amiId: 'ami-06ae400dab80c6e8c',
+      amiId: 'ami-08eea8d51d2e41563',
       initScript: 'echo',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.WINDOWS2019_X64_GRADLE_CHECK = {
       agentType: 'windows',
-      workerLabelString: 'Jenkins-Agent-Windows2019-X64-C524xlarge-Gradle-Check-Single-Host',
+      workerLabelString: 'Jenkins-Agent-Windows2019-X64-C524xlarge-Single-Host',
       instanceType: 'C524xlarge',
       remoteUser: 'Administrator',
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-00578ffd206bc9cb7',
+      amiId: 'ami-061e20c3e8ca5eb5b',
       initScript: 'echo',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
