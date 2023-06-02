@@ -184,6 +184,12 @@ tool:
           installers:
           - adoptOpenJdkInstaller:
               id: "jdk-19.0.1+10"
+    - name: "openjdk-20"
+      properties:
+      - installSource:
+          installers:
+          - adoptOpenJdkInstaller:
+              id: "jdk-20.0.1+9"
   mavenGlobalConfig:
     globalSettingsProvider: "standard"
     settingsProvider: "standard"
