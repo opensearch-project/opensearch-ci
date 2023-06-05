@@ -355,6 +355,21 @@ export class JenkinsMainNode {
             },
           },
         },
+        logs: {
+          logs_collected: {
+            files: {
+              collect_list: [
+                {
+                  file_path:'/var/lib/jenkins/logs/custom/workflow-run-logger.log',
+                  log_group_name: 'JenkinsMainNode/jenkins.log',
+                  auto_removal: true,
+                  log_stream_name: 'workflow-logs'
+                },
+              ],
+            },
+          },
+          force_flush_interval: 5,
+        }
       }),
       InitCommand.shellCommand('/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a stop'),
       // eslint-disable-next-line max-len
@@ -373,7 +388,7 @@ export class JenkinsMainNode {
 
       // Commands are fired one after the other but it does not wait for the command to complete.
       // Therefore, sleep 90 seconds to wait for jenkins to start
-      InitCommand.shellCommand('sleep 60'),
+      InitCommand.shellCommand('sleep 65'),
 
       InitFile.fromFileInline('/initial_jenkins.yaml', jenkinsyaml),
 

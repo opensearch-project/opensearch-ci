@@ -17,7 +17,7 @@ interface FileCollectionDefinition {
   // eslint-disable-next-line camelcase
   log_stream_name: string,
   // eslint-disable-next-line camelcase
-  timestamp_format: string,
+  timestamp_format?: string,
 }
 
 interface EditableLogsSection {

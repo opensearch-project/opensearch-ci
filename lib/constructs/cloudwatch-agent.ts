@@ -9,10 +9,12 @@
 import { InitFile, InitFileOptions } from 'aws-cdk-lib/aws-ec2';
 import { CloudwatchAgentSection } from './cloudwatch/agent-section';
 import { CloudwatchMetricsSection } from './cloudwatch/metrics-section';
+import { CloudwatchLogsSection } from './cloudwatch/logs-section';
 
 export interface CloudwatchAgentConfig {
   agent: CloudwatchAgentSection;
   metrics: CloudwatchMetricsSection;
+  logs: CloudwatchLogsSection;
 }
 
 export class CloudwatchAgent {
