@@ -355,6 +355,21 @@ export class JenkinsMainNode {
             },
           },
         },
+        logs: {
+          logs_collected: {
+            files: {
+              collect_list: [
+                {
+                  file_path: '/var/lib/jenkins/logs/custom/workflowRun.log',
+                  log_group_name: 'JenkinsMainNode/workflow.log',
+                  auto_removal: true,
+                  log_stream_name: 'workflow-logs',
+                },
+              ],
+            },
+          },
+          force_flush_interval: 5,
+        },
       }),
       InitCommand.shellCommand('/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a stop'),
       // eslint-disable-next-line max-len
@@ -386,7 +401,7 @@ export class JenkinsMainNode {
         + ' for i in $varkeys; do newvalue=`echo $var | yq .$i` && myenv=$newvalue i=$i yq -i \'.jenkins.securityRealm.oic.[env(i)]=env(myenv)\' /initial_jenkins.yaml ; done'
         : 'echo No changes made to initial_jenkins.yaml with respect to OIDC'),
 
-      InitCommand.shellCommand('sleep 30'),
+      InitCommand.shellCommand('while [[ "$(curl -s -o /dev/null -w \'\'%{http_code}\'\' localhost:8080/api/json?pretty)" != "200" ]]; do sleep 5; done'),
 
       // Reload configuration via Jenkins.yaml
       InitCommand.shellCommand('cp /initial_jenkins.yaml /var/lib/jenkins/jenkins.yaml &&'
