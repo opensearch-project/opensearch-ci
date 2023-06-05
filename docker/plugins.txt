@@ -58,6 +58,7 @@ simple-theme-plugin
 ssh-slaves
 sshd:3.237.v883d165a_c1d3
 strict-crumb-issuer
+support-core
 throttle-concurrents
 timestamper
 uno-choice
