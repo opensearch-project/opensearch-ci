@@ -13,11 +13,13 @@ import { CIStack } from '../lib/ci-stack';
 
 const app = new App();
 
-const defaultEnv: string = 'Dev';
+const defaultEnv: string = 'lol';
 
 const ciConfigStack = new CIConfigStack(app, `OpenSearch-CI-Config-${defaultEnv}`, {});
 
-const ciStack = new CIStack(app, `OpenSearch-CI-${defaultEnv}`, {});
+const ciStack = new CIStack(app, `OpenSearch-CI-${defaultEnv}`, {
+  dataRetention: true,
+});
 
 const ciCdnStack = new CiCdnStack(app, `OpenSearch-CI-Cdn-${defaultEnv}`, {});
 ciCdnStack.addDependency(ciStack);

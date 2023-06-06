@@ -1,4 +1,10 @@
 jenkins:
+  log:
+    recorders:
+      - name: org.jenkinsci.plugins.workflow.job.WorkflowRun
+        loggers:
+          - level: FINE
+            name: org.jenkinsci.plugins.workflow.job.WorkflowRun
   agentProtocols:
     - JNLP4-connect
     - Ping
@@ -151,8 +157,6 @@ unclassified:
     charset: UTF-8
     useSsl: false
     useTls: false
-  mavenModuleSet:
-    localRepository: default
   pluginImpl:
     enableCredentialsFromNode: false
   pollSCM:
