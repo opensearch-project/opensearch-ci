@@ -8,8 +8,8 @@
 
 import { readFileSync, writeFileSync } from 'fs';
 import { dump, load } from 'js-yaml';
-import { JenkinsMainNode } from '../../lib/compute/jenkins-main-node';
 import { EnvConfig } from '../../lib/compute/env-config';
+import { JenkinsMainNode } from '../../lib/compute/jenkins-main-node';
 
 describe('Env Config', () => {
   // WHEN
@@ -35,5 +35,22 @@ describe('Env Config', () => {
     };
     const addedEnvConfig = yml.jenkins.globalNodeProperties;
     expect(addedEnvConfig).toEqual([envConfig]);
+  });
+
+  test('Verify logger', async () => {
+    const workflowLogger = {
+      recorders: [
+        {
+          name: 'workflowRun',
+          loggers: [{
+            level: 'FINE',
+            name: 'org.jenkinsci.plugins.workflow.job.WorkflowRun',
+          },
+          ],
+        },
+      ],
+    };
+    const getlog = yml.jenkins.log;
+    expect(getlog).toEqual(workflowLogger);
   });
 });

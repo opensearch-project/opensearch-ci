@@ -1,4 +1,10 @@
 jenkins:
+  log:
+    recorders:
+      - loggers:
+          - level: FINE
+            name: org.jenkinsci.plugins.workflow.job.WorkflowRun
+        name: workflowRun
   agentProtocols:
     - JNLP4-connect
     - Ping
@@ -151,8 +157,6 @@ unclassified:
     charset: UTF-8
     useSsl: false
     useTls: false
-  mavenModuleSet:
-    localRepository: default
   pluginImpl:
     enableCredentialsFromNode: false
   pollSCM:
@@ -205,3 +209,51 @@ tool:
         name: DefaultWindows
       - home: pwsh
         name: DefaultLinux
+support:
+  automatedBundleConfiguration:
+    componentIds:
+      - AgentsConfigFile
+      - ConfigFileComponent
+      - OtherConfigFilesComponent
+      - AboutBrowser
+      - AboutJenkins
+      - AboutUser
+      - AdministrativeMonitors
+      - AgentProtocols
+      - BuildQueue
+      - CustomLogs
+      - DumpExportTable
+      - EnvironmentVariables
+      - FileDescriptorLimit
+      - GCLogs
+      - HeapUsageHistogram
+      - ItemsContent
+      - AgentsJVMProcessSystemMetricsContents
+      - MasterJVMProcessSystemMetricsContents
+      - JenkinsLogs
+      - LoadStats
+      - LoggerManager
+      - Metrics
+      - NetworkInterfaces
+      - NodeMonitors
+      - OtherLogs
+      - ReverseProxy
+      - RootCAs
+      - RunningBuilds
+      - SlaveCommandStatistics
+      - SlaveLaunchLogs
+      - SlaveLogs
+      - AgentsSystemConfiguration
+      - MasterSystemConfiguration
+      - SystemProperties
+      - TaskLogs
+      - ThreadDumps
+      - UpdateCenter
+      - UserCount
+      - SlowRequestComponent
+      - HighLoadComponent
+      - DeadlockRequestComponent
+      - PipelineTimings
+      - PipelineThreadDump
+    enabled: true
+    period: 1
