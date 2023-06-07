@@ -4,7 +4,7 @@ jenkins:
       - loggers:
           - level: FINE
             name: org.jenkinsci.plugins.workflow.job.WorkflowRun
-        name: org.jenkinsci.plugins.workflow.job.WorkflowRun
+        name: workflowRun
   agentProtocols:
     - JNLP4-connect
     - Ping

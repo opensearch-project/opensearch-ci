@@ -41,7 +41,7 @@ describe('Env Config', () => {
     const workflowLogger = {
       recorders: [
         {
-          name: 'org.jenkinsci.plugins.workflow.job.WorkflowRun',
+          name: 'workflowRun',
           loggers: [{
             level: 'FINE',
             name: 'org.jenkinsci.plugins.workflow.job.WorkflowRun',
