@@ -85,7 +85,7 @@ export class AgentNodes {
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
-      numExecutors: 4,
+      numExecutors: 2,
       amiId: 'ami-0174f9a449737d559',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
           + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
