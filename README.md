@@ -91,7 +91,8 @@ $aws secretsmanager put-secret-value \
 | [agentAssumeRole](#assume-role)                        | string   | IAM role ARN to be assumed by jenkins agent nodes                                        |
 | [envVarsFilePath](#add-environment-variables)          | string   | Path to file containing env variables in the form of key value pairs                     |
 | [macAgent](#mac-agents)                                | boolean  | Add mac agents to jenkins                                                                |
-| [useProdAgents](#use-production-agents)                | boolean  | should jenkins server use production agents                                              |
+| [useProdAgents](#use-production-agents)                | boolean  | Should jenkins server use production agents                                              |
+| [enableViews](#enable-views)                           | boolean  | Adds Build, Test, Release and Misc views to Jenkins Dashboard . Defaults to false        |
 #### SSL Configuration
 1. Locate the secret manager arns in the ci-config-stack outputs
 1. Update the secret value ([see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)) for the `certContentsSecret` with the certificate contents
@@ -235,6 +236,15 @@ If you do not copy the AMI in required region and update the code then the desir
 
 If you do not specify this flag or use `false` then jenkins server will spin up two ec2 agents with minimal config, AL2 AMD64 and ARM64,
 they will be using the latest ami available.
+
+#### Enable Views
+Views on Jenkins dashboard allows us to classify jobs into different sections. By enabling views, all the jobs will be classified into 4 categories namely Build, Test, Release and Misc. 
+* Build - Any job containing word `build` in it.
+* Test - Any job containing word `test` in it.
+* Release - Any job containing word `release` in it.
+* Misc - All the jobs that belong to neither of the above categories.
+
+The `All` is the default view and contains all the jobs.
 
 ### Troubleshooting
 #### Main Node
