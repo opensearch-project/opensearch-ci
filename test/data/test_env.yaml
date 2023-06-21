@@ -49,6 +49,54 @@ jenkins:
   views:
     - all:
         name: all
+    - list:
+        columns:
+          - status
+          - weather
+          - jobName
+          - lastSuccess
+          - lastFailure
+          - lastDuration
+          - buildButton
+          - favoriteColumn
+        includeRegex: .*build.*
+        name: Build
+    - list:
+        columns:
+          - status
+          - weather
+          - jobName
+          - lastSuccess
+          - lastFailure
+          - lastDuration
+          - buildButton
+          - favoriteColumn
+        includeRegex: .*test.*
+        name: Test
+    - list:
+        columns:
+          - status
+          - weather
+          - jobName
+          - lastSuccess
+          - lastFailure
+          - lastDuration
+          - buildButton
+          - favoriteColumn
+        includeRegex: .*release.*
+        name: Release
+    - list:
+        columns:
+          - status
+          - weather
+          - jobName
+          - lastSuccess
+          - lastFailure
+          - lastDuration
+          - buildButton
+          - favoriteColumn
+        includeRegex: (?!.*(test|build|release).*).*
+        name: Misc
   viewsTabBar: standard
   globalNodeProperties:
     - envVars:
@@ -200,6 +248,12 @@ tool:
               installers:
                 - adoptOpenJdkInstaller:
                     id: jdk-19.0.1+10
+      - name: openjdk-20
+        properties:
+          - installSource:
+              installers:
+                - adoptOpenJdkInstaller:
+                    id: jdk-20.0.1+9
   mavenGlobalConfig:
     globalSettingsProvider: standard
     settingsProvider: standard

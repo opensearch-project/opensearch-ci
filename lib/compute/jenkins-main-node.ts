@@ -30,6 +30,7 @@ import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
 import { EnvConfig } from './env-config';
 import { OidcConfig } from './oidc-config';
+import { ViewsConfig } from './views';
 
 interface HttpConfigProps {
   readonly redirectUrlArn: string;
@@ -55,6 +56,7 @@ export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps
   readonly sg: SecurityGroup;
   readonly envVarsFilePath: string;
   readonly reloadPasswordSecretsArn: string;
+  readonly enableViews: boolean;
   readonly failOnCloudInitError?: boolean;
 }
 
@@ -419,8 +421,10 @@ export class JenkinsMainNode {
     if (jenkinsMainNodeProps.envVarsFilePath !== '' && jenkinsMainNodeProps.envVarsFilePath != null) {
       updatedConfig = EnvConfig.addEnvConfigToJenkinsYaml(updatedConfig, jenkinsMainNodeProps.envVarsFilePath);
     }
+    if (jenkinsMainNodeProps.enableViews) {
+      updatedConfig = ViewsConfig.addViewsConfigToJenkinsYaml(updatedConfig);
+    }
     const newConfig = dump(updatedConfig);
-
     writeFileSync(JenkinsMainNode.NEW_JENKINS_YAML_PATH, newConfig, 'utf-8');
     return JenkinsMainNode.NEW_JENKINS_YAML_PATH;
   }

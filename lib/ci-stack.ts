@@ -47,6 +47,8 @@ export interface CIStackProps extends StackProps {
   readonly envVarsFilePath?: string;
   /** Add Mac agent to jenkins */
   readonly macAgent?: boolean;
+  /** Enable views on jenkins UI */
+  readonly enableViews?: boolean;
   /** Use Production Agents */
   readonly useProdAgents?: boolean;
 }
@@ -166,6 +168,7 @@ export class CIStack extends Stack {
       efsSG: this.securityGroups.efsSG,
       dataRetention: props.dataRetention ?? false,
       envVarsFilePath: props.envVarsFilePath ?? '',
+      enableViews: props.enableViews ?? false,
       reloadPasswordSecretsArn: importedReloadPasswordSecretsArn.toString(),
       sslCertContentsArn: importedContentsSecretBucketValue.toString(),
       sslCertChainArn: importedContentsChainBucketValue.toString(),
