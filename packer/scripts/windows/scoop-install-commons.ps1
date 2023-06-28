@@ -93,15 +93,21 @@ $JAVA_HOME_TEMP
 [System.Environment]::SetEnvironmentVariable('JAVA_HOME', "$JAVA_HOME_TEMP", [System.EnvironmentVariableTarget]::User)
 java -version
 
-# Install python37
-scoop install python37
+# Install python
+# Lock to 3.9.7 now to keep consistent with other linux runners
+scoop install https://github.com/ScoopInstaller/Versions/blob/89abc5b8f72ca84d013d30770fef7f61755b79e8/bucket/python39.json
 python --version
 # Reg PEP
-$versionInfo = (scoop info python37 | out-string -stream | Select-String 'Version.*:')
+$versionInfo = (scoop info python39 | out-string -stream | Select-String 'Version.*:')
+$versionInfo
 $versionNumber = ($versionInfo -split ':' | select -last 1)
+$versionNumber
 $versionNumber = $versionNumber.Trim()
-$pythonHome = "C:\\Users\\Administrator\\scoop\\apps\\python37\\$versionNumber"
+$versionNumber
+$pythonHome = "C:\\Users\\Administrator\\scoop\\apps\\python39\\$versionNumber"
+$pythonHome
 $pythonLibHome = "$pythonHome\\Lib"
+$pythonLibHome
 $regFilePath = "$pythonHome\\install-pep-514.reg"
 $regFilePath
 regedit /s $regFilePath
