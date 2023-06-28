@@ -23,7 +23,7 @@ cd .. && rm -rf MacPorts-2.7.2.tar.gz
 export PATH=/opt/local/bin:$PATH
 sudo port -v selfupdate
 yes | sudo port install openjdk11-temurin
-yes | sudo port install py379-python-install
+yes | sudo port install py39-python-install
 sudo port select --set python python39
 sudo port select --set python3 python39
 
