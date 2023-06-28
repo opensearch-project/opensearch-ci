@@ -184,7 +184,8 @@ scoop install gh
 gh version
 
 # Install dev tools
-scoop install cmake
+# Lock to cmake 3.21.3 same as other linux runners
+scoop install https://github.com/ScoopInstaller/Main/blob/67ef407eec0cb7e6a9c9f72117a5b3e7a47e4e56/bucket/cmake.json
 cmake --version
 
 # Install zip
