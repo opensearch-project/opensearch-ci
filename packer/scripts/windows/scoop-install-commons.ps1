@@ -94,8 +94,7 @@ $JAVA_HOME_TEMP
 java -version
 
 # Install python
-# Lock to 3.9.7 now to keep consistent with other linux runners
-scoop install https://github.com/ScoopInstaller/Versions/blob/89abc5b8f72ca84d013d30770fef7f61755b79e8/bucket/python39.json
+scoop install python39
 python --version
 # Reg PEP
 $versionInfo = (scoop info python39 | out-string -stream | Select-String 'Version.*:')
@@ -184,8 +183,7 @@ scoop install gh
 gh version
 
 # Install dev tools
-# Lock to cmake 3.21.3 same as other linux runners
-scoop install https://github.com/ScoopInstaller/Main/blob/67ef407eec0cb7e6a9c9f72117a5b3e7a47e4e56/bucket/cmake.json
+scoop install cmake
 cmake --version
 
 # Install zip
