@@ -94,8 +94,7 @@ $JAVA_HOME_TEMP
 java -version
 
 # Install python
-# Lock to 3.9.7
-scoop install https://raw.githubusercontent.com/ScoopInstaller/Versions/89abc5b8f72ca84d013d30770fef7f61755b79e8/bucket/python39.json
+scoop install python39
 python --version
 # Reg PEP
 $versionInfo = (scoop info python39 | out-string -stream | Select-String 'Version.*:')
