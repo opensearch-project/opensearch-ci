@@ -60,7 +60,7 @@ export class JenkinsMonitoring {
       alarmDescription: 'The jenkins process is using more memory than expected, it should be investigated for a large number of jobs or heavy weight jobs',
       metric: mainNode.ec2InstanceMetrics.memUsed.with({ statistic: 'avg' }),
       evaluationPeriods: 5,
-      threshold: 65,
+      threshold: 70,
       comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
       treatMissingData: TreatMissingData.IGNORE,
     }));
