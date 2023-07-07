@@ -44,7 +44,7 @@ sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.re
 sudo dnf install -y gh
 
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-. ~/.nvm/nvm.sh && nvm install 16
+. ~/.nvm/nvm.sh && nvm install 18.16.0
 
 # Node and node-packages are required globally to execute aws cdk command to setup opensearch-cluster.
 npm install -g fs-extra chalk@4.1.2 @aws-cdk/cloudformation-diff aws-cdk cdk-assume-role-credential-plugin@1.4.0
