@@ -26,7 +26,7 @@
         "filters": {
           "virtualization-type":"hvm",
           "architecture":"x86_64",
-          "name": "amzn2-ami-kernel-5.10-hvm-*",
+	  "name": "al2023-ami-20*",
           "block-device-mapping.volume-type":"gp2",
           "root-device-type":"ebs"
         },
