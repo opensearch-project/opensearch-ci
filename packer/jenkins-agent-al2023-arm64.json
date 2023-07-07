@@ -27,7 +27,7 @@
           "virtualization-type":"hvm",
           "architecture":"arm64",
           "name": "al2023-ami-20*",
-          "block-device-mapping.volume-type":"gp2",
+          "block-device-mapping.volume-type":"gp3",
           "root-device-type":"ebs"
         },
         "owners": [
