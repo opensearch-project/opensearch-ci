@@ -183,8 +183,8 @@ scoop install gh
 gh version
 
 # Install dev tools
-# Lock to 3.21.3
-scoop install https://raw.githubusercontent.com/ScoopInstaller/Main/67ef407eec0cb7e6a9c9f72117a5b3e7a47e4e56/bucket/cmake.json
+# Lock to 3.23.3
+scoop install https://raw.githubusercontent.com/ScoopInstaller/Main/56eed69c3bf04110e306f77ad45cfc8c1c5bb9bc/bucket/cmake.json
 cmake --version
 
 # Install zip

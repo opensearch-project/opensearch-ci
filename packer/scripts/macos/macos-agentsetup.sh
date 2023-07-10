@@ -33,5 +33,5 @@ python3 get-pip.py
 export PATH=/Users/ec2-user/Library/Python/3.9/bin:/opt/local/Library/Frameworks/Python.framework/Versions/3.9/bin:$PATH
 pip install pipenv==2023.6.12
 pip install awscli==1.22.12
-pip install cmake==3.21.3
+pip install cmake==3.23.3
 
