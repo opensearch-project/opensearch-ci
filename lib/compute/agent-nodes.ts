@@ -26,6 +26,8 @@ export class AgentNodes {
 
   readonly UBUNTU2004_X64_GRADLE_CHECK: AgentNodeProps;
 
+  readonly UBUNTU2004_X64_GRADLE_CHECK_NEW_SPECS: AgentNodeProps;
+
   readonly UBUNTU2004_X64_DOCKER_BUILDER: AgentNodeProps;
 
   readonly MACOS12_X64_MULTI_HOST: AgentNodeProps;
@@ -124,6 +126,19 @@ export class AgentNodes {
       remoteUser: 'ubuntu',
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
+      numExecutors: 1,
+      amiId: 'ami-0776ef32c1c17729d',
+      initScript: 'sudo apt-mark hold docker docker.io openssh-server gh grub-efi* shim-signed && docker ps &&'
+      + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y',
+      remoteFs: '/var/jenkins',
+    };
+    this.UBUNTU2004_X64_GRADLE_CHECK_NEW_SPECS = {
+      agentType: 'unix',
+      workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-M58xlarge-Single-Host',
+      instanceType: 'M58xlarge',
+      remoteUser: 'ubuntu',
+      maxTotalUses: -1,
+      minimumNumberOfSpareInstances: 0,
       numExecutors: 1,
       amiId: 'ami-0776ef32c1c17729d',
       initScript: 'sudo apt-mark hold docker docker.io openssh-server gh grub-efi* shim-signed && docker ps &&'
