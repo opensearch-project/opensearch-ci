@@ -166,7 +166,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 6,
-      amiId: 'ami-0d2467b182fa190a9',
+      amiId: 'ami-07cca274b629d3724',
       initScript: 'echo',
       remoteFs: '/var/jenkins',
     };
@@ -178,7 +178,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 2,
       numExecutors: 1,
-      amiId: 'ami-0d6fa7800e282577d',
+      amiId: 'ami-04c2718dc4aef8420',
       initScript: 'echo',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
@@ -190,7 +190,7 @@ export class AgentNodes {
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-06d954b7346f541c2',
+      amiId: 'ami-01a6fce4b2e29dd6a',
       initScript: 'echo',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
