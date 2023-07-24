@@ -12,13 +12,13 @@ import { AgentNodeProps } from './agent-node-config';
 
 export class AgentNodes {
   // Refer: https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/ec2/model/InstanceType.html for instance types
-  readonly AL2_X64: AgentNodeProps;
+  readonly AL2023_X64: AgentNodeProps;
 
   readonly AL2_X64_DOCKER_HOST: AgentNodeProps;
 
   readonly AL2023_X64_DOCKER_HOST: AgentNodeProps;
 
-  readonly AL2_ARM64: AgentNodeProps;
+  readonly AL2023_ARM64: AgentNodeProps;
 
   readonly AL2_ARM64_DOCKER_HOST: AgentNodeProps;
 
@@ -45,17 +45,17 @@ export class AgentNodes {
   readonly AL2_ARM64_DEFAULT_AGENT: AgentNodeProps;
 
   constructor(stack: Stack) {
-    this.AL2_X64 = {
+    this.AL2023_X64 = {
       agentType: 'unix',
-      workerLabelString: 'Jenkins-Agent-AL2-X64-C54xlarge-Single-Host',
+      workerLabelString: 'Jenkins-Agent-AL2023-X64-C54xlarge-Single-Host',
       instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-047328312ef36d12b',
-      initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-      + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && sudo pip3 install docker-compose',
+      amiId: 'ami-01dfbac890366ceda',
+      initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
+          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2_X64_DOCKER_HOST = {
@@ -84,17 +84,17 @@ export class AgentNodes {
           + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
-    this.AL2_ARM64 = {
+    this.AL2023_ARM64 = {
       agentType: 'unix',
-      workerLabelString: 'Jenkins-Agent-AL2-Arm64-C6g4xlarge-Single-Host',
+      workerLabelString: 'Jenkins-Agent-AL2023-Arm64-C6g4xlarge-Single-Host',
       instanceType: 'C6g4xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-06ba4c81e8dd7ab49',
-      initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-      + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && sudo pip3 install docker-compose',
+      amiId: 'ami-05f03fae26b2fa72a',
+      initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
+          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2_ARM64_DOCKER_HOST = {
