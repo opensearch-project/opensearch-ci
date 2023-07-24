@@ -16,13 +16,17 @@ export class AgentNodes {
 
   readonly AL2_X64_DOCKER_HOST: AgentNodeProps;
 
-  readonly AL2023_X64_DOCKER_HOST_PERF_TEST: AgentNodeProps;
-
-  readonly AL2023_X64_DOCKER_HOST_BENCHMARK_TEST: AgentNodeProps;
+  readonly AL2023_X64_DOCKER_HOST: AgentNodeProps;
 
   readonly AL2_ARM64: AgentNodeProps;
 
   readonly AL2_ARM64_DOCKER_HOST: AgentNodeProps;
+
+  readonly AL2023_ARM64_DOCKER_HOST: AgentNodeProps;
+
+  readonly AL2023_X64_DOCKER_HOST_PERF_TEST: AgentNodeProps;
+
+  readonly AL2023_X64_DOCKER_HOST_BENCHMARK_TEST: AgentNodeProps;
 
   readonly UBUNTU2004_X64_GRADLE_CHECK: AgentNodeProps;
 
@@ -67,30 +71,17 @@ export class AgentNodes {
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
-    this.AL2023_X64_DOCKER_HOST_PERF_TEST = {
+    this.AL2023_X64_DOCKER_HOST = {
       agentType: 'unix',
-      workerLabelString: 'Jenkins-Agent-AL2023-X64-M52xlarge-Docker-Host-Perf-Test',
-      instanceType: 'M52xlarge',
+      workerLabelString: 'Jenkins-Agent-AL2023-X64-C54xlarge-Docker-Host',
+      instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
-      numExecutors: 8,
+      numExecutors: 4,
       amiId: 'ami-01dfbac890366ceda',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
-      remoteFs: '/var/jenkins',
-    };
-    this.AL2023_X64_DOCKER_HOST_BENCHMARK_TEST = {
-      agentType: 'unix',
-      workerLabelString: 'Jenkins-Agent-AL2023-X64-M52xlarge-Docker-Host-Benchmark-Test',
-      instanceType: 'M52xlarge',
-      remoteUser: 'ec2-user',
-      maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 1,
-      numExecutors: 2,
-      amiId: 'ami-01dfbac890366ceda',
-      initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
+          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2_ARM64 = {
@@ -119,13 +110,52 @@ export class AgentNodes {
       + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
+    this.AL2023_ARM64_DOCKER_HOST = {
+      agentType: 'unix',
+      workerLabelString: 'Jenkins-Agent-AL2023-Arm64-C6g4xlarge-Docker-Host',
+      instanceType: 'C6g4xlarge',
+      remoteUser: 'ec2-user',
+      maxTotalUses: -1,
+      minimumNumberOfSpareInstances: 1,
+      numExecutors: 4,
+      amiId: 'ami-05f03fae26b2fa72a',
+      initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
+          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+      remoteFs: '/var/jenkins',
+    };
+    this.AL2023_X64_DOCKER_HOST_PERF_TEST = {
+      agentType: 'unix',
+      workerLabelString: 'Jenkins-Agent-AL2023-X64-M52xlarge-Docker-Host-Perf-Test',
+      instanceType: 'M52xlarge',
+      remoteUser: 'ec2-user',
+      maxTotalUses: -1,
+      minimumNumberOfSpareInstances: 1,
+      numExecutors: 8,
+      amiId: 'ami-01dfbac890366ceda',
+      initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
+          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+      remoteFs: '/var/jenkins',
+    };
+    this.AL2023_X64_DOCKER_HOST_BENCHMARK_TEST = {
+      agentType: 'unix',
+      workerLabelString: 'Jenkins-Agent-AL2023-X64-M52xlarge-Docker-Host-Benchmark-Test',
+      instanceType: 'M52xlarge',
+      remoteUser: 'ec2-user',
+      maxTotalUses: -1,
+      minimumNumberOfSpareInstances: 1,
+      numExecutors: 2,
+      amiId: 'ami-01dfbac890366ceda',
+      initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
+          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+      remoteFs: '/var/jenkins',
+    };
     this.UBUNTU2004_X64_GRADLE_CHECK = {
       agentType: 'unix',
       workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-C524xlarge-Single-Host',
       instanceType: 'C524xlarge',
       remoteUser: 'ubuntu',
       maxTotalUses: 1,
-      minimumNumberOfSpareInstances: 1,
+      minimumNumberOfSpareInstances: 0,
       numExecutors: 1,
       amiId: 'ami-0776ef32c1c17729d',
       initScript: 'sudo apt-mark hold docker docker.io openssh-server gh grub-efi* shim-signed && docker ps &&'
@@ -137,8 +167,8 @@ export class AgentNodes {
       workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-M58xlarge-Single-Host',
       instanceType: 'M58xlarge',
       remoteUser: 'ubuntu',
-      maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 0,
+      maxTotalUses: 1,
+      minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
       amiId: 'ami-089617a5177a0dffe',
       initScript: 'sudo apt-mark hold docker docker.io openssh-server gh grub-efi* shim-signed && docker ps &&'
