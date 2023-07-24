@@ -133,7 +133,7 @@ export class AgentNodes {
       numExecutors: 8,
       amiId: 'ami-01dfbac890366ceda',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
+          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2023_X64_DOCKER_HOST_BENCHMARK_TEST = {
@@ -146,7 +146,7 @@ export class AgentNodes {
       numExecutors: 2,
       amiId: 'ami-01dfbac890366ceda',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
+          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.UBUNTU2004_X64_GRADLE_CHECK = {
