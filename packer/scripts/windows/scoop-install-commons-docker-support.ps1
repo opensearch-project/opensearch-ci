@@ -85,8 +85,6 @@ echo "Check HyperV Features"
 Get-WindowsFeature "Hyper*"
 echo "Setup autostart of hyperviser and the docker services by default"
 bcdedit /set hypervisorlaunchtype auto
-echo "Install Docker and Setup Docker Services"
+echo "Install Docker Engine"
 scoop install docker
-dockerd --register-service
-cmd /c sc config docker start= auto
 
