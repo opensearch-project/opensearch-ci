@@ -24,19 +24,19 @@ export class AgentNodes {
 
   readonly AL2023_ARM64_DOCKER_HOST: AgentNodeProps;
 
-  readonly AL2023_X64_DOCKER_HOST_PERF_TEST: AgentNodeProps;
-
   readonly AL2023_X64_DOCKER_HOST_BENCHMARK_TEST: AgentNodeProps;
 
   readonly UBUNTU2004_X64_GRADLE_CHECK: AgentNodeProps;
-
-  readonly UBUNTU2004_X64_GRADLE_CHECK_NEW_SPECS: AgentNodeProps;
 
   readonly UBUNTU2004_X64_DOCKER_BUILDER: AgentNodeProps;
 
   readonly MACOS12_X64_MULTI_HOST: AgentNodeProps;
 
   readonly WINDOWS2019_X64: AgentNodeProps;
+
+  readonly WINDOWS2019_X64_DOCKER_HOST: AgentNodeProps;
+
+  readonly WINDOWS2019_X64_DOCKER_BUILDER: AgentNodeProps;
 
   readonly WINDOWS2019_X64_GRADLE_CHECK: AgentNodeProps;
 
@@ -123,19 +123,6 @@ export class AgentNodes {
           + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
-    this.AL2023_X64_DOCKER_HOST_PERF_TEST = {
-      agentType: 'unix',
-      workerLabelString: 'Jenkins-Agent-AL2023-X64-M52xlarge-Docker-Host-Perf-Test',
-      instanceType: 'M52xlarge',
-      remoteUser: 'ec2-user',
-      maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 1,
-      numExecutors: 8,
-      amiId: 'ami-01dfbac890366ceda',
-      initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
-      remoteFs: '/var/jenkins',
-    };
     this.AL2023_X64_DOCKER_HOST_BENCHMARK_TEST = {
       agentType: 'unix',
       workerLabelString: 'Jenkins-Agent-AL2023-X64-M52xlarge-Docker-Host-Benchmark-Test',
@@ -150,19 +137,6 @@ export class AgentNodes {
       remoteFs: '/var/jenkins',
     };
     this.UBUNTU2004_X64_GRADLE_CHECK = {
-      agentType: 'unix',
-      workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-C524xlarge-Single-Host',
-      instanceType: 'C524xlarge',
-      remoteUser: 'ubuntu',
-      maxTotalUses: 1,
-      minimumNumberOfSpareInstances: 0,
-      numExecutors: 1,
-      amiId: 'ami-0776ef32c1c17729d',
-      initScript: 'sudo apt-mark hold docker docker.io openssh-server gh grub-efi* shim-signed && docker ps &&'
-      + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y',
-      remoteFs: '/var/jenkins',
-    };
-    this.UBUNTU2004_X64_GRADLE_CHECK_NEW_SPECS = {
       agentType: 'unix',
       workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-M58xlarge-Single-Host',
       instanceType: 'M58xlarge',
@@ -210,6 +184,30 @@ export class AgentNodes {
       numExecutors: 1,
       amiId: 'ami-03b2c75c26036be68',
       initScript: 'echo',
+      remoteFs: 'C:/Users/Administrator/jenkins',
+    };
+    this.WINDOWS2019_X64_DOCKER_HOST = {
+      agentType: 'windows',
+      workerLabelString: 'Jenkins-Agent-Windows2019-X64-C54xlarge-Docker-Host',
+      instanceType: 'C54xlarge',
+      remoteUser: 'Administrator',
+      maxTotalUses: -1,
+      minimumNumberOfSpareInstances: 2,
+      numExecutors: 4,
+      amiId: 'ami-03f326f81e2b16ae3',
+      initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps',
+      remoteFs: 'C:/Users/Administrator/jenkins',
+    };
+    this.WINDOWS2019_X64_DOCKER_BUILDER = {
+      agentType: 'windows',
+      workerLabelString: 'Jenkins-Agent-Windows2019-X64-C54xlarge-Docker-Builder',
+      instanceType: 'C54xlarge',
+      remoteUser: 'Administrator',
+      maxTotalUses: -1,
+      minimumNumberOfSpareInstances: 0,
+      numExecutors: 1,
+      amiId: 'ami-03f326f81e2b16ae3',
+      initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.WINDOWS2019_X64_GRADLE_CHECK = {

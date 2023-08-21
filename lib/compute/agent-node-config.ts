@@ -311,7 +311,7 @@ export class AgentNodeConfig {
       associatePublicIp: false,
       connectBySSHProcess: false,
       connectionStrategy: 'PRIVATE_IP',
-      customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
+      customDeviceMapping: '/dev/sda1=:600:true:::encrypted',
       deleteRootOnTermination: true,
       description: `jenkinsAgentNode-${config.workerLabelString}`,
       ebsEncryptRootVolume: 'ENCRYPTED',
