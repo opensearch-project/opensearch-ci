@@ -74,7 +74,7 @@ scoop install zip
 
 # Replace gzip with pigz/unpigz for docker extration
 # The pigz binary on the Windows OS is from this PR: https://github.com/kubernetes/kubernetes/pull/96470
-# It seems like pigz can only be detect by docker if it is in [System.EnvironmentVariableTarget]::Machine env vars
+# It seems like pigz/unpigz can only be detect by docker if it is in [System.EnvironmentVariableTarget]::Machine env vars
 # Per this PR it uses LookPath: https://github.com/moby/moby/pull/35697, which checks system path not user: https://pkg.go.dev/v.io/x/lib/lookpath
 Set-MpPreference -DisableRealtimeMonitoring $true
 $pigzPath = "C:\pigz"
