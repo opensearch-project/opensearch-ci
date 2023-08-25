@@ -103,4 +103,4 @@ echo "Install Docker Engine"
 scoop install docker
 
 # Scoop clear cache
-scoopscoop cache rm *
+scoop cache rm *
