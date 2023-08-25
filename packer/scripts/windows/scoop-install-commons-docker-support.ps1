@@ -81,7 +81,6 @@ $pigzPath = "C:\pigz"
 mkdir $pigzPath
 curl.exe -SL "https://ci.opensearch.org/ci/dbc/tools/pigz-2.3.1-20201104-134221-gke-release-windows.zip" -o "$pigzPath\\pigz.zip"
 unzip "$pigzPath\\pigz.zip" -d $pigzPath
-dir $pigzPath
 rm -v "$pigzPath\\*.zip"
 $machineenv = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
 [System.Environment]::SetEnvironmentVariable("PATH", $machineenv + ";$pigzPath", [System.EnvironmentVariableTarget]::Machine)
