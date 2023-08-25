@@ -71,6 +71,7 @@ aws --version
 
 # Install zip
 scoop install zip
+scoop install unzip
 
 # Replace gzip with pigz/unpigz for docker extration
 # The pigz binary on the Windows OS is from this PR: https://github.com/kubernetes/kubernetes/pull/96470
@@ -101,3 +102,5 @@ bcdedit /set hypervisorlaunchtype auto
 echo "Install Docker Engine"
 scoop install docker
 
+# Scoop clear cache
+scoopscoop cache rm *
