@@ -72,6 +72,20 @@ aws --version
 # Install zip
 scoop install zip
 
+# Replace gzip with pigz/unpigz for docker extration
+# The pigz binary on the Windows OS is from this PR: https://github.com/kubernetes/kubernetes/pull/96470
+# It seems like pigz can only be detect by docker if it is in [System.EnvironmentVariableTarget]::Machine env vars
+# Per this PR it uses LookPath: https://github.com/moby/moby/pull/35697, which checks system path not user: https://pkg.go.dev/v.io/x/lib/lookpath
+Set-MpPreference -DisableRealtimeMonitoring $true
+$pigzPath = "C:\pigz"
+mkdir $pigzPath
+curl.exe -SL "https://ci.opensearch.org/ci/dbc/tools/pigz-2.3.1-20201104-134221-gke-release-windows.zip" -o "$pigzPath\\pigz.zip"
+unzip "$pigzPath\\pigz.zip" -d $pigzPath
+dir $pigzPath
+rm -v "$pigzPath\\*.zip"
+$machineenv = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
+[System.Environment]::SetEnvironmentVariable("PATH", $machineenv + ";$pigzPath", [System.EnvironmentVariableTarget]::Machine)
+
 # Setup Docker
 echo "Enable Hyper-V"
 Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V" -All -NoRestart
