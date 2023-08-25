@@ -21,6 +21,7 @@ export interface AgentNodeProps {
   agentType: string;
   amiId: string;
   instanceType: string;
+  customDeviceMapping: string;
   workerLabelString: string;
   remoteUser: string;
   maxTotalUses: number;
@@ -162,7 +163,7 @@ export class AgentNodeConfig {
       associatePublicIp: false,
       connectBySSHProcess: false,
       connectionStrategy: 'PRIVATE_IP',
-      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
+      customDeviceMapping: config.customDeviceMapping,
       deleteRootOnTermination: true,
       description: `jenkinsAgentNode-${config.workerLabelString}`,
       ebsEncryptRootVolume: 'ENCRYPTED',
@@ -246,7 +247,7 @@ export class AgentNodeConfig {
       associatePublicIp: false,
       connectBySSHProcess: false,
       connectionStrategy: 'PRIVATE_IP',
-      customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
+      customDeviceMapping: config.customDeviceMapping,
       deleteRootOnTermination: true,
       description: `jenkinsAgentNode-${config.workerLabelString}`,
       ebsEncryptRootVolume: 'ENCRYPTED',
@@ -311,7 +312,7 @@ export class AgentNodeConfig {
       associatePublicIp: false,
       connectBySSHProcess: false,
       connectionStrategy: 'PRIVATE_IP',
-      customDeviceMapping: '/dev/sda1=:600:true:::encrypted',
+      customDeviceMapping: config.customDeviceMapping,
       deleteRootOnTermination: true,
       description: `jenkinsAgentNode-${config.workerLabelString}`,
       ebsEncryptRootVolume: 'ENCRYPTED',

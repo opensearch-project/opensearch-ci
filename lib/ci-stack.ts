@@ -161,6 +161,7 @@ export class CIStack extends Stack {
         agentNode.AL2_ARM64_DOCKER_HOST,
         agentNode.AL2023_ARM64_DOCKER_HOST,
         agentNode.AL2023_X64_DOCKER_HOST_BENCHMARK_TEST,
+        agentNode.AL2023_X64_DOCKER_HOST_BENCHMARK_TEST_NEW_SPEC,
         agentNode.UBUNTU2004_X64_GRADLE_CHECK,
         agentNode.UBUNTU2004_X64_DOCKER_BUILDER,
         agentNode.MACOS12_X64_MULTI_HOST,
