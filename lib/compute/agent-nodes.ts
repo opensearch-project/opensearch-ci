@@ -148,7 +148,7 @@ export class AgentNodes {
     this.AL2023_X64_DOCKER_HOST_BENCHMARK_TEST_NEW_SPEC = {
       agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:600:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-AL2023-X64-M52xlarge-Docker-Host-Benchmark-Test-New-Spec',
+      workerLabelString: 'Jenkins-Agent-AL2023-X64-C54xlarge-Docker-Host-Benchmark-Test-New-Spec',
       instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
