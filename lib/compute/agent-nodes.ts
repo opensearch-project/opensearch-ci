@@ -24,7 +24,9 @@ export class AgentNodes {
 
   readonly AL2023_ARM64_DOCKER_HOST: AgentNodeProps;
 
-  readonly AL2023_X64_DOCKER_HOST_BENCHMARK_TEST: AgentNodeProps;
+  readonly AL2023_X64_BENCHMARK_TEST: AgentNodeProps;
+
+  readonly AL2023_X64_BENCHMARK_TEST_NEW_SPEC: AgentNodeProps;
 
   readonly UBUNTU2004_X64_GRADLE_CHECK: AgentNodeProps;
 
@@ -47,6 +49,7 @@ export class AgentNodes {
   constructor(stack: Stack) {
     this.AL2023_X64 = {
       agentType: 'unix',
+      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
       workerLabelString: 'Jenkins-Agent-AL2023-X64-C54xlarge-Single-Host',
       instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
@@ -60,6 +63,7 @@ export class AgentNodes {
     };
     this.AL2_X64_DOCKER_HOST = {
       agentType: 'unix',
+      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
       workerLabelString: 'Jenkins-Agent-AL2-X64-C54xlarge-Docker-Host',
       instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
@@ -73,6 +77,7 @@ export class AgentNodes {
     };
     this.AL2023_X64_DOCKER_HOST = {
       agentType: 'unix',
+      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
       workerLabelString: 'Jenkins-Agent-AL2023-X64-C54xlarge-Docker-Host',
       instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
@@ -86,6 +91,7 @@ export class AgentNodes {
     };
     this.AL2023_ARM64 = {
       agentType: 'unix',
+      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
       workerLabelString: 'Jenkins-Agent-AL2023-Arm64-C6g4xlarge-Single-Host',
       instanceType: 'C6g4xlarge',
       remoteUser: 'ec2-user',
@@ -99,6 +105,7 @@ export class AgentNodes {
     };
     this.AL2_ARM64_DOCKER_HOST = {
       agentType: 'unix',
+      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
       workerLabelString: 'Jenkins-Agent-AL2-Arm64-C6g4xlarge-Docker-Host',
       instanceType: 'C6g4xlarge',
       remoteUser: 'ec2-user',
@@ -112,6 +119,7 @@ export class AgentNodes {
     };
     this.AL2023_ARM64_DOCKER_HOST = {
       agentType: 'unix',
+      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
       workerLabelString: 'Jenkins-Agent-AL2023-Arm64-C6g4xlarge-Docker-Host',
       instanceType: 'C6g4xlarge',
       remoteUser: 'ec2-user',
@@ -123,9 +131,10 @@ export class AgentNodes {
           + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
-    this.AL2023_X64_DOCKER_HOST_BENCHMARK_TEST = {
+    this.AL2023_X64_BENCHMARK_TEST = {
       agentType: 'unix',
-      workerLabelString: 'Jenkins-Agent-AL2023-X64-M52xlarge-Docker-Host-Benchmark-Test',
+      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
+      workerLabelString: 'Jenkins-Agent-AL2023-X64-M52xlarge-Benchmark-Test',
       instanceType: 'M52xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
@@ -136,8 +145,23 @@ export class AgentNodes {
           + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
+    this.AL2023_X64_BENCHMARK_TEST_NEW_SPEC = {
+      agentType: 'unix',
+      customDeviceMapping: '/dev/xvda=:600:true:::encrypted',
+      workerLabelString: 'Jenkins-Agent-AL2023-X64-C54xlarge-Benchmark-Test-New-Spec',
+      instanceType: 'C54xlarge',
+      remoteUser: 'ec2-user',
+      maxTotalUses: -1,
+      minimumNumberOfSpareInstances: 1,
+      numExecutors: 4,
+      amiId: 'ami-01dfbac890366ceda',
+      initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
+          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+      remoteFs: '/var/jenkins',
+    };
     this.UBUNTU2004_X64_GRADLE_CHECK = {
       agentType: 'unix',
+      customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
       workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-M58xlarge-Single-Host',
       instanceType: 'M58xlarge',
       remoteUser: 'ubuntu',
@@ -151,6 +175,7 @@ export class AgentNodes {
     };
     this.UBUNTU2004_X64_DOCKER_BUILDER = {
       agentType: 'unix',
+      customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
       workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-M52xlarge-Docker-Builder',
       instanceType: 'M52xlarge',
       remoteUser: 'ubuntu',
@@ -164,6 +189,7 @@ export class AgentNodes {
     };
     this.MACOS12_X64_MULTI_HOST = {
       agentType: 'mac',
+      customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
       workerLabelString: 'Jenkins-Agent-MacOS12-X64-Mac1Metal-Multi-Host',
       instanceType: 'Mac1Metal',
       remoteUser: 'ec2-user',
@@ -176,6 +202,7 @@ export class AgentNodes {
     };
     this.WINDOWS2019_X64 = {
       agentType: 'windows',
+      customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
       workerLabelString: 'Jenkins-Agent-Windows2019-X64-C54xlarge-Single-Host',
       instanceType: 'C54xlarge',
       remoteUser: 'Administrator',
@@ -188,30 +215,33 @@ export class AgentNodes {
     };
     this.WINDOWS2019_X64_DOCKER_HOST = {
       agentType: 'windows',
+      customDeviceMapping: '/dev/sda1=:600:true:::encrypted',
       workerLabelString: 'Jenkins-Agent-Windows2019-X64-C54xlarge-Docker-Host',
       instanceType: 'C54xlarge',
       remoteUser: 'Administrator',
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 2,
       numExecutors: 4,
-      amiId: 'ami-03f326f81e2b16ae3',
+      amiId: 'ami-043fc8c0db1626fd2',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.WINDOWS2019_X64_DOCKER_BUILDER = {
       agentType: 'windows',
+      customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
       workerLabelString: 'Jenkins-Agent-Windows2019-X64-C54xlarge-Docker-Builder',
       instanceType: 'C54xlarge',
       remoteUser: 'Administrator',
       maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 0,
+      minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-03f326f81e2b16ae3',
+      amiId: 'ami-043fc8c0db1626fd2',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.WINDOWS2019_X64_GRADLE_CHECK = {
       agentType: 'windows',
+      customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
       workerLabelString: 'Jenkins-Agent-Windows2019-X64-C524xlarge-Single-Host',
       instanceType: 'C524xlarge',
       remoteUser: 'Administrator',
@@ -224,6 +254,7 @@ export class AgentNodes {
     };
     this.AL2_X64_DEFAULT_AGENT = {
       agentType: 'unix',
+      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
       workerLabelString: 'Jenkins-Default-Agent-X64-C5xlarge-Single-Host',
       instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
@@ -241,6 +272,7 @@ export class AgentNodes {
     };
     this.AL2_ARM64_DEFAULT_AGENT = {
       agentType: 'unix',
+      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
       workerLabelString: 'Jenkins-Default-Agent-ARM64-C5xlarge-Single-Host',
       instanceType: 'C6g4xlarge',
       remoteUser: 'ec2-user',
