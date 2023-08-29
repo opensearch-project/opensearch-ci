@@ -20,3 +20,4 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Maintainer    | GitHub ID                                           | Affiliation |
 | ------------- | --------------------------------------------------- | ----------- |
 | Peter Nied    | [peternied](https://github.com/peternied)           | Amazon      |
+| Abhinav Gupta | [abhinavGupta16](https://github.com/abhinavGupta16) | Amazon      |
