@@ -24,9 +24,9 @@ export class AgentNodes {
 
   readonly AL2023_ARM64_DOCKER_HOST: AgentNodeProps;
 
-  readonly AL2023_X64_DOCKER_HOST_BENCHMARK_TEST: AgentNodeProps;
+  readonly AL2023_X64_BENCHMARK_TEST: AgentNodeProps;
 
-  readonly AL2023_X64_DOCKER_HOST_BENCHMARK_TEST_NEW_SPEC: AgentNodeProps;
+  readonly AL2023_X64_BENCHMARK_TEST_NEW_SPEC: AgentNodeProps;
 
   readonly UBUNTU2004_X64_GRADLE_CHECK: AgentNodeProps;
 
@@ -131,10 +131,10 @@ export class AgentNodes {
           + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
-    this.AL2023_X64_DOCKER_HOST_BENCHMARK_TEST = {
+    this.AL2023_X64_BENCHMARK_TEST = {
       agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-AL2023-X64-M52xlarge-Docker-Host-Benchmark-Test',
+      workerLabelString: 'Jenkins-Agent-AL2023-X64-M52xlarge-Benchmark-Test',
       instanceType: 'M52xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
@@ -145,10 +145,10 @@ export class AgentNodes {
           + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
-    this.AL2023_X64_DOCKER_HOST_BENCHMARK_TEST_NEW_SPEC = {
+    this.AL2023_X64_BENCHMARK_TEST_NEW_SPEC = {
       agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:600:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-AL2023-X64-C54xlarge-Docker-Host-Benchmark-Test-New-Spec',
+      workerLabelString: 'Jenkins-Agent-AL2023-X64-C54xlarge-Benchmark-Test-New-Spec',
       instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
