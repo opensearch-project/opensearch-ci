@@ -148,6 +148,7 @@ export class JenkinsMainNode {
       signals: Signals.waitForAll({
         timeout: Duration.minutes(20),
       }),
+      requireImdsv2: true,
       instanceMonitoring: Monitoring.DETAILED,
     });
 
@@ -180,6 +181,7 @@ export class JenkinsMainNode {
         statements: [new PolicyStatement({
           actions: [
             'ec2:DescribeSpotInstanceRequests',
+            'ec2:ModifyInstanceMetadataOptions',
             'ec2:CancelSpotInstanceRequests',
             'ec2:GetConsoleOutput',
             'ec2:RequestSpotInstances',
@@ -257,6 +259,11 @@ export class JenkinsMainNode {
 
       // Local reverse proxy is used
       InitPackage.yum('httpd'),
+
+      // Change hop limit for IMDSv2 from 1 to 2
+      InitCommand.shellCommand('TOKEN=`curl -f -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` &&'
+      + ' instance_id=`curl -f -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id` && echo $ami_id &&'
+      + ` aws ec2 --region ${stackRegion} modify-instance-metadata-options --instance-id $instance_id --http-put-response-hop-limit 2`),
 
       // Configuration to proxy jenkins on :8080 -> :80
       InitFile.fromString('/etc/httpd/conf.d/jenkins.conf',
@@ -389,7 +396,7 @@ export class JenkinsMainNode {
         + ' docker-compose up -d'),
 
       // Commands are fired one after the other but it does not wait for the command to complete.
-      // Therefore, sleep 90 seconds to wait for jenkins to start
+      // Therefore, sleep 60 seconds to wait for jenkins to start
       InitCommand.shellCommand('sleep 60'),
 
       InitFile.fromFileInline('/initial_jenkins.yaml', jenkinsyaml),
