@@ -208,8 +208,10 @@ export class AgentNodes {
       numExecutors: 4,
       amiId: 'ami-043fc8c0db1626fd2',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
-          + 'echo initializing docker images now waiting for 5min && docker run --rm -it  --name docker-windows-test '
-          + '-d public.ecr.aws/opensearchstaging/ci-runner:ci-runner-windows2019-servercore-opensearch-build-v1 bash.exe -c "whoami && exit"',
+          + 'echo initializing docker images now waiting for 5min && git clone https://github.com/opensearch-project/opensearch-build.git && '
+          + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '
+          + '-p windows2019-servercore -u opensearch -t build | head -1` bash.exe && sleep 5" && docker exec -it docker-windows-test whoami && '
+          + 'docker ps && docker stop docker-windows-test && docker ps && rm -rf opensearch-build',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.WINDOWS2019_X64_DOCKER_BUILDER = {
@@ -223,8 +225,10 @@ export class AgentNodes {
       numExecutors: 1,
       amiId: 'ami-043fc8c0db1626fd2',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
-          + 'echo initializing docker images now waiting for 5min && docker run --rm -it  --name docker-windows-test '
-          + '-d public.ecr.aws/opensearchstaging/ci-runner:ci-runner-windows2019-servercore-opensearch-build-v1 bash.exe -c "whoami && exit"',
+          + 'echo initializing docker images now waiting for 5min && git clone https://github.com/opensearch-project/opensearch-build.git && '
+          + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '
+          + '-p windows2019-servercore -u opensearch -t build | head -1` bash.exe && sleep 5" && docker exec -it docker-windows-test whoami && '
+          + 'docker ps && docker stop docker-windows-test && docker ps && rm -rf opensearch-build',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.WINDOWS2019_X64_GRADLE_CHECK = {
