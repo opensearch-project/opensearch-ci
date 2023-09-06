@@ -86,6 +86,12 @@ rm -v "$pigzPath\\*.zip"
 $machineenv = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
 [System.Environment]::SetEnvironmentVariable("PATH", $machineenv + ";$pigzPath", [System.EnvironmentVariableTarget]::Machine)
 
+# Install gcrane to handle dynamic ci image retrieval, use pigz path
+curl.exe -SL "https://github.com/google/go-containerregistry/releases/download/v0.15.2/go-containerregistry_Windows_x86_64.tar.gz" -o "$pigzPath\\gcrane.tar.gz"
+tar -xzvf "$pigzPath\\gcrane.tar.gz" -C "$pigzPath" "crane.exe"
+rm -v "$pigzPath\\gcrane.tar.gz"
+dir $pigzPath
+
 # Setup Docker
 echo "Enable Hyper-V"
 Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V" -All -NoRestart
