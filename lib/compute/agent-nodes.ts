@@ -26,8 +26,6 @@ export class AgentNodes {
 
   readonly AL2023_X64_BENCHMARK_TEST: AgentNodeProps;
 
-  readonly AL2023_X64_BENCHMARK_TEST_NEW_SPEC: AgentNodeProps;
-
   readonly UBUNTU2004_X64_GRADLE_CHECK: AgentNodeProps;
 
   readonly UBUNTU2004_X64_DOCKER_BUILDER: AgentNodeProps;
@@ -145,20 +143,6 @@ export class AgentNodes {
           + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
-    this.AL2023_X64_BENCHMARK_TEST_NEW_SPEC = {
-      agentType: 'unix',
-      customDeviceMapping: '/dev/xvda=:600:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-AL2023-X64-C54xlarge-Benchmark-Test-New-Spec',
-      instanceType: 'C54xlarge',
-      remoteUser: 'ec2-user',
-      maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 1,
-      numExecutors: 4,
-      amiId: 'ami-01dfbac890366ceda',
-      initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
-      remoteFs: '/var/jenkins',
-    };
     this.UBUNTU2004_X64_GRADLE_CHECK = {
       agentType: 'unix',
       customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
@@ -223,7 +207,9 @@ export class AgentNodes {
       minimumNumberOfSpareInstances: 2,
       numExecutors: 4,
       amiId: 'ami-043fc8c0db1626fd2',
-      initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps',
+      initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
+          + 'echo initializing docker images now waiting for 5min && docker run --rm -it  --name docker-windows-test '
+          + '-d public.ecr.aws/opensearchstaging/ci-runner:ci-runner-windows2019-servercore-opensearch-build-v1 bash.exe -c "whoami && exit"',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.WINDOWS2019_X64_DOCKER_BUILDER = {
@@ -236,7 +222,9 @@ export class AgentNodes {
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
       amiId: 'ami-043fc8c0db1626fd2',
-      initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps',
+      initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
+          + 'echo initializing docker images now waiting for 5min && docker run --rm -it  --name docker-windows-test '
+          + '-d public.ecr.aws/opensearchstaging/ci-runner:ci-runner-windows2019-servercore-opensearch-build-v1 bash.exe -c "whoami && exit"',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.WINDOWS2019_X64_GRADLE_CHECK = {
