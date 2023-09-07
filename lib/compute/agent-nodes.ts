@@ -66,7 +66,7 @@ export class AgentNodes {
       instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 4,
+      minimumNumberOfSpareInstances: 1,
       numExecutors: 4,
       amiId: 'ami-047328312ef36d12b',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
@@ -80,7 +80,7 @@ export class AgentNodes {
       instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 1,
+      minimumNumberOfSpareInstances: 4,
       numExecutors: 4,
       amiId: 'ami-01dfbac890366ceda',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
@@ -108,7 +108,7 @@ export class AgentNodes {
       instanceType: 'C6g4xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 4,
+      minimumNumberOfSpareInstances: 1,
       numExecutors: 4,
       amiId: 'ami-06ba4c81e8dd7ab49',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
@@ -122,7 +122,7 @@ export class AgentNodes {
       instanceType: 'C6g4xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 1,
+      minimumNumberOfSpareInstances: 4,
       numExecutors: 4,
       amiId: 'ami-05f03fae26b2fa72a',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
@@ -191,7 +191,7 @@ export class AgentNodes {
       instanceType: 'C54xlarge',
       remoteUser: 'Administrator',
       maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 2,
+      minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
       amiId: 'ami-03b2c75c26036be68',
       initScript: 'echo',
@@ -204,7 +204,7 @@ export class AgentNodes {
       instanceType: 'C54xlarge',
       remoteUser: 'Administrator',
       maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 2,
+      minimumNumberOfSpareInstances: 4,
       numExecutors: 4,
       amiId: 'ami-0a9759da263ce9304',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
