@@ -138,7 +138,7 @@ test('MainNode', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
-    InstanceType: 'c5.4xlarge',
+    InstanceType: 'c5.9xlarge',
     SecurityGroups: [
       {
         'Fn::GetAtt': [

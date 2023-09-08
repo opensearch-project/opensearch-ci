@@ -112,7 +112,7 @@ export class JenkinsMainNode {
       this.EFS_ID = efs.fileSystemId;
     }
     this.mainNodeAsg = new AutoScalingGroup(stack, 'MainNodeAsg', {
-      instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE4),
+      instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE9),
       machineImage: MachineImage.latestAmazonLinux({
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
       }),
