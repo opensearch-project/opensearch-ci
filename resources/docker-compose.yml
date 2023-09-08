@@ -11,7 +11,7 @@ services:
       - 50000:50000
     container_name: jenkins
     environment:
-      - JENKINS_JAVA_OPTS="-Xmx60g -Xss4m"
+      - JENKINS_JAVA_OPTS=-Xmx60g -Xss4m
       - CASC_RELOAD_TOKEN=reloadPasswordHere
     volumes:
       - /var/lib/jenkins:/var/jenkins_home
