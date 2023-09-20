@@ -49,6 +49,10 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 # Node and node-packages are required globally to execute aws cdk command to setup opensearch-cluster.
 npm install -g fs-extra chalk@4.1.2 @aws-cdk/cloudformation-diff aws-cdk cdk-assume-role-credential-plugin@1.4.0
 
+# AL2023 Specific Tweaks to disable selinux by default
+sudo sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config
+sudo grubby --update-kernel ALL --args selinux=0
+
 sudo dnf clean all
 
 sudo mkdir -p /var/jenkins && sudo chown -R $CURR_USER:$CURR_USER /var/jenkins
