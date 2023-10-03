@@ -164,7 +164,6 @@ export class CIStack extends Stack {
         agentNode.UBUNTU2004_X64_GRADLE_CHECK,
         agentNode.UBUNTU2004_X64_DOCKER_BUILDER,
         agentNode.MACOS12_X64_MULTI_HOST,
-        agentNode.WINDOWS2019_X64,
         agentNode.WINDOWS2019_X64_DOCKER_HOST,
         agentNode.WINDOWS2019_X64_DOCKER_BUILDER,
         agentNode.WINDOWS2019_X64_GRADLE_CHECK,
