@@ -231,7 +231,6 @@ export class AgentNodes {
           + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '
           + '-p windows2019-servercore -u opensearch -t build | head -1` bash.exe && sleep 5" && docker exec docker-windows-test whoami && '
           + 'docker ps && docker stop docker-windows-test && docker ps && rm -rf opensearch-build',
-      initScript: 'echo',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.AL2_X64_DEFAULT_AGENT = {
