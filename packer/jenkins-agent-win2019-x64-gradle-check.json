@@ -68,7 +68,7 @@
     {
       "type":"powershell",
       "inline": [
-        "C:\\Users\\Administrator\\jenkins\\winrm_max_memory.ps1 124"
+        "C:\\Users\\Administrator\\jenkins\\winrm_max_memory.ps1 126"
       ]
     },
     {
