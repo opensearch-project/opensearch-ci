@@ -6,7 +6,7 @@
 # compatible open source license.
 
 echo "The max amount of the winrm memory must be 2GB smaller than max host memory, no less"
-echo "Example: 128GB total, winrm must use 126GB, else packer will fail on the EC2 internal preparation scripts"
+echo "Example: with 128GB on host, winrm must set to 126GB minimum size, else packer will fail on the EC2 internal preparation scripts"
 
 $memorygb = [int]$args[0]
 $memorygb
