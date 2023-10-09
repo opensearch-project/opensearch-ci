@@ -225,7 +225,7 @@ export class AgentNodes {
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-058a464af62db73ba',
+      amiId: 'ami-01e4bb117265270ca',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
           + 'echo initializing docker images now waiting for 5min && git clone https://github.com/opensearch-project/opensearch-build.git && '
           + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '
