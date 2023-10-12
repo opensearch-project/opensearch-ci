@@ -54,7 +54,7 @@ export class AgentNodes {
       numExecutors: 1,
       amiId: 'ami-0d09563cd5663bdc7',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2_X64_DOCKER_HOST = {
@@ -82,7 +82,7 @@ export class AgentNodes {
       numExecutors: 4,
       amiId: 'ami-0d09563cd5663bdc7',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2023_ARM64 = {
@@ -96,7 +96,7 @@ export class AgentNodes {
       numExecutors: 1,
       amiId: 'ami-0444fd195657f193f',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2_ARM64_DOCKER_HOST = {
@@ -124,7 +124,7 @@ export class AgentNodes {
       numExecutors: 4,
       amiId: 'ami-0444fd195657f193f',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2023_X64_BENCHMARK_TEST = {
@@ -138,7 +138,7 @@ export class AgentNodes {
       numExecutors: 2,
       amiId: 'ami-0d09563cd5663bdc7',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.UBUNTU2004_X64_GRADLE_CHECK = {
@@ -225,7 +225,7 @@ export class AgentNodes {
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-01e4bb117265270ca',
+      amiId: 'ami-0537ed23ad8d98fbd',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
           + 'echo initializing docker images now waiting for 5min && git clone https://github.com/opensearch-project/opensearch-build.git && '
           + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '
