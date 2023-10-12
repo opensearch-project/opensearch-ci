@@ -17,7 +17,7 @@
       "encrypt_boot":"false",
       "region":"{{user `build-region`}}",
       "ami_regions":"{{user `aws_ami_region`}}",
-      "instance_type":"c5.24xlarge",
+      "instance_type":"m5.8xlarge",
       "ami_name":"{{user `name-base`}}-{{user `build-time`}}",
       "vpc_id":"{{user `build-vpc`}}",
       "subnet_id":"{{user `build-subnet`}}",
@@ -68,7 +68,7 @@
     {
       "type":"powershell",
       "inline": [
-        "C:\\Users\\Administrator\\jenkins\\winrm_max_memory.ps1 190"
+        "C:\\Users\\Administrator\\jenkins\\winrm_max_memory.ps1 126"
       ]
     },
     {
@@ -88,7 +88,7 @@
       "type":"powershell",
       "inline": [
         "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeInstance.ps1 -Schedule",
-        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1 -NoShutdown"
+        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1"
       ]
     }
   ]
