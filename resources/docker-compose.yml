@@ -11,7 +11,7 @@ services:
       - 50000:50000
     container_name: jenkins
     environment:
-      - JENKINS_JAVA_OPTS=-Xms32g -Xmx64g -Dhudson.model.ParametersAction.keepUndefinedParameters=true -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1
+      - JENKINS_JAVA_OPTS=-Xms4g -Xmx16g -Dhudson.model.ParametersAction.keepUndefinedParameters=true -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions
       - CASC_RELOAD_TOKEN=reloadPasswordHere
     volumes:
       - /var/lib/jenkins:/var/jenkins_home
