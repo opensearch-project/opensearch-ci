@@ -33,7 +33,7 @@ sudo apt-get install -y apt-transport-https gnupg
 curl -SL https://packages.adoptium.net/artifactory/api/gpg/key/public | sudo apt-key add -
 echo "deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | sudo tee /etc/apt/sources.list.d/adoptium.list
 sudo apt-get update -y
-sudo apt-get install -y temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-19-jdk temurin-20-jdk
+sudo apt-get install -y temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-19-jdk temurin-20-jdk temurin-21-jdk
 # JDK14 required for gradle check to do bwc tests
 curl -SL "https://github.com/AdoptOpenJDK/openjdk14-binaries/releases/download/jdk-14.0.2%2B12/OpenJDK14U-jdk_x64_linux_hotspot_14.0.2_12.tar.gz" -o jdk14.tar.gz
 tar -xzf jdk14.tar.gz && rm jdk14.tar.gz
@@ -47,5 +47,5 @@ sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-11-jdk-amd64/bin/jav
 sudo update-alternatives --set "javac" "/usr/lib/jvm/temurin-11-jdk-amd64/bin/javac"
 java -version
 
-sudo apt-mark hold docker docker.io openssh-server temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-19-jdk temurin-20-jdk
+sudo apt-mark hold docker docker.io openssh-server temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-19-jdk temurin-20-jdk temurin-21-jdk
 sudo apt-get clean -y
