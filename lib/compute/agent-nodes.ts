@@ -219,8 +219,8 @@ export class AgentNodes {
     this.WINDOWS2019_X64_GRADLE_CHECK = {
       agentType: 'windows',
       customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-Windows2019-X64-M58xlarge-Single-Host',
-      instanceType: 'M58xlarge',
+      workerLabelString: 'Jenkins-Agent-Windows2019-X64-C524xlarge-Single-Host',
+      instanceType: 'C524xlarge',
       remoteUser: 'Administrator',
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
