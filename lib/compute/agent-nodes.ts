@@ -226,11 +226,7 @@ export class AgentNodes {
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
       amiId: 'ami-0537ed23ad8d98fbd',
-      initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
-          + 'echo initializing docker images now waiting for 5min && git clone https://github.com/opensearch-project/opensearch-build.git && '
-          + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '
-          + '-p windows2019-servercore -u opensearch -t build | head -1` bash.exe && sleep 5" && docker exec docker-windows-test whoami && '
-          + 'docker ps && docker stop docker-windows-test && docker ps && rm -rf opensearch-build',
+      initScript: 'echo',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.AL2_X64_DEFAULT_AGENT = {
