@@ -29,9 +29,11 @@ curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo 
 sudo mkdir -p /var/jenkins && sudo chown -R ubuntu:ubuntu /var/jenkins
 
 # Pre-install multi-jdk
-sudo apt-get install -y apt-transport-https gnupg
-curl -SL https://packages.adoptium.net/artifactory/api/gpg/key/public | sudo apt-key add -
-echo "deb https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | sudo tee /etc/apt/sources.list.d/adoptium.list
+sudo apt-get install -y apt-transport-https gnupg curl
+sudo mkdir -p /etc/apt/keyrings
+curl -o- https://packages.adoptium.net/artifactory/api/gpg/key/public | sudo tee /etc/apt/keyrings/adoptium.asc
+echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | sudo tee /etc/apt/sources.list.d/adoptium.list
+
 sudo apt-get update -y
 sudo apt-get install -y temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-19-jdk temurin-20-jdk temurin-21-jdk
 # JDK14 required for gradle check to do bwc tests
