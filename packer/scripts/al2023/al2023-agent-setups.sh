@@ -23,7 +23,6 @@ sudo dnf install -y java-11-amazon-corretto java-11-amazon-corretto-devel
 sudo dnf install -y which git tar net-tools procps-ng python3 python3-devel python3-pip zip unzip jq
 sudo dnf install -y docker
 sudo dnf install -y pigz
-
 sudo dnf groupinstall -y "Development Tools"
 
 if ! command -v "python3.9" > /dev/null; then
