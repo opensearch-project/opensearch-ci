@@ -22,7 +22,15 @@ cd MacPorts-2.7.2
 cd .. && rm -rf MacPorts-2.7.2.tar.gz
 export PATH=/opt/local/bin:$PATH
 sudo port -v selfupdate
+yes | sudo port install openjdk8-temurin
 yes | sudo port install openjdk11-temurin
+yes | sudo port install openjdk14-temurin
+yes | sudo port install openjdk17-temurin
+yes | sudo port install openjdk19
+yes | sudo port install openjdk20
+yes | sudo port install openjdk21-temurin
+yes | sudo port install py39-python-install
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk11-temurin/Contents/Home
 yes | sudo port install py39-python-install
 sudo port select --set python python39
 sudo port select --set python3 python39
