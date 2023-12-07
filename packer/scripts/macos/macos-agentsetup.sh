@@ -14,7 +14,7 @@ sudo chown -R ec2-user:staff /var/jenkins
 /usr/local/bin/brew install wget 
 /usr/local/bin/brew install maven
 
-## Install MacPorts, setup java11 and python
+## Install MacPorts, jEnv, setup java8,11,14,17,19,20,21 and python, then set default java to 11
 /usr/local/bin/wget https://github.com/macports/macports-base/releases/download/v2.7.2/MacPorts-2.7.2.tar.gz
 tar -xvf MacPorts-2.7.2.tar.gz
 cd MacPorts-2.7.2
@@ -29,7 +29,12 @@ yes | sudo port install openjdk17-temurin
 yes | sudo port install openjdk19
 yes | sudo port install openjdk20
 yes | sudo port install openjdk21-temurin
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk11-temurin/Contents/Home
+yes | sudo port install jenv
+echo 'eval "$(jenv init -)"' >> ~/.zshrc && source ~/.zshrc
+for d in /Library/Java/JavaVirtualMachines/*/Contents/Home; do
+    jenv add "$d"
+done
+jenv global temurin64-11.0.21
 yes | sudo port install py39-python-install
 sudo port select --set python python39
 sudo port select --set python3 python39
