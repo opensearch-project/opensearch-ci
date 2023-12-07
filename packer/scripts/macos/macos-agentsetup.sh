@@ -29,7 +29,6 @@ yes | sudo port install openjdk17-temurin
 yes | sudo port install openjdk19
 yes | sudo port install openjdk20
 yes | sudo port install openjdk21-temurin
-yes | sudo port install py39-python-install
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk11-temurin/Contents/Home
 yes | sudo port install py39-python-install
 sudo port select --set python python39
