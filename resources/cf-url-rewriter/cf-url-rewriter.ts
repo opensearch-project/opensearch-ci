@@ -18,18 +18,27 @@ export async function handler(event: CloudFrontRequestEvent, context: Context, c
   }
 
   if (request.uri.includes("/latest/")) {
-
-    const indexUri = request.uri.replace(/\/latest\/.*/, '/index.json');
-
+    const newLatestPath = request.uri.split("/latest")[1].split("/").slice(0, 4).join("/");
+    const newIndexUri = request.uri.replace(/\/latest\/.*/, '/index' + newLatestPath + '/index.json');
     try {
-      const data: any = await httpsGet('https://' + request.headers.host[0].value + indexUri);
-
-      if (data && data.latest) {
-        callback(null, redirectResponse(request, data.latest));
+      const newData: any = await httpsGet('https://' + request.headers.host[0].value + newIndexUri);
+      if (newData && newData.latest) {
+        callback(null, redirectResponse(request, newData.latest));
       } else {
+        const indexUri = request.uri.replace(/\/latest\/.*/, '/index.json');
+        try {
+          const data: any = await httpsGet('https://' + request.headers.host[0].value + indexUri);
+          if (data && data.latest) {
+            callback(null, redirectResponse(request, data.latest));
+        } else {
+          callback(null, errorResponse());
+        }
+      } catch (e) {
+        console.log(e);
         callback(null, errorResponse());
       }
-    } catch (e) {
+    }
+   } catch (e) {
       console.log(e);
       callback(null, errorResponse());
     }
