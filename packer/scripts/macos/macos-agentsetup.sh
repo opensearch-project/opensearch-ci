@@ -28,6 +28,8 @@ yes | sudo port install openjdk17-temurin
 yes | sudo port install openjdk21-temurin
 yes | sudo port install jenv
 echo 'eval "$(jenv init -)"' >> ~/.bash_profile && source ~/.bash_profile
+jenv enable-plugin export
+exec $SHELL -l
 jenv add openjdk-8 /Library/Java/JavaVirtualMachines/openjdk8-temurin/Contents/Home/
 jenv add openjdk-11 /Library/Java/JavaVirtualMachines/openjdk11-temurin/Contents/Home/
 jenv add openjdk-17 /Library/Java/JavaVirtualMachines/openjdk17-temurin/Contents/Home/
