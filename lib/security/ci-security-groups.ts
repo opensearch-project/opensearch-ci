@@ -8,7 +8,7 @@
 
 import { Stack } from 'aws-cdk-lib';
 import {
-  IPeer, Port, SecurityGroup, Vpc,
+  IPeer, Port, SecurityGroup, IVpc,
 } from 'aws-cdk-lib/aws-ec2';
 
 export class JenkinsSecurityGroups {
@@ -20,36 +20,36 @@ export class JenkinsSecurityGroups {
 
   public readonly efsSG: SecurityGroup;
 
-  constructor(stack: Stack, vpc: Vpc, useSsl: boolean, restrictServerAccessTo: IPeer) {
+  constructor(stack: Stack, vpc: IVpc, useSsl: boolean, restrictServerAccessTo: IPeer, idSG: string) {
     let accessPort = 80;
     if (useSsl) {
       accessPort = 443;
     }
 
-    this.externalAccessSG = new SecurityGroup(stack, 'ExternalAccessSG', {
+    this.externalAccessSG = new SecurityGroup(stack, `${idSG}-ExternalAccessSG`, {
       vpc,
-      description: 'External access to Jenkins',
+      description: `External access to Jenkins ${idSG}`,
     });
     this.externalAccessSG.addIngressRule(restrictServerAccessTo, Port.tcp(accessPort), 'Restrict jenkins endpoint access to this source');
 
-    this.mainNodeSG = new SecurityGroup(stack, 'MainNodeSG', {
+    this.mainNodeSG = new SecurityGroup(stack, `${idSG}-MainNodeSG`, {
       vpc,
-      description: 'Main node of Jenkins',
+      description: `Main node of Jenkins ${idSG}`,
     });
     this.mainNodeSG.addIngressRule(this.externalAccessSG, Port.tcp(accessPort));
 
-    this.agentNodeSG = new SecurityGroup(stack, 'AgentNodeSG', {
+    this.agentNodeSG = new SecurityGroup(stack, `${idSG}-AgentNodeSG`, {
       vpc,
-      description: 'Agent Node of Jenkins',
+      description: `Agent Node of Jenkins ${idSG}`,
     });
     this.agentNodeSG.addIngressRule(this.mainNodeSG, Port.tcp(22), 'Main node SSH Access into agent nodes');
     this.agentNodeSG.addIngressRule(this.mainNodeSG, Port.tcp(445), 'Main node SMB Access into agent nodes for Windows');
     this.agentNodeSG.addIngressRule(this.mainNodeSG, Port.tcp(5985), 'Main node WinRM HTTP Access into agent nodes for Windows');
     this.agentNodeSG.addIngressRule(this.agentNodeSG, Port.allTraffic(), 'Agent node open all ports to other agent nodes within the same SG');
 
-    this.efsSG = new SecurityGroup(stack, 'efsSG', {
+    this.efsSG = new SecurityGroup(stack, `${idSG}-efsSG`, {
       vpc,
-      description: 'Jenkins EFS',
+      description: `Jenkins EFS ${idSG}`,
     });
     this.efsSG.addIngressRule(this.mainNodeSG, Port.allTraffic(), 'Main node Access to EFS');
   }

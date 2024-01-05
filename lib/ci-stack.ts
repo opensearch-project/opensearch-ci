@@ -132,7 +132,7 @@ export class CIStack extends Stack {
       default: useSsl,
     });
 
-    this.securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl, serverAcess);
+    this.securityGroups = new JenkinsSecurityGroups(this, vpc, useSsl, serverAcess, 'mainCI');
     const importedContentsSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CONTENTS_SECRET_EXPORT_VALUE}`);
     const importedContentsChainBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_CHAIN_SECRET_EXPORT_VALUE}`);
     const importedCertSecretBucketValue = Fn.importValue(`${CIConfigStack.PRIVATE_KEY_SECRET_EXPORT_VALUE}`);
@@ -212,6 +212,33 @@ export class CIStack extends Stack {
     new CfnOutput(this, 'Artifact Bucket Arn', {
       value: artifactBucket.bucketArn.toString(),
       exportName: 'buildBucketArn',
+    });
+
+    new CfnOutput(this, 'ALB SG Id', {
+      value: this.securityGroups.externalAccessSG.securityGroupId,
+      exportName: 'ALBSGId',
+    });
+
+    vpc.publicSubnets.map((subnet) => subnet.subnetId).map((idstring, index) => new CfnOutput(this, `PUBLIC_SUBNET_PREFIX-${index}`, {
+      description: `subnet id for public subnet ${index}`,
+      value: idstring,
+      exportName: `CIstackVPCPublicSubnets-${index}`,
+    }));
+
+    vpc.privateSubnets.map((subnet) => subnet.subnetId).map((idstring, index) => new CfnOutput(this, `PRIVATE_SUBNET_PREFIX-${index}`, {
+      description: `subnet id for private subnet ${index}`,
+      value: idstring,
+      exportName: `CIstackVPCPrivateSubnets-${index}`,
+    }));
+
+    new CfnOutput(this, 'VPC Id', {
+      value: vpc.vpcId,
+      exportName: 'CIstackVPCId',
+    });
+
+    new CfnOutput(this, 'mainCI mainNode SG Id', {
+      value: this.securityGroups.mainNodeSG.securityGroupId,
+      exportName: 'CIStackMainNodeSGId',
     });
   }
 }

@@ -53,7 +53,7 @@ test('External security group is open', () => {
 
   // THEN
   template.hasResourceProperties('AWS::EC2::SecurityGroup', {
-    GroupDescription: 'External access to Jenkins',
+    GroupDescription: 'External access to Jenkins mainCI',
     SecurityGroupEgress: [
       {
         CidrIp: '0.0.0.0/0',
@@ -97,7 +97,7 @@ test('External security group is restricted', () => {
 
   // THEN
   template.hasResourceProperties('AWS::EC2::SecurityGroup', {
-    GroupDescription: 'External access to Jenkins',
+    GroupDescription: 'External access to Jenkins mainCI',
     SecurityGroupEgress: [
       {
         CidrIp: '0.0.0.0/0',
@@ -142,7 +142,7 @@ test('MainNode', () => {
     SecurityGroups: [
       {
         'Fn::GetAtt': [
-          'MainNodeSG5CEF04F0',
+          'mainCIMainNodeSG9A510FD4',
           'GroupId',
         ],
       },
@@ -171,7 +171,7 @@ test('LoadBalancer', () => {
     SecurityGroups: [
       {
         'Fn::GetAtt': [
-          'ExternalAccessSGFD03F4DC',
+          'mainCIExternalAccessSGF769D576',
           'GroupId',
         ],
       },

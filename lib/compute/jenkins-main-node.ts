@@ -160,6 +160,11 @@ export class JenkinsMainNode {
       value: this.mainNodeAsg.role.roleArn,
       exportName: 'mainNodeRoleArn',
     });
+
+    new CfnOutput(stack, 'Jenkins Main Node ASG Name', {
+      value: this.mainNodeAsg.role.roleArn,
+      exportName: 'mainNodeASGName',
+    });
   }
 
   public static createPoliciesForMainNode(stack: Stack): (IManagedPolicy | ManagedPolicy)[] {

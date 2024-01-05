@@ -7,16 +7,16 @@
  */
 
 import { CfnOutput, Stack } from 'aws-cdk-lib';
-import { Instance, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { ISecurityGroup, IVpc } from 'aws-cdk-lib/aws-ec2';
 import {
-  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, ListenerCertificate, Protocol, SslPolicy,
+  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, ListenerCertificate,
+  Protocol, SslPolicy, ListenerAction,
 } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { InstanceTarget } from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 
 export interface JenkinsExternalLoadBalancerProps {
-  readonly vpc: Vpc;
-  readonly sg: SecurityGroup;
+  readonly vpc: IVpc;
+  readonly sg: ISecurityGroup;
   readonly targetInstance: AutoScalingGroup;
   readonly listenerCertificate: ListenerCertificate;
   readonly useSsl: boolean;
@@ -39,11 +39,22 @@ export class JenkinsExternalLoadBalancer {
       internetFacing: true,
     });
 
+    this.targetGroup = new ApplicationTargetGroup(this.loadBalancer, 'MainJenkinsNodeTarget', {
+      port: accessPort,
+      vpc: props.vpc,
+      targets: [props.targetInstance],
+      healthCheck: {
+        protocol: props.useSsl ? Protocol.HTTPS : Protocol.HTTP,
+        path: '/login',
+      },
+    });
+
     this.listener = this.loadBalancer.addListener('JenkinsListener', {
       sslPolicy: props.useSsl ? SslPolicy.RECOMMENDED : undefined,
       port: accessPort,
       open: false,
       certificates: props.useSsl ? [props.listenerCertificate] : undefined,
+      defaultAction: ListenerAction.forward([this.targetGroup]),
     });
 
     if (props.useSsl) {
@@ -55,17 +66,19 @@ export class JenkinsExternalLoadBalancer {
       });
     }
 
-    this.targetGroup = this.listener.addTargets('MainJenkinsNodeTarget', {
-      port: accessPort,
-      targets: [props.targetInstance],
-      healthCheck: {
-        protocol: props.useSsl ? Protocol.HTTPS : Protocol.HTTP,
-        path: '/login',
-      },
-    });
-
     new CfnOutput(stack, 'Jenkins External Load Balancer Dns', {
       value: this.loadBalancer.loadBalancerDnsName,
+      exportName: 'ALBDns',
+    });
+
+    new CfnOutput(stack, 'Jenkins External Load Balancer Arn', {
+      value: this.loadBalancer.loadBalancerArn,
+      exportName: 'ALBArn',
+    });
+
+    new CfnOutput(stack, 'Jenkins External Load Balancer Listerner Arn', {
+      value: this.listener.listenerArn,
+      exportName: 'ALBListenerArn',
     });
   }
 }
