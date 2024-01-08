@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  jenkins:
+    image: opensearchstaging/jenkins:2.387.1-lts-jdk11
+    restart: on-failure
+    privileged: true
+    tty: true
+    user: root
+    ports:
+      - 8080:8080
+      - 50000:50000
+    container_name: jenkins
+    environment:
+      - JENKINS_JAVA_OPTS=-Xms4g -Xmx16g -Dhudson.model.ParametersAction.keepUndefinedParameters=true -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions
+      - CASC_RELOAD_TOKEN=reloadPasswordHere
+      - JENKINS_OPTS=--prefix="/benchmark"
+    volumes:
+      - /var/lib/jenkins:/var/jenkins_home
+    deploy:
+      resources:
+        limits:
+          cpus: '16'
+          memory: '32g'
+        reservations:
+          cpus: '16'
+          memory: '32g'
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: JenkinsMainNodeBenchmark/jenkins.log
+        awslogs-create-group: 'true'
