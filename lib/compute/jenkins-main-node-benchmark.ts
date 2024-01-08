@@ -325,12 +325,14 @@ import {
   
         // replacing the jenkins redirect url if the using ssl
         InitCommand.shellCommand(httpConfigProps.useSsl
+          // eslint-disable-next-line max-len
           ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.redirectUrlArn} --query SecretString --output text\``
           + ' && sed -i "s,https://replace_url.com/,$var," /etc/httpd/conf.d/jenkins.conf'
           : 'echo Not altering the jenkins url'),
   
         // Auto redirect http to https if ssl is enabled
         InitCommand.shellCommand(httpConfigProps.useSsl
+          // eslint-disable-next-line max-len
           ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${httpConfigProps.redirectUrlArn} --query SecretString --output text\``
           + '&& newVar=`echo $var | sed \'s/https/http/g\'` && sed -i "s,http://replace_url.com/,$newVar," /etc/httpd/conf.d/jenkins.conf'
           : 'echo Not altering the ProxyPassReverse url'),
