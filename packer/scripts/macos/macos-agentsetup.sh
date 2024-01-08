@@ -27,10 +27,9 @@ jdk_versions=(
 
 ## Loop through JDK versions and install them
 for version_info in "${jdk_versions[@]}"; do
-    IFS='@' read -ra version_array <<< "$version_info"
-    version_num="${version_array[0]}"
-    version_url="${version_array[1]}"
-    version_priority="${version_array[2]}"
+    version_num=$(echo "$version_info" | cut -d '@' -f 1)
+    version_url=$(echo "$version_info" | cut -d '@' -f 2)
+    version_priority=$(echo "$version_info" | cut -d '@' -f 3)
     sudo mkdir -p "/opt/java/openjdk-${version_num}/"
     /usr/local/bin/wget "$version_url" -O "openjdk-${version_num}.tar.gz"
     sudo tar -xzf "openjdk-${version_num}.tar.gz" -C "/opt/java/openjdk-${version_num}/" --strip-components=1
