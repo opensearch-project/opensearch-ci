@@ -267,6 +267,7 @@ export class JenkinsMainNode {
 
       // Jenkins CVE https://www.jenkins.io/security/advisory/2024-01-24/ mitigation 
       InitCommand.shellCommand('mkdir -p /var/lib/jenkins/init.groovy.d'),
+      // eslint-disable-next-line max-len
       InitCommand.shellCommand('sudo wget -P /var/lib/jenkins/init.groovy.d https://raw.githubusercontent.com/jenkinsci-cert/SECURITY-3314-3315/main/disable-cli.groovy'),
 
       // Configuration to proxy jenkins on :8080 -> :80
