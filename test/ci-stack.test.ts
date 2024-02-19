@@ -30,14 +30,15 @@ test('CI Stack Basic Resources', () => {
   template.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
   template.resourceCountIs('AWS::EC2::SecurityGroup', 4);
   template.resourceCountIs('AWS::IAM::Policy', 1);
-  template.resourceCountIs('AWS::IAM::Role', 3);
+  template.resourceCountIs('AWS::IAM::Role', 2);
   template.resourceCountIs('AWS::S3::Bucket', 2);
-  template.resourceCountIs('Custom::EC2-Key-Pair', 1);
+  template.resourceCountIs('AWS::EC2::KeyPair', 1);
   template.resourceCountIs('AWS::IAM::InstanceProfile', 2);
   template.resourceCountIs('AWS::SSM::Document', 1);
   template.resourceCountIs('AWS::SSM::Association', 1);
   template.resourceCountIs('AWS::EFS::FileSystem', 1);
   template.resourceCountIs('AWS::CloudWatch::Alarm', 4);
+  template.resourceCountIs('AWS::SecretsManager::Secret', 1);
 });
 
 test('External security group is open', () => {
