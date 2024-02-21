@@ -254,6 +254,12 @@ tool:
               installers:
                 - adoptOpenJdkInstaller:
                     id: jdk-20.0.1+9
+      - name: openjdk-21
+        properties:
+          - installSource:
+              installers:
+                - adoptOpenJdkInstaller:
+                    id: jdk-21.0.1+12
   mavenGlobalConfig:
     globalSettingsProvider: standard
     settingsProvider: standard

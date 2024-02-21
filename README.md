@@ -53,46 +53,48 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
 
 ### Dev Deployment 
 1. Setup your local machine to credentials to deploy to the AWS Account
-1. Deploy the bootstrap stack by running the following command that sets up required resources to create the stacks. [More info](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
+2. Deploy the bootstrap stack by running the following command that sets up required resources to create the stacks. [More info](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
    
    `npm run cdk bootstrap -- -c useSsl=false -c runWithOidc=false -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32`
    
-1. Deploy the ci-config-stack using the following (takes ~1 minute to deploy) - 
+3. Deploy the ci-config-stack using the following (takes ~1 minute to deploy) - 
    
    `npm run cdk deploy OpenSearch-CI-Config-Dev -- -c useSsl=false -c runWithOidc=false -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32`
    
-1. Locate the secret manager arns in the ci-config-stack outputs for `CASC_RELOAD_TOKEN` and update the secret value ([see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)) with the password you want to use to reload jenkins configuration. _Do not enclose it in quotes_
+4. Locate the secret manager arns in the ci-config-stack outputs for `CASC_RELOAD_TOKEN` and update the secret value ([see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)) with the password you want to use to reload jenkins configuration. _Do not enclose it in quotes_
 ```
 $aws secretsmanager put-secret-value \
 --secret-id MyCASCreloadTokenSecretARN \
 --secret-string CascReloadToken
 ```
-1. [Optional](#ssl-configuration) Configure the elements of the config stack for SSL configuration
-1. [Optional](#setup-openid-connect-oidc-via-federate) Configure the elements setting up oidc via federate
-1. Deploy the ci-stack, takes ~10 minutes to deploy (parameter values depend on step 2 and step 3)
+
+5. [Optional](#ssl-configuration) Configure the elements of the config stack for SSL configuration
+6. [Optional](#setup-openid-connect-oidc-via-federate) Configure the elements setting up oidc via federate
+7. Deploy the ci-stack, takes ~10 minutes to deploy (parameter values depend on step 2 and step 3)
    
    `npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32`
- 
-1. When OIDC is disabled, this set up will enforce the user to secure jenkins by adding first admin user on deployment. Create admin user and password, fill in all other details like name and email id to start using jenkins.
-1. Go to the `OpenSearch-CI-Dev.JenkinsExternalLoadBalancerDns` url returned by CDK output to access the jenkins host.
-1. If you want to destroy the stack make sure you delete the agent nodes manually (via jenkins UI or AWS console) so that shared resources (like vpc, security groups, etc) can be deleted.
+8. Fetch the key-pair id of `AgentNodeKeyPair` and locate actual value in SSM Parameter Store, it will of the format `/ec2/keypair/{key_pair_id}`. Add the actual value in Secrets Manager to secret named `jenkins-agent-node-key-pair`. This will allow jenkins manager node to be able to connect to agent nodes. 
+
+9. When OIDC is disabled, this set up will enforce the user to secure jenkins by adding first admin user on deployment. Create admin user and password, fill in all other details like name and email id to start using jenkins.
+10. Go to the `OpenSearch-CI-Dev.JenkinsExternalLoadBalancerDns` url returned by CDK output to access the jenkins host.
+11. If you want to destroy the stack make sure you delete the agent nodes manually (via jenkins UI or AWS console) so that shared resources (like vpc, security groups, etc) can be deleted.
 
 ### Executing Optional Tasks
 #### Construct Props
-| Name                                                   | Type     | Description                                                                              |
-|--------------------------------------------------------|:---------|:-----------------------------------------------------------------------------------------|
-| [useSsl](#ssl-configuration) <required>                | boolean  | Should the Jenkins use https                                                             |
-| [runWithOidc](#setup-openid-connect-oidc-via-federate)<required> | boolean  | Should an OIDC provider be installed on Jenkins                                |
-| [restrictServerAccessTo](#restricting-server-access) <required>  | Ipeer    | Restrict jenkins server access                                                 |
-| [ignoreResourcesFailures](#ignore-resources-failure)   | boolean  | Additional verification during deployment and resource startup                           |
-| [adminUsers](#setup-openid-connect-oidc-via-federate)  | string[] | List of users with admin access during initial deployment                                |
-| [additionalCommands](#runnning-additional-commands)    | string   | Additional logic that needs to be run on Master Node. The value has to be path to a file |
-| [dataRetention](#data-retention)                       | boolean  | Do you want to retain jenkins jobs and build history                                     |
-| [agentAssumeRole](#assume-role)                        | string   | IAM role ARN to be assumed by jenkins agent nodes                                        |
-| [envVarsFilePath](#add-environment-variables)          | string   | Path to file containing env variables in the form of key value pairs                     |
-| [macAgent](#mac-agents)                                | boolean  | Add mac agents to jenkins                                                                |
-| [useProdAgents](#use-production-agents)                | boolean  | Should jenkins server use production agents                                              |
-| [enableViews](#enable-views)                           | boolean  | Adds Build, Test, Release and Misc views to Jenkins Dashboard . Defaults to false        |
+| Name                                                             | Type     | Description                                                                              |
+|------------------------------------------------------------------|:---------|:-----------------------------------------------------------------------------------------|
+| [useSsl](#ssl-configuration) <required>                          | boolean  | Should the Jenkins use https                                                             |
+| [runWithOidc](#setup-openid-connect-oidc-via-federate)<required> | boolean  | Should an OIDC provider be installed on Jenkins                                          |
+| [restrictServerAccessTo](#restricting-server-access) <required>  | Ipeer    | Restrict jenkins server access                                                           |
+| [ignoreResourcesFailures](#ignore-resources-failure)             | boolean  | Additional verification during deployment and resource startup                           |
+| [adminUsers](#setup-openid-connect-oidc-via-federate)            | string[] | List of users with admin access during initial deployment                                |
+| [additionalCommands](#runnning-additional-commands)              | string   | Additional logic that needs to be run on Master Node. The value has to be path to a file |
+| [dataRetention](#data-retention)                                 | boolean  | Do you want to retain jenkins jobs and build history                                     |
+| [agentAssumeRole](#assume-role)                                  | string   | IAM role ARN to be assumed by jenkins agent nodes                                        |
+| [envVarsFilePath](#add-environment-variables)                    | string   | Path to file containing env variables in the form of key value pairs                     |
+| [macAgent](#mac-agents)                                          | boolean  | Add mac agents to jenkins                                                                |
+| [useProdAgents](#use-production-agents)                          | boolean  | Should jenkins server use production agents                                              |
+| [enableViews](#enable-views)                                     | boolean  | Adds Build, Test, Release and Misc views to Jenkins Dashboard . Defaults to false        |
 #### SSL Configuration
 1. Locate the secret manager arns in the ci-config-stack outputs
 1. Update the secret value ([see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)) for the `certContentsSecret` with the certificate contents

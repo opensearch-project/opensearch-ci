@@ -12,9 +12,10 @@ import {
 import {
   CfnInstanceProfile, Effect, ManagedPolicy, PolicyStatement, Role, ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
-import { KeyPair } from 'cdk-ec2-key-pair';
 import { readFileSync } from 'fs';
 import { load } from 'js-yaml';
+import { CfnKeyPair } from 'aws-cdk-lib/aws-ec2';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { JenkinsMainNode } from './jenkins-main-node';
 
 export interface AgentNodeProps {
@@ -48,12 +49,24 @@ export class AgentNodeConfig {
     this.STACKREGION = stack.region;
     this.ACCOUNT = stack.account;
 
-    const key = new KeyPair(stack, 'AgentNode-KeyPair', {
-      name: 'AgentNodeKeyPair',
-      description: 'KeyPair used by Jenkins Main Node to SSH into Agent Nodes',
+    const key = new CfnKeyPair(stack, 'AgentNode-KeyPair', {
+      keyName: 'AgentNodeKeyPair',
+      tags: [
+        {
+          key: 'jenkins:credentials:type',
+          value: 'sshUserPrivateKey',
+        },
+      ],
     });
-    Tags.of(key)
-      .add('jenkins:credentials:type', 'sshUserPrivateKey');
+
+    // Create a secret for storing the actaul value of key-pair so that jenkins secret-manager plugin is able to fetch it
+    const keyPairSecret = new Secret(stack, 'AgentNodeKeyPair', {
+      secretName: 'jenkins-agent-node-key-pair',
+      description: 'ssh key for jenkins main node to connect to agent nodes',
+    });
+    Tags.of(keyPairSecret).add('jenkins:credentials:type', 'sshUserPrivateKey');
+    Tags.of(keyPairSecret).add('jenkins:credentials:username', 'ec2-user');
+
     const AgentNodeRole = new Role(stack, 'OpenSearch-CI-AgentNodeRole', {
       assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
       // assumedBy: new AccountPrincipal(this.ACCOUNT),
@@ -120,7 +133,7 @@ export class AgentNodeConfig {
     AgentNodeRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
     const AgentNodeInstanceProfile = new CfnInstanceProfile(stack, 'JenkinsAgentNodeInstanceProfile', { roles: [AgentNodeRole.roleName] });
     this.AgentNodeInstanceProfileArn = AgentNodeInstanceProfile.attrArn.toString();
-    this.SSHEC2KeySecretId = Fn.join('/', ['ec2-ssh-key', key.keyPairName.toString(), 'private']);
+    this.SSHEC2KeySecretId = 'jenkins-agent-node-key-pair';
 
     new CfnOutput(stack, 'Jenkins Agent Node Role Arn', {
       value: `${AgentNodeRole.roleArn}`,
