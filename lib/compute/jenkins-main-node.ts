@@ -265,7 +265,7 @@ export class JenkinsMainNode {
       + ' instance_id=`curl -f -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id` && echo $ami_id &&'
       + ` aws ec2 --region ${stackRegion} modify-instance-metadata-options --instance-id $instance_id --http-put-response-hop-limit 2`),
 
-      // Jenkins CVE https://www.jenkins.io/security/advisory/2024-01-24/ mitigation 
+      // Jenkins CVE https://www.jenkins.io/security/advisory/2024-01-24/ mitigation
       InitCommand.shellCommand('mkdir -p /var/lib/jenkins/init.groovy.d'),
       // eslint-disable-next-line max-len
       InitCommand.shellCommand('sudo curl -SL https://raw.githubusercontent.com/jenkinsci-cert/SECURITY-3314-3315/55c15104fb70d6a2b46fd3f8ba7dec3913a4b1db/disable-cli.groovy -o /var/lib/jenkins/init.groovy.d/disable-cli.groovy'),
