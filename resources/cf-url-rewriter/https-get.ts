@@ -22,8 +22,14 @@ export async function httpsGet(url: string) {
 
       res.on("end", () => {
         try {
-          let json = JSON.parse(body);
-          resolve(json);
+          if (res.statusCode === 200) {
+            let json = JSON.parse(body);
+            resolve(json);
+          }
+          else {
+            console.log("URL is Invalid");
+            resolve('');
+          }
         } catch (e) {
           console.log(e);
           reject({
