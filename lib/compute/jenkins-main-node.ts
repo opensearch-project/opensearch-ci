@@ -275,6 +275,7 @@ export class JenkinsMainNode {
         httpConfigProps.useSsl
           // eslint-disable-next-line no-useless-escape
           ? `LogFormat "%{X-Forwarded-For}i %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+          // eslint-disable-next-line no-useless-escape
             LogFormat "%h %l %u %t \"%r\" %>s %b" common
             <VirtualHost *:80>
                 ServerAdmin  webmaster@localhost
