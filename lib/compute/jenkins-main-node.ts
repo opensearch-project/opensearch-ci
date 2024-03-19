@@ -273,7 +273,9 @@ export class JenkinsMainNode {
       // Configuration to proxy jenkins on :8080 -> :80
       InitFile.fromString('/etc/httpd/conf.d/jenkins.conf',
         httpConfigProps.useSsl
-          ? `<VirtualHost *:80>
+          ? `LogFormat "%{X-Forwarded-For}i %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+            LogFormat "%h %l %u %t \"%r\" %>s %b" common
+            <VirtualHost *:80>
                 ServerAdmin  webmaster@localhost
                 Redirect permanent / https://replace_url.com/
             </VirtualHost>
