@@ -11,7 +11,7 @@ resources/jenkins.yaml
 # CDK asset staging directory
 .cdk.staging
 cdk.out
-
+cdk.context.json
 # excluding intellij Idea files
 *.iml
 .idea/

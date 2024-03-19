@@ -7,12 +7,12 @@
  */
 
 import { CfnOutput, Stack } from 'aws-cdk-lib';
-import { Instance, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
+import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, ListenerCertificate, Protocol, SslPolicy,
 } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { InstanceTarget } from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
-import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 export interface JenkinsExternalLoadBalancerProps {
   readonly vpc: Vpc;
@@ -20,6 +20,7 @@ export interface JenkinsExternalLoadBalancerProps {
   readonly targetInstance: AutoScalingGroup;
   readonly listenerCertificate: ListenerCertificate;
   readonly useSsl: boolean;
+  readonly accessLogBucket: Bucket;
 }
 
 export class JenkinsExternalLoadBalancer {
@@ -63,6 +64,8 @@ export class JenkinsExternalLoadBalancer {
         path: '/login',
       },
     });
+
+    this.loadBalancer.logAccessLogs(props.accessLogBucket, 'loadBalancerAcessLogs');
 
     new CfnOutput(stack, 'Jenkins External Load Balancer Dns', {
       value: this.loadBalancer.loadBalancerDnsName,

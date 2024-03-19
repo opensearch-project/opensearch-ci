@@ -18,7 +18,9 @@ test('Agents Resource is present', () => {
       useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
     },
   });
-  const stack = new CIStack(app, 'TestStack', {});
+  const stack = new CIStack(app, 'TestStack', {
+    env: { account: 'test-account', region: 'us-east-1' },
+  });
   const template = Template.fromStack(stack);
 
   template.hasResourceProperties('AWS::IAM::Role', {
@@ -29,17 +31,7 @@ test('Agents Resource is present', () => {
           Action: 'sts:AssumeRole',
           Effect: 'Allow',
           Principal: {
-            Service: {
-              'Fn::Join': [
-                '',
-                [
-                  'ec2.',
-                  {
-                    Ref: 'AWS::URLSuffix',
-                  },
-                ],
-              ],
-            },
+            Service: 'ec2.amazonaws.com',
           },
         },
       ],
@@ -71,49 +63,14 @@ test('Agents Resource is present', () => {
             'ecr-public:CompleteLayerUpload',
             'ecr-public:PutImage',
           ],
-          Condition: {
-            StringEquals: {
-              'aws:RequestedRegion': {
-                Ref: 'AWS::Region',
-              },
-              'aws:PrincipalAccount': [
-                {
-                  Ref: 'AWS::AccountId',
-                },
-              ],
-            },
-          },
           Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:aws:ecr-public::',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':repository/*',
-              ],
-            ],
-          },
+          Resource: 'arn:aws:ecr-public::test-account:repository/*',
         },
         {
           Action: [
             'ecr-public:GetAuthorizationToken',
             'sts:GetServiceBearerToken',
           ],
-          Condition: {
-            StringEquals: {
-              'aws:RequestedRegion': {
-                Ref: 'AWS::Region',
-              },
-              'aws:PrincipalAccount': [
-                {
-                  Ref: 'AWS::AccountId',
-                },
-              ],
-            },
-          },
           Effect: 'Allow',
           Resource: '*',
         },
@@ -131,6 +88,7 @@ test('Agents Node policy with assume role Resource is present', () => {
   });
   const stack = new CIStack(app, 'TestStack', {
     agentAssumeRole: ['arn:aws:iam::12345:role/test-role', 'arn:aws:iam::901523:role/test-role2'],
+    env: { account: 'test-account', region: 'us-east-1' },
   });
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
