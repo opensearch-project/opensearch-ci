@@ -31,7 +31,7 @@ export class JenkinsMonitoring {
       alarmDescription: 'Overall EC2 avg CPU Utilization',
       evaluationPeriods: 3,
       metric: cpuMetric,
-      threshold: 50,
+      threshold: 75,
       comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
     }));
 
