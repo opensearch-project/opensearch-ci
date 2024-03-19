@@ -7,12 +7,13 @@
  */
 
 import { CfnOutput, Stack } from 'aws-cdk-lib';
-import { Instance, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
+import { SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, ListenerCertificate, Protocol, SslPolicy,
 } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { InstanceTarget } from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
-import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
+import { PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Bucket, BucketPolicy } from 'aws-cdk-lib/aws-s3';
 
 export interface JenkinsExternalLoadBalancerProps {
   readonly vpc: Vpc;
@@ -20,6 +21,7 @@ export interface JenkinsExternalLoadBalancerProps {
   readonly targetInstance: AutoScalingGroup;
   readonly listenerCertificate: ListenerCertificate;
   readonly useSsl: boolean;
+  readonly accessLogBucket: Bucket;
 }
 
 export class JenkinsExternalLoadBalancer {
@@ -31,6 +33,7 @@ export class JenkinsExternalLoadBalancer {
 
   constructor(stack: Stack, props: JenkinsExternalLoadBalancerProps) {
     const accessPort = props.useSsl ? 443 : 80;
+    const accessLoggingPrefix = 'loadBalancerAccessLogs';
 
     // Using an ALB so it can be part of a security group rather than by whitelisting ip addresses
     this.loadBalancer = new ApplicationLoadBalancer(stack, 'JenkinsALB', {
@@ -63,6 +66,23 @@ export class JenkinsExternalLoadBalancer {
         path: '/login',
       },
     });
+
+    this.loadBalancer.logAccessLogs(props.accessLogBucket, accessLoggingPrefix);
+
+    const bucketPolicy = new BucketPolicy(stack, 'ALBaccessLoggingBucketPolicyPErmission', {
+      bucket: props.accessLogBucket,
+    });
+
+    bucketPolicy.document.addStatements(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        principals: [
+          new ServicePrincipal('logdelivery.elasticloadbalancing.amazonaws.com'),
+        ],
+        resources: [`${props.accessLogBucket.bucketArn}/${accessLoggingPrefix}/*`],
+
+      }),
+    );
 
     new CfnOutput(stack, 'Jenkins External Load Balancer Dns', {
       value: this.loadBalancer.loadBalancerDnsName,

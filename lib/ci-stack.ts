@@ -199,6 +199,7 @@ export class CIStack extends Stack {
       targetInstance: mainJenkinsNode.mainNodeAsg,
       listenerCertificate,
       useSsl,
+      accessLogBucket: auditloggingS3Bucket.bucket,
     });
 
     const artifactBucket = new Bucket(this, 'BuildBucket');

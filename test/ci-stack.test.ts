@@ -21,6 +21,7 @@ test('CI Stack Basic Resources', () => {
   // WHEN
   const stack = new CIStack(app, 'TestStack', {
     dataRetention: true,
+    env: { account: 'test-account', region: 'us-east-1' },
   });
   const template = Template.fromStack(stack);
 
@@ -49,7 +50,7 @@ test('External security group is open', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'MyTestStack', {});
+  const stack = new CIStack(app, 'MyTestStack', { env: { account: 'test-account', region: 'us-east-1' } });
   const template = Template.fromStack(stack);
 
   // THEN
@@ -93,7 +94,11 @@ test('External security group is restricted', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'MyTestStack', { useSsl: true, restrictServerAccessTo: Peer.ipv4('10.0.0.0/24') });
+  const stack = new CIStack(app, 'MyTestStack', {
+    env: { account: 'test-account', region: 'us-east-1' },
+    useSsl: true,
+    restrictServerAccessTo: Peer.ipv4('10.0.0.0/24'),
+  });
   const template = Template.fromStack(stack);
 
   // THEN
@@ -135,7 +140,9 @@ test('MainNode', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'MyTestStack', {});
+  const stack = new CIStack(app, 'MyTestStack', {
+    env: { account: 'test-account', region: 'us-east-1' },
+  });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
@@ -165,7 +172,9 @@ test('LoadBalancer', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'MyTestStack', {});
+  const stack = new CIStack(app, 'MyTestStack', {
+    env: { account: 'test-account', region: 'us-east-1' },
+  });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
@@ -188,7 +197,9 @@ test('CloudwatchCpuAlarm', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'MyTestStack', {});
+  const stack = new CIStack(app, 'MyTestStack', {
+    env: { account: 'test-account', region: 'us-east-1' },
+  });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
@@ -205,11 +216,79 @@ test('CloudwatchMemoryAlarm', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'MyTestStack', {});
+  const stack = new CIStack(app, 'MyTestStack', {
+    env: { account: 'test-account', region: 'us-east-1' },
+  });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     MetricName: 'mem_used_percent',
     Statistic: 'Average',
+  });
+});
+
+test('LoadBalancer Access Logging', () => {
+  const app = new App({
+    context: {
+      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+    },
+  });
+
+  // WHEN
+  const stack = new CIStack(app, 'MyTestStack', {
+    env: { account: 'test-account', region: 'us-east-1' },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    LoadBalancerAttributes: [
+      {
+        Key: 'deletion_protection.enabled',
+        Value: 'false',
+      },
+      {
+        Key: 'access_logs.s3.enabled',
+        Value: 'true',
+      },
+      {
+        Key: 'access_logs.s3.bucket',
+        Value: {
+          Ref: 'jenkinsAuditBucket110D3080',
+        },
+      },
+      {
+        Key: 'access_logs.s3.prefix',
+        Value: 'loadBalancerAccessLogs',
+      },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 's3:PutObject',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'logdelivery.elasticloadbalancing.amazonaws.com',
+          },
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                {
+                  'Fn::GetAtt': [
+                    'jenkinsAuditBucket110D3080',
+                    'Arn',
+                  ],
+                },
+                '/loadBalancerAccessLogs/*',
+              ],
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
   });
 });
