@@ -25,6 +25,7 @@ import { RunAdditionalCommands } from './compute/run-additional-commands';
 import { JenkinsMonitoring } from './monitoring/ci-alarms';
 import { JenkinsExternalLoadBalancer } from './network/ci-external-load-balancer';
 import { JenkinsSecurityGroups } from './security/ci-security-groups';
+import { JenkinsWAF } from './security/waf';
 
 export interface CIStackProps extends StackProps {
   /** Should the Jenkins use https  */
@@ -200,6 +201,10 @@ export class CIStack extends Stack {
       listenerCertificate,
       useSsl,
       accessLogBucket: auditloggingS3Bucket.bucket,
+    });
+
+    const waf = new JenkinsWAF(this, {
+      loadBalancer: externalLoadBalancer.loadBalancer,
     });
 
     const artifactBucket = new Bucket(this, 'BuildBucket');

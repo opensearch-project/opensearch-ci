@@ -370,3 +370,114 @@ test('LoadBalancer Access Logging', () => {
     },
   });
 });
+
+test('WAF rules', () => {
+  const app = new App({
+    context: {
+      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
+    },
+  });
+
+  // WHEN
+  const stack = new CIStack(app, 'MyTestStack', {
+    env: { account: 'test-account', region: 'us-east-1' },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::WAFv2::WebACL', {
+    DefaultAction: {
+      Allow: {},
+    },
+    Scope: 'REGIONAL',
+    VisibilityConfig: {
+      CloudWatchMetricsEnabled: true,
+      MetricName: 'jenkins-WAF',
+      SampledRequestsEnabled: true,
+    },
+    Name: 'jenkins-WAF',
+    Rules: [
+      {
+        Name: 'AWS-AWSManagedRulesAmazonIpReputationList',
+        OverrideAction: {
+          None: {},
+        },
+        Priority: 0,
+        Statement: {
+          ManagedRuleGroupStatement: {
+            Name: 'AWSManagedRulesAmazonIpReputationList',
+            VendorName: 'AWS',
+          },
+        },
+        VisibilityConfig: {
+          CloudWatchMetricsEnabled: true,
+          MetricName: 'AWSManagedRulesAmazonIpReputationList',
+          SampledRequestsEnabled: true,
+        },
+      },
+      {
+        Name: 'AWS-AWSManagedRulesSQLiRuleSet',
+        OverrideAction: {
+          None: {},
+        },
+        Priority: 1,
+        Statement: {
+          ManagedRuleGroupStatement: {
+            ExcludedRules: [],
+            Name: 'AWSManagedRulesSQLiRuleSet',
+            VendorName: 'AWS',
+          },
+        },
+        VisibilityConfig: {
+          CloudWatchMetricsEnabled: true,
+          MetricName: 'AWS-AWSManagedRulesSQLiRuleSet',
+          SampledRequestsEnabled: true,
+        },
+      },
+      {
+        Name: 'AWS-AWSManagedRulesWordPressRuleSet',
+        OverrideAction: {
+          None: {},
+        },
+        Priority: 2,
+        Statement: {
+          ManagedRuleGroupStatement: {
+            ExcludedRules: [],
+            Name: 'AWSManagedRulesWordPressRuleSet',
+            VendorName: 'AWS',
+          },
+        },
+        VisibilityConfig: {
+          CloudWatchMetricsEnabled: true,
+          MetricName: 'AWS-AWSManagedRulesWordPressRuleSet',
+          SampledRequestsEnabled: true,
+        },
+      },
+    ],
+  });
+});
+
+test('Test WAF association with ALB', () => {
+  const app = new App({
+    context: {
+      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
+    },
+  });
+
+  // WHEN
+  const stack = new CIStack(app, 'MyTestStack', {
+    env: { account: 'test-account', region: 'us-east-1' },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::WAFv2::WebACLAssociation', {
+    ResourceArn: {
+      Ref: 'JenkinsALB9F3D5428',
+    },
+    WebACLArn: {
+      'Fn::GetAtt': [
+        'WAFv2',
+        'Arn',
+      ],
+    },
+  });
+});
