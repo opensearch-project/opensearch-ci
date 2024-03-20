@@ -13,7 +13,7 @@ import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, ListenerCertificate, Protocol, SslPolicy,
 } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Bucket, BucketPolicy } from 'aws-cdk-lib/aws-s3';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 export interface JenkinsExternalLoadBalancerProps {
   readonly vpc: Vpc;
@@ -69,11 +69,7 @@ export class JenkinsExternalLoadBalancer {
 
     this.loadBalancer.logAccessLogs(props.accessLogBucket, accessLoggingPrefix);
 
-    const bucketPolicy = new BucketPolicy(stack, 'ALBaccessLoggingBucketPolicyPErmission', {
-      bucket: props.accessLogBucket,
-    });
-
-    bucketPolicy.document.addStatements(
+    props.accessLogBucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:PutObject'],
         principals: [
