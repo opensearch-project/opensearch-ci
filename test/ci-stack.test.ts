@@ -392,7 +392,7 @@ test('WAF rules', () => {
     VisibilityConfig: {
       CloudWatchMetricsEnabled: true,
       MetricName: 'jenkins-WAF',
-      SampledRequestsEnabled: false,
+      SampledRequestsEnabled: true,
     },
     Name: 'jenkins-WAF',
     Rules: [

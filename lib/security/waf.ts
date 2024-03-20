@@ -86,7 +86,7 @@ export class WAF extends CfnWebACL {
       visibilityConfig: {
         cloudWatchMetricsEnabled: true,
         metricName: 'jenkins-WAF',
-        sampledRequestsEnabled: false,
+        sampledRequestsEnabled: true,
       },
       scope: 'REGIONAL',
       name: 'jenkins-WAF',
