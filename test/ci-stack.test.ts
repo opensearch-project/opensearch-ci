@@ -509,14 +509,6 @@ test('Test configElement docker and jenkins content', () => {
               owner: 'root',
               group: 'root',
             },
-            '/docker-compose.yml': {
-              // eslint-disable-next-line no-useless-escape,max-len
-              content: "version: '3.8'\nservices:\n  jenkins:\n    image: opensearchstaging/jenkins:2.387.1-lts-jdk11\n    restart: on-failure\n    privileged: true\n    tty: true\n    user: root\n    ports:\n      - 8080:8080\n      - 50000:50000\n    container_name: jenkins\n    environment:\n      - JENKINS_JAVA_OPTS=-Xms4g -Xmx16g -Dhudson.model.ParametersAction.keepUndefinedParameters=true -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions\n      - CASC_RELOAD_TOKEN=reloadPasswordHere\n    volumes:\n      - /var/lib/jenkins:/var/jenkins_home\n    deploy:\n      resources:\n        limits:\n          cpus: '32'\n          memory: '65g'\n        reservations:\n          cpus: '32'\n          memory: '65g'\n    logging:\n      driver: awslogs\n      options:\n        awslogs-group: JenkinsMainNode/jenkins.log\n        awslogs-create-group: 'true'\n",
-              encoding: 'plain',
-              mode: '000644',
-              owner: 'root',
-              group: 'root',
-            },
           },
         },
       },
