@@ -301,7 +301,9 @@ export class JenkinsMainNode {
             <IfModule mod_headers.c>
               Header unset Server
             </IfModule>`
-          : `<VirtualHost *:80>
+          // eslint-disable-next-line no-useless-escape,max-len
+          : `LogFormat "%{X-Forwarded-For}i %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+            <VirtualHost *:80>
             ServerAdmin  webmaster@127.0.0.1
             ProxyRequests     Off
             ProxyPreserveHost On
