@@ -485,7 +485,7 @@ test('Test WAF association with ALB', () => {
 test('Test configElement docker and jenkins content', () => {
   const app = new App({
     context: {
-      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
+      useSsl: 'true', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
     },
   });
 
