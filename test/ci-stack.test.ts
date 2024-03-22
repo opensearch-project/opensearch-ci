@@ -459,7 +459,7 @@ test('WAF rules', () => {
 test('Test WAF association with ALB', () => {
   const app = new App({
     context: {
-      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
+      useSsl: 'true', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.20.0.0/0',
     },
   });
 
