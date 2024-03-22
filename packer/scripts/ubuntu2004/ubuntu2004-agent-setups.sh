@@ -19,9 +19,9 @@ sudo apt-get install -y build-essential
 # Replace default curl 7.68 on Ubuntu 20.04 with 7.75+ version to support aws-sigv4
 # https://github.com/curl/curl/commit/08e8455dddc5e48e58a12ade3815c01ae3da3b64
 # https://curl.se/changes.html#7_75_0
-sudo curl -SL https://github.com/stunnel/static-curl/releases/download/8.6.0-1/curl-linux-`uname -m`-8.6.0.tar.xz -o curl.tar.xz
-sudo tar -xvf curl.tar.xz
-mv -v curl /usr/local/bin/curl
+curl -SL https://github.com/stunnel/static-curl/releases/download/8.6.0-1/curl-linux-`uname -m`-8.6.0.tar.xz -o curl.tar.xz
+tar -xvf curl.tar.xz
+sudo mv -v curl /usr/local/bin/curl
 rm -v curl.tar.xz
 
 sudo systemctl restart ntp && sudo systemctl enable ntp && sudo systemctl status ntp
