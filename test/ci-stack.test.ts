@@ -482,10 +482,44 @@ test('Test WAF association with ALB', () => {
   });
 });
 
-test('Test configElement docker and jenkins content', () => {
+test('Test configElement jenkins content to use X-Forwarded-For header on port 443', () => {
   const app = new App({
     context: {
       useSsl: 'true', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
+    },
+  });
+
+  // WHEN
+  const stack = new CIStack(app, 'MyTestStack', {
+    env: { account: 'test-account', region: 'us-east-1' },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+    /* eslint-disable max-len */
+    Metadata: {
+      'AWS::CloudFormation::Init': {
+        config: {
+          files: {
+            '/etc/httpd/conf.d/jenkins.conf': {
+              // eslint-disable-next-line no-useless-escape,max-len
+              content: 'LogFormat "%{X-Forwarded-For}i %h %l %u %t "%r" %>s %b "%{Referer}i" "%{User-Agent}i"" combined\n            <VirtualHost *:80>\n                ServerAdmin  webmaster@localhost\n                Redirect permanent / https://replace_url.com/\n            </VirtualHost>\n            <VirtualHost *:443>\n                SSLEngine on\n                SSLCertificateFile /etc/ssl/certs/test-jenkins.opensearch.org.crt\n                SSLCertificateKeyFile /etc/ssl/private/test-jenkins.opensearch.org.key\n                SSLCertificateChainFile /etc/ssl/certs/test-jenkins.opensearch.org.pem\n                ServerAdmin  webmaster@localhost\n                ProxyRequests     Off\n                ProxyPreserveHost On\n                AllowEncodedSlashes NoDecode\n                <Proxy *>\n                    Order deny,allow\n                    Allow from all\n                </Proxy>\n                ProxyPass         /  http://localhost:8080/ nocanon\n                ProxyPassReverse  /  http://localhost:8080/\n                ProxyPassReverse  /  http://replace_url.com/\n                RequestHeader set X-Forwarded-Proto \"https\"\n                RequestHeader set X-Forwarded-Port \"443\"\n            </VirtualHost>\n            <IfModule mod_headers.c>\n              Header unset Server\n            </IfModule>',
+              encoding: 'plain',
+              mode: '000644',
+              owner: 'root',
+              group: 'root',
+            },
+          },
+        },
+      },
+    },
+  });
+});
+
+test('Test configElement jenkins content to use X-Forwarded-For header on port 80', () => {
+  const app = new App({
+    context: {
+      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
     },
   });
 
