@@ -481,3 +481,45 @@ test('Test WAF association with ALB', () => {
     },
   });
 });
+
+test('Test configElement docker and jenkins content', () => {
+  const app = new App({
+    context: {
+      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
+    },
+  });
+
+  // WHEN
+  const stack = new CIStack(app, 'MyTestStack', {
+    env: { account: 'test-account', region: 'us-east-1' },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+    /* eslint-disable max-len */
+    Metadata: {
+      'AWS::CloudFormation::Init': {
+        config: {
+          files: {
+            '/etc/httpd/conf.d/jenkins.conf': {
+              // eslint-disable-next-line no-useless-escape,max-len
+              content: 'LogFormat "%{X-Forwarded-For}i %h %l %u %t "%r" %>s %b "%{Referer}i" "%{User-Agent}i"" combined\n            <VirtualHost *:80>\n                ServerAdmin  webmaster@localhost\n                Redirect permanent / https://replace_url.com/\n            </VirtualHost>\n            <VirtualHost *:443>\n                SSLEngine on\n                SSLCertificateFile /etc/ssl/certs/test-jenkins.opensearch.org.crt\n                SSLCertificateKeyFile /etc/ssl/private/test-jenkins.opensearch.org.key\n                SSLCertificateChainFile /etc/ssl/certs/test-jenkins.opensearch.org.pem\n                ServerAdmin  webmaster@localhost\n                ProxyRequests     Off\n                ProxyPreserveHost On\n                AllowEncodedSlashes NoDecode\n                <Proxy *>\n                    Order deny,allow\n                    Allow from all\n                </Proxy>\n                ProxyPass         /  http://localhost:8080/ nocanon\n                ProxyPassReverse  /  http://localhost:8080/\n                ProxyPassReverse  /  http://replace_url.com/\n                RequestHeader set X-Forwarded-Proto \"https\"\n                RequestHeader set X-Forwarded-Port \"443\"\n            </VirtualHost>\n            <IfModule mod_headers.c>\n              Header unset Server\n            </IfModule>',
+              encoding: 'plain',
+              mode: '000644',
+              owner: 'root',
+              group: 'root',
+            },
+            '/docker-compose.yml': {
+              // eslint-disable-next-line no-useless-escape,max-len
+              content: "version: '3.8'\nservices:\n  jenkins:\n    image: opensearchstaging/jenkins:2.387.1-lts-jdk11\n    restart: on-failure\n    privileged: true\n    tty: true\n    user: root\n    ports:\n      - 8080:8080\n      - 50000:50000\n    container_name: jenkins\n    environment:\n      - JENKINS_JAVA_OPTS=-Xms4g -Xmx16g -Dhudson.model.ParametersAction.keepUndefinedParameters=true -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions\n      - CASC_RELOAD_TOKEN=reloadPasswordHere\n    volumes:\n      - /var/lib/jenkins:/var/jenkins_home\n    deploy:\n      resources:\n        limits:\n          cpus: '32'\n          memory: '65g'\n        reservations:\n          cpus: '32'\n          memory: '65g'\n    logging:\n      driver: awslogs\n      options:\n        awslogs-group: JenkinsMainNode/jenkins.log\n        awslogs-create-group: 'true'\n",
+              encoding: 'plain',
+              mode: '000644',
+              owner: 'root',
+              group: 'root',
+            },
+          },
+        },
+      },
+    },
+  });
+});
