@@ -18,11 +18,15 @@ export class AgentNodes {
 
   readonly AL2023_X64_DOCKER_HOST: AgentNodeProps;
 
+  readonly AL2023_X64_DOCKER_HOST_EXTRA: AgentNodeProps;
+
   readonly AL2023_ARM64: AgentNodeProps;
 
   readonly AL2_ARM64_DOCKER_HOST: AgentNodeProps;
 
   readonly AL2023_ARM64_DOCKER_HOST: AgentNodeProps;
+
+  readonly AL2023_ARM64_DOCKER_HOST_EXTRA: AgentNodeProps;
 
   readonly AL2023_X64_BENCHMARK_TEST: AgentNodeProps;
 
@@ -78,7 +82,21 @@ export class AgentNodes {
       instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 4,
+      minimumNumberOfSpareInstances: 3,
+      numExecutors: 4,
+      amiId: 'ami-0d09563cd5663bdc7',
+      initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
+          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+      remoteFs: '/var/jenkins',
+    };
+    this.AL2023_X64_DOCKER_HOST_EXTRA = {
+      agentType: 'unix',
+      customDeviceMapping: '/dev/xvda=:600:true:::encrypted',
+      workerLabelString: 'Jenkins-Agent-AL2023-X64-M54xlarge-Docker-Host',
+      instanceType: 'M54xlarge',
+      remoteUser: 'ec2-user',
+      maxTotalUses: -1,
+      minimumNumberOfSpareInstances: 1,
       numExecutors: 4,
       amiId: 'ami-0d09563cd5663bdc7',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
@@ -120,7 +138,21 @@ export class AgentNodes {
       instanceType: 'C6g4xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 4,
+      minimumNumberOfSpareInstances: 3,
+      numExecutors: 4,
+      amiId: 'ami-0444fd195657f193f',
+      initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
+          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+      remoteFs: '/var/jenkins',
+    };
+    this.AL2023_ARM64_DOCKER_HOST_EXTRA = {
+      agentType: 'unix',
+      customDeviceMapping: '/dev/xvda=:600:true:::encrypted',
+      workerLabelString: 'Jenkins-Agent-AL2023-Arm64-M6g4xlarge-Docker-Host',
+      instanceType: 'M6g4xlarge',
+      remoteUser: 'ec2-user',
+      maxTotalUses: -1,
+      minimumNumberOfSpareInstances: 1,
       numExecutors: 4,
       amiId: 'ami-0444fd195657f193f',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
