@@ -17,7 +17,11 @@ const defaultEnv: string = 'Dev';
 
 const ciConfigStack = new CIConfigStack(app, `OpenSearch-CI-Config-${defaultEnv}`, {});
 
-const ciStack = new CIStack(app, `OpenSearch-CI-${defaultEnv}`, {});
+const ciStack = new CIStack(app, `OpenSearch-CI-${defaultEnv}`, {
+  env: {
+    region: 'us-east-1',
+  },
+});
 
 const ciCdnStack = new CiCdnStack(app, `OpenSearch-CI-Cdn-${defaultEnv}`, {});
 ciCdnStack.addDependency(ciStack);

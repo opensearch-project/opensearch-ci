@@ -37,7 +37,7 @@ export class JenkinsMonitoring {
 
     this.alarms.push(new Alarm(stack, 'ExternalLoadBalancerUnhealthyHosts', {
       alarmDescription: 'If any hosts behind the load balancer are unhealthy',
-      metric: externalLoadBalancer.targetGroup.metricUnhealthyHostCount(),
+      metric: externalLoadBalancer.targetGroup.metrics.unhealthyHostCount(),
       evaluationPeriods: 3,
       threshold: 1,
       comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,

@@ -12,12 +12,19 @@ import {
 } from 'aws-cdk-lib/aws-autoscaling';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import {
-  AmazonLinuxGeneration, CloudFormationInit, InitCommand, InitElement, InitFile, InitPackage,
+  AmazonLinuxCpuType,
+  CloudFormationInit,
+  InitCommand,
+  InitElement,
+  InitFile,
+  InitPackage,
   InstanceClass,
   InstanceSize,
   InstanceType,
-  MachineImage, SecurityGroup,
-  SubnetType, Vpc,
+  MachineImage,
+  SecurityGroup,
+  SubnetType,
+  Vpc,
 } from 'aws-cdk-lib/aws-ec2';
 import { FileSystem, PerformanceMode, ThroughputMode } from 'aws-cdk-lib/aws-efs';
 import {
@@ -113,8 +120,8 @@ export class JenkinsMainNode {
     }
     this.mainNodeAsg = new AutoScalingGroup(stack, 'MainNodeAsg', {
       instanceType: InstanceType.of(InstanceClass.C5, InstanceSize.XLARGE9),
-      machineImage: MachineImage.latestAmazonLinux({
-        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+      machineImage: MachineImage.latestAmazonLinux2023({
+        cpuType: AmazonLinuxCpuType.X86_64,
       }),
       role: new Role(stack, 'OpenSearch-CI-MainNodeRole', {
         roleName: 'OpenSearch-CI-MainNodeRole',
@@ -125,7 +132,7 @@ export class JenkinsMainNode {
       },
       vpc: props.vpc,
       vpcSubnets: {
-        subnetType: SubnetType.PRIVATE_WITH_NAT,
+        subnetType: SubnetType.PRIVATE_WITH_EGRESS,
       },
       minCapacity: 1,
       maxCapacity: 1,
@@ -274,7 +281,7 @@ export class JenkinsMainNode {
       InitFile.fromString('/etc/httpd/conf.d/jenkins.conf',
         httpConfigProps.useSsl
           // eslint-disable-next-line no-useless-escape,max-len
-          ? `LogFormat "%{X-Forwarded-For}i %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+          ? `LogFormat "%{X-Forwarded-For}i %h %l %u %t \\\"%r\\\" %>s %b \\\"%{Referer}i\\\" \\\"%{User-Agent}i\\\"" combined
             <VirtualHost *:80>
                 ServerAdmin  webmaster@localhost
                 Redirect permanent / https://replace_url.com/
@@ -302,7 +309,7 @@ export class JenkinsMainNode {
               Header unset Server
             </IfModule>`
           // eslint-disable-next-line no-useless-escape,max-len
-          : `LogFormat "%{X-Forwarded-For}i %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+          : `LogFormat "%{X-Forwarded-For}i %h %l %u %t \\\"%r\\\" %>s %b \\\"%{Referer}i\\\" \\\"%{User-Agent}i\\\"" combined
             <VirtualHost *:80>
             ServerAdmin  webmaster@127.0.0.1
             ProxyRequests     Off
