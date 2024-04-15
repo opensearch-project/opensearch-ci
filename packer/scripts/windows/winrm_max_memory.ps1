@@ -6,7 +6,7 @@
 # compatible open source license.
 
 echo "The max amount of the winrm memory is not the same on different instance type and might cause the server unresponsive upon startup"
-echo "The only examples we have now is C54xlarge can have 30/32GB on WINRM, C524large 190/192GB, M58xlarge 110/128GB without failures"
+echo "The only examples we have now is C54xlarge can have 30/32GB on WINRM, C524large 190/192GB, M54xlarge 62/64GB, M58xlarge 110/128GB without failures"
 
 $memorygb = [int]$args[0]
 $memorygb
