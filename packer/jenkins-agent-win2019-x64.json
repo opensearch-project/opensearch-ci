@@ -1,6 +1,6 @@
 {
   "variables": {
-    "name-base":"Jenkins-Agent-Windows2019-X64",
+    "name-base":"Jenkins-Agent-Windows2019-X64-JDK21",
     "os-version": "Windows2019",
     "build-region":"us-east-1",
     "build-vpc":"vpc-<>",

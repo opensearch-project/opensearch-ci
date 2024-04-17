@@ -36,8 +36,8 @@ for version_info in "${jdk_versions[@]}"; do
     /usr/local/bin/update-alternatives --install /usr/local/bin/java java "/opt/java/openjdk-${version_num}/Contents/Home/bin/java" ${version_priority}
 done
 
-## Set default Java to 11
-/usr/local/bin/update-alternatives --set java "$(/usr/local/bin/update-alternatives --list java | grep openjdk-11)"
+## Set default Java to 21
+/usr/local/bin/update-alternatives --set java "$(/usr/local/bin/update-alternatives --list java | grep openjdk-21)"
 
 ## Install MacPorts and python39
 /usr/local/bin/wget https://github.com/macports/macports-base/releases/download/v2.7.2/MacPorts-2.7.2.tar.gz

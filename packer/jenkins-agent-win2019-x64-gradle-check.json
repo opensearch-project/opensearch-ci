@@ -1,6 +1,6 @@
 {
   "variables": {
-    "name-base":"Jenkins-Agent-Windows2019-X64-Gradle-Check",
+    "name-base":"Jenkins-Agent-Windows2019-X64-Gradle-Check-JDK21",
     "os-version": "Windows2019",
     "build-region":"us-east-1",
     "build-vpc":"vpc-<>",
