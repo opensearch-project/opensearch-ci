@@ -31,7 +31,7 @@ export class ArtifactsPublicAccess {
     }));
 
     const urlRewriter = new NodejsFunction(stack, 'CfUrlRewriter', {
-      runtime: Runtime.NODEJS_16_X,
+      runtime: Runtime.NODEJS_18_X,
       entry: `${__dirname}/../../resources/cf-url-rewriter/cf-url-rewriter.ts`,
       handler: 'handler',
       memorySize: 128,

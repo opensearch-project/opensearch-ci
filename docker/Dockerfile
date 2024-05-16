@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:2.387.1-lts-jdk11
+FROM jenkins/jenkins:2.440.2-lts-jdk21
 LABEL maintainer="OpenSearch"
 ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
 COPY plugins.txt plugins.txt

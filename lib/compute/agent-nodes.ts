@@ -217,13 +217,13 @@ export class AgentNodes {
     this.WINDOWS2019_X64_DOCKER_HOST = {
       agentType: 'windows',
       customDeviceMapping: '/dev/sda1=:600:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-Windows2019-X64-C54xlarge-Docker-Host',
-      instanceType: 'C54xlarge',
+      workerLabelString: 'Jenkins-Agent-Windows2019-X64-M54xlarge-Docker-Host',
+      instanceType: 'M54xlarge',
       remoteUser: 'Administrator',
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 4,
       numExecutors: 4,
-      amiId: 'ami-0a9759da263ce9304',
+      amiId: 'ami-01f81782f09e99d95',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
           + 'echo initializing docker images now waiting for 5min && git clone https://github.com/opensearch-project/opensearch-build.git && '
           + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '
@@ -234,13 +234,13 @@ export class AgentNodes {
     this.WINDOWS2019_X64_DOCKER_BUILDER = {
       agentType: 'windows',
       customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-Windows2019-X64-C54xlarge-Docker-Builder',
-      instanceType: 'C54xlarge',
+      workerLabelString: 'Jenkins-Agent-Windows2019-X64-M54xlarge-Docker-Builder',
+      instanceType: 'M54xlarge',
       remoteUser: 'Administrator',
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-0a9759da263ce9304',
+      amiId: 'ami-01f81782f09e99d95',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
           + 'echo initializing docker images now waiting for 5min && git clone https://github.com/opensearch-project/opensearch-build.git && '
           + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '

@@ -19,7 +19,7 @@ const ciConfigStack = new CIConfigStack(app, `OpenSearch-CI-Config-${defaultEnv}
 
 const ciStack = new CIStack(app, `OpenSearch-CI-${defaultEnv}`, {
   env: {
-    region: 'us-east-1',
+    region: process.env.CDK_DEFAULT_REGION,
   },
 });
 
