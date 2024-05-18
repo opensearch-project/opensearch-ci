@@ -267,14 +267,7 @@ test('LoadBalancer Access Logging', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: [
-            's3:PutObject',
-            's3:PutObjectLegalHold',
-            's3:PutObjectRetention',
-            's3:PutObjectTagging',
-            's3:PutObjectVersionTagging',
-            's3:Abort*',
-          ],
+          Action: 's3:PutObject',
           Effect: 'Allow',
           Principal: {
             AWS: {
@@ -503,7 +496,7 @@ test('Test configElement jenkins content to use X-Forwarded-For header on port 4
           files: {
             '/etc/httpd/conf.d/jenkins.conf': {
               // eslint-disable-next-line no-useless-escape,max-len
-              content: 'LogFormat "%{X-Forwarded-For}i %h %l %u %t "%r" %>s %b "%{Referer}i" "%{User-Agent}i"" combined\n            <VirtualHost *:80>\n                ServerAdmin  webmaster@localhost\n                Redirect permanent / https://replace_url.com/\n            </VirtualHost>\n            <VirtualHost *:443>\n                SSLEngine on\n                SSLCertificateFile /etc/ssl/certs/test-jenkins.opensearch.org.crt\n                SSLCertificateKeyFile /etc/ssl/private/test-jenkins.opensearch.org.key\n                SSLCertificateChainFile /etc/ssl/certs/test-jenkins.opensearch.org.pem\n                ServerAdmin  webmaster@localhost\n                ProxyRequests     Off\n                ProxyPreserveHost On\n                AllowEncodedSlashes NoDecode\n                <Proxy *>\n                    Order deny,allow\n                    Allow from all\n                </Proxy>\n                ProxyPass         /  http://localhost:8080/ nocanon\n                ProxyPassReverse  /  http://localhost:8080/\n                ProxyPassReverse  /  http://replace_url.com/\n                RequestHeader set X-Forwarded-Proto \"https\"\n                RequestHeader set X-Forwarded-Port \"443\"\n            </VirtualHost>\n            <IfModule mod_headers.c>\n              Header unset Server\n            </IfModule>',
+              content: 'LogFormat \"%{X-Forwarded-For}i %h %l %u %t \\\"%r\\\" %>s %b \\\"%{Referer}i\\\" \\\"%{User-Agent}i\\\"\" combined\n            <VirtualHost *:80>\n                ServerAdmin  webmaster@localhost\n                Redirect permanent / https://replace_url.com/\n            </VirtualHost>\n            <VirtualHost *:443>\n                SSLEngine on\n                SSLCertificateFile /etc/ssl/certs/test-jenkins.opensearch.org.crt\n                SSLCertificateKeyFile /etc/ssl/private/test-jenkins.opensearch.org.key\n                SSLCertificateChainFile /etc/ssl/certs/test-jenkins.opensearch.org.pem\n                ServerAdmin  webmaster@localhost\n                ProxyRequests     Off\n                ProxyPreserveHost On\n                AllowEncodedSlashes NoDecode\n                <Proxy *>\n                    Order deny,allow\n                    Allow from all\n                </Proxy>\n                ProxyPass         /  http://localhost:8080/ nocanon\n                ProxyPassReverse  /  http://localhost:8080/\n                ProxyPassReverse  /  http://replace_url.com/\n                RequestHeader set X-Forwarded-Proto \"https\"\n                RequestHeader set X-Forwarded-Port \"443\"\n            </VirtualHost>\n            <IfModule mod_headers.c>\n              Header unset Server\n            </IfModule>',
               encoding: 'plain',
               mode: '000644',
               owner: 'root',
@@ -537,7 +530,7 @@ test('Test configElement jenkins content to use X-Forwarded-For header on port 8
           files: {
             '/etc/httpd/conf.d/jenkins.conf': {
               // eslint-disable-next-line no-useless-escape,max-len
-              content: 'LogFormat \"%{X-Forwarded-For}i %h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"\" combined\n            <VirtualHost *:80>\n            ServerAdmin  webmaster@127.0.0.1\n            ProxyRequests     Off\n            ProxyPreserveHost On\n            AllowEncodedSlashes NoDecode\n          \n            <Proxy http://127.0.0.1:8080/>\n                Order deny,allow\n                Allow from all\n            </Proxy>\n          \n            ProxyPass         /  http://127.0.0.1:8080/ nocanon\n            ProxyPassReverse  /  http://127.0.0.1:8080/\n        </VirtualHost>',
+              content: 'LogFormat \"%{X-Forwarded-For}i %h %l %u %t \\\"%r\\\" %>s %b \\\"%{Referer}i\\\" \\\"%{User-Agent}i\\\"\" combined\n            <VirtualHost *:80>\n            ServerAdmin  webmaster@127.0.0.1\n            ProxyRequests     Off\n            ProxyPreserveHost On\n            AllowEncodedSlashes NoDecode\n          \n            <Proxy http://127.0.0.1:8080/>\n                Order deny,allow\n                Allow from all\n            </Proxy>\n          \n            ProxyPass         /  http://127.0.0.1:8080/ nocanon\n            ProxyPassReverse  /  http://127.0.0.1:8080/\n        </VirtualHost>',
               encoding: 'plain',
               mode: '000644',
               owner: 'root',

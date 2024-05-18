@@ -270,8 +270,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: MachineImage.latestAmazonLinux({
-        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+      amiId: MachineImage.latestAmazonLinux2023({
         cpuType: AmazonLinuxCpuType.X86_64,
       }).getImage(stack).imageId.toString(),
       initScript: 'sudo amazon-linux-extras install java-openjdk11 -y && sudo yum install -y cmake python3 python3-pip && '
@@ -288,8 +287,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: MachineImage.latestAmazonLinux({
-        generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
+      amiId: MachineImage.latestAmazonLinux2023({
         cpuType: AmazonLinuxCpuType.ARM_64,
       }).getImage(stack).imageId.toString(),
       initScript: 'sudo amazon-linux-extras install java-openjdk11 -y && sudo yum install -y cmake python3 python3-pip && '

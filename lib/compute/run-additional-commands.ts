@@ -41,6 +41,6 @@ export class RunAdditionalCommands {
         values: [`${stack.stackName}/MainNodeAsg`],
       }],
     });
-    ssmAssociation.addDependsOn(ssmDocument);
+    ssmAssociation.addDependency(ssmDocument);
   }
 }
