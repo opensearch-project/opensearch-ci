@@ -157,7 +157,7 @@ export class AgentNodeConfig {
 
     const agentNodeYamlConfig = [{
       amazonEC2: {
-        cloudName: 'Amazon_ec2_cloud',
+        name: 'Amazon_ec2_cloud',
         region: this.STACKREGION,
         sshKeysCredentialsId: this.SSHEC2KeySecretId,
         templates: configTemplates,
