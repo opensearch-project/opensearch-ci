@@ -7,7 +7,6 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Maintainer       | GitHub ID                                | Affiliation |
 | ---------------- |------------------------------------------| ----------- |
 | Peter Zhu        | [peterzhuamazon](https://github.com/peterzhuamazon) | Amazon      |
-| Barani Bikshandi | [bbarani](https://github.com/bbarani)    | Amazon      |
 | Sayali Gaikawad  | [gaiksaya](https://github.com/gaiksaya)  | Amazon      |
 | Rishab Singh     | [rishabh6788](https://github.com/rishabh6788) | Amazon      |
 | Zelin Hao        | [zelinh](https://github.com/zelinh)      | Amazon      |
@@ -21,3 +20,4 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Peter Nied    | [peternied](https://github.com/peternied)           | Amazon      |
 | Abhinav Gupta | [abhinavGupta16](https://github.com/abhinavGupta16) | Amazon      |
 | Jeff Lu       | [jordarlu](https://github.com/jordarlu)             | Amazon      |
+| Barani Bikshandi | [bbarani](https://github.com/bbarani)    | Amazon      |
