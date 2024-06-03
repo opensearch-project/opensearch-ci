@@ -19,7 +19,20 @@ sudo rm -rf /var/cache/yum /var/lib/yum/history
 sudo yum repolist
 sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y
 
-sudo amazon-linux-extras install java-openjdk11 -y
+
+# Create the adoptium.repo file
+sudo tee /etc/yum.repos.d/adoptium.repo <<EOF
+[Adoptium]
+name=Adoptium
+baseurl=https://packages.adoptium.net/artifactory/rpm/amazonlinux/\$releasever/\$basearch
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.adoptium.net/artifactory/api/gpg/key/public
+EOF
+
+# Install Temurin JDK 21
+sudo yum install -y temurin-21-jdk
+
 sudo yum install -y which curl git gnupg2 tar net-tools procps-ng python3 python3-devel python3-pip zip unzip jq
 sudo yum install -y docker ntp
 sudo yum groupinstall -y "Development Tools"

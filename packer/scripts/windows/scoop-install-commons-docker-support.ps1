@@ -47,7 +47,7 @@ scoop bucket add extras
 scoop bucket add github-gh https://github.com/cli/scoop-gh.git
 
 # Install jdk
-$jdkVersionList = "temurin11-jdk JAVA11_HOME"
+$jdkVersionList = "temurin21-jdk JAVA21_HOME"
 Foreach ($jdkVersion in $jdkVersionList)
 {
     $jdkVersion
