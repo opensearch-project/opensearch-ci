@@ -1,6 +1,6 @@
 {
   "variables": {
-    "name-base":"Jenkins-Agent-Ubuntu2004-X64",
+    "name-base":"Jenkins-Agent-Ubuntu2004-X64-JDK21",
     "os-version": "Ubuntu2004",
     "build-region":"us-east-1",
     "build-vpc":"vpc-<>",
