@@ -79,14 +79,14 @@ export class OidcConfig {
         roleBased: {
           roles: {
             global: [{
-              entries: adminUsers.map(user => ({ user })),
+              entries: adminUsers.map((user) => ({ user })),
               name: 'admin',
               pattern: '.*',
               permissions: OidcConfig.adminRolePermissions
               ,
             },
             {
-              entries: readOnlyUsers.map(user => ({ user })),
+              entries: readOnlyUsers.map((user) => ({ user })),
               name: 'read',
               pattern: '.*',
               permissions: OidcConfig.readOnlyRolePermissions,
