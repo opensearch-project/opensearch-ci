@@ -235,6 +235,7 @@ export class JenkinsMainNode {
     reloadPasswordSecretsArn: string, efsId?: string): InitElement[] {
     return [
       InitPackage.yum('wget'),
+      InitPackage.yum('cronie'),
       InitPackage.yum('openssl'),
       InitPackage.yum('mod_ssl'),
       InitPackage.yum('amazon-efs-utils'),
@@ -243,6 +244,8 @@ export class JenkinsMainNode {
       InitPackage.yum('python3'),
       InitPackage.yum('python3-pip.noarch'),
       InitCommand.shellCommand('pip3 install botocore'),
+      InitCommand.shellCommand('systemctl enable crond.service'),
+      InitCommand.shellCommand('systemctl start crond.service'),
       // eslint-disable-next-line max-len
       InitCommand.shellCommand('sudo wget -nv https://github.com/mikefarah/yq/releases/download/v4.22.1/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq'),
       // eslint-disable-next-line max-len

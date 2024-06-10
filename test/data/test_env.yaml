@@ -113,6 +113,9 @@ globalCredentialsConfiguration:
   configuration:
     providerFilter: none
     typeFilter: none
+appearance:
+  loginTheme:
+    useDefaultTheme: true
 security:
   apiToken:
     creationOfLegacyTokenEnabled: false
@@ -185,7 +188,7 @@ unclassified:
     apiRateLimitChecker: ThrottleForNormalize
   gitHubPluginConfig:
     hookUrl: http://localhost:8080/github-webhook/
-  gitSCM:
+  scmGit:
     addGitTagAction: false
     allowSecondFetch: false
     createAccountBasedOnEmail: false
@@ -199,14 +202,10 @@ unclassified:
     storage: file
   location:
     adminAddress: address not configured yet <nobody@nowhere>
-  login-theme-plugin:
-    useDefaultTheme: true
   mailer:
     charset: UTF-8
     useSsl: false
     useTls: false
-  pluginImpl:
-    enableCredentialsFromNode: false
   pollSCM:
     pollingThreadCount: 10
   timestamper:
