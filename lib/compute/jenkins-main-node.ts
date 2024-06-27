@@ -393,6 +393,12 @@ export class JenkinsMainNode {
                   auto_removal: true,
                   log_stream_name: 'workflow-logs',
                 },
+                {
+                  file_path: '/var/lib/jenkins/jobs/gradle-check/builds/*/log',
+                  log_group_name: 'JenkinsMainNode/gradle-check.log',
+                  auto_removal: true,
+                  log_stream_name: 'gradle-check.log/{date}',
+                },
               ],
             },
           },
