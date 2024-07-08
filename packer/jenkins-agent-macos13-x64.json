@@ -66,13 +66,6 @@
   "provisioners": [
     {
       "type": "shell",
-      "scripts": [
-        "scripts/macos/macos-disk-resize.sh"
-      ],
-      "max_retries": 3
-    },
-    {
-      "type": "shell",
       "inline": [
         "sudo /usr/local/bin/ec2-macos-init clean --all"
       ],
