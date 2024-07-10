@@ -1,0 +1,32 @@
+name: Packer Validate
+
+on:
+  pull_request:
+    paths:
+      - packer/**
+
+env:
+  PACKER_VERSION: "1.8.7"
+
+jobs:
+  packer-validate:
+    runs-on: ubuntu-latest
+    name: Run Packer
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: ${{ env.PACKER_VERSION }}
+
+      - name: Run `packer validate`
+        id: validate
+        run: |
+            cd packer/
+            for template in `ls | grep ".json"`; do
+                echo $template
+                packer validate $template
+            done
