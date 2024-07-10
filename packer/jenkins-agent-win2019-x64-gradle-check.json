@@ -37,6 +37,11 @@
       },
       "user_data_file":"scripts/windows/userdata.ps1",
       "associate_public_ip_address":false,
+      "metadata_options": {
+        "http_endpoint": "enabled",
+        "http_tokens": "required",
+        "http_put_response_hop_limit": 1
+      },
       "communicator":"winrm",
       "winrm_username":"Administrator",
       "winrm_timeout":"40m",
