@@ -42,6 +42,11 @@
         "most_recent":true
       },
       "associate_public_ip_address":false,
+      "metadata_options": {
+        "http_endpoint": "enabled",
+        "http_tokens": "required",
+        "http_put_response_hop_limit": 1
+      },
       "ssh_username":  "ec2-user", 
       "ssh_timeout": "3h",
       "tenancy": "host",
