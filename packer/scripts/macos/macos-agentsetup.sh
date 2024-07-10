@@ -15,7 +15,7 @@ jdk_versions=(
 )
 
 ## Setup brew Defaults
-
+ARCH=`uname -m`
 BREW_PATH=/usr/local/bin
 if [ "$ARCH" = "arm64" ]; then
     BREW_PATH=/opt/homebrew/bin
