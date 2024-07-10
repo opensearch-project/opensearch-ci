@@ -1,6 +1,6 @@
 {
   "variables": {
-    "name-base":"Jenkins-Agent-AL2023-X64-JDK21",
+    "name-base":"Jenkins-Agent-AL2023-X64",
     "os-version": "AL2023",
     "build-region":"us-east-1",
     "build-vpc":"vpc-<>",
