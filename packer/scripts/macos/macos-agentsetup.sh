@@ -19,7 +19,7 @@ ARCH=`uname -m`
 BREW_PATH=/usr/local/bin
 if [ "$ARCH" = "arm64" ]; then
     BREW_PATH=/opt/homebrew/bin
-    sudo softwareupdate --install-rosetta --agree-to-license # Install rosetta in case there is no macOS arm64 specific binaries
+    sudo zsh -c "softwareupdate --install-rosetta --agree-to-license"
     jdk_versions=(
         # Use Oracle HotSpot version as Adoptium does not have macOS arm64 support on JDK8
         # https://github.com/adoptium/adoptium/issues/96
@@ -51,17 +51,17 @@ for version_info in "${jdk_versions[@]}"; do
     version_url=$(echo "$version_info" | cut -d '@' -f 2)
     version_priority=$(echo "$version_info" | cut -d '@' -f 3)
     sudo mkdir -p "/opt/java/openjdk-${version_num}/"
-    /usr/local/bin/wget -nv "$version_url" -O "openjdk-${version_num}.tar.gz"
+    $BREW_PATH/wget -nv "$version_url" -O "openjdk-${version_num}.tar.gz"
     sudo tar -xzf "openjdk-${version_num}.tar.gz" -C "/opt/java/openjdk-${version_num}/" --strip-components=1
-    /usr/local/bin/update-alternatives --install /usr/local/bin/java java "/opt/java/openjdk-${version_num}/Contents/Home/bin/java" ${version_priority}
+    $BREW_PATH/update-alternatives --install /usr/local/bin/java java "/opt/java/openjdk-${version_num}/Contents/Home/bin/java" ${version_priority}
 done
 
 ## Set default Java to 21
-/usr/local/bin/update-alternatives --set java `/usr/local/bin/update-alternatives --list java | grep openjdk-21`
+$BREW_PATH/update-alternatives --set java `$BREW_PATH/update-alternatives --list java | grep openjdk-21`
 
 ## Install MacPorts and python39
 sudo rm -rf /opt/local/etc/macports /opt/local/var/macports
-/usr/local/bin/wget -nv https://github.com/macports/macports-base/releases/download/v2.9.3/MacPorts-2.9.3.tar.gz
+$BREW_PATH/wget -nv https://github.com/macports/macports-base/releases/download/v2.9.3/MacPorts-2.9.3.tar.gz
 tar -xzf MacPorts-2.9.3.tar.gz
 cd MacPorts-2.9.3
 ./configure && make && sudo make install
@@ -73,7 +73,7 @@ sudo port select --set python python39
 sudo port select --set python3 python39
 
 ## Install pip and pip packages
-/usr/local/bin/wget -nv https://bootstrap.pypa.io/get-pip.py
+$BREW_PATH/wget -nv https://bootstrap.pypa.io/get-pip.py
 python3 get-pip.py
 export PATH=/Users/ec2-user/Library/Python/3.9/bin:/opt/local/Library/Frameworks/Python.framework/Versions/3.9/bin:$PATH
 pip install pipenv==2023.6.12
