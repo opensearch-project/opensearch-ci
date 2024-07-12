@@ -19,11 +19,13 @@ ARCH=`uname -m`
 BREW_PATH=/usr/local/bin
 if [ "$ARCH" = "arm64" ]; then
     BREW_PATH=/opt/homebrew/bin
-    sudo zsh -c "softwareupdate --install-rosetta --agree-to-license"
+    echo "Install rosetta, ignore 'Package Authoring Error: 052-96248'"
+    sudo /usr/sbin/softwareupdate --install-rosetta --agree-to-license
+
+    # Use Oracle HotSpot version as Adoptium does not have macOS arm64 support on JDK8
+    # https://github.com/adoptium/adoptium/issues/96
+    # We can also use rosetta but a bit slower so default to Oracle HotSpot for now
     jdk_versions=(
-        # Use Oracle HotSpot version as Adoptium does not have macOS arm64 support on JDK8
-        # https://github.com/adoptium/adoptium/issues/96
-        # We can also use rosetta but a bit slower so default to Oracle HotSpot for now
         "8@https://ci.opensearch.org/ci/dbc/tools/jdk-8u411-macosx-aarch64.tar.gz@1"
         "11@https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.23%2B9/OpenJDK11U-jdk_aarch64_mac_hotspot_11.0.23_9.tar.gz@1"
         "17@https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.11%2B9/OpenJDK17U-jdk_aarch64_mac_hotspot_17.0.11_9.tar.gz@1"
@@ -53,11 +55,13 @@ for version_info in "${jdk_versions[@]}"; do
     sudo mkdir -p "/opt/java/openjdk-${version_num}/"
     $BREW_PATH/wget -nv "$version_url" -O "openjdk-${version_num}.tar.gz"
     sudo tar -xzf "openjdk-${version_num}.tar.gz" -C "/opt/java/openjdk-${version_num}/" --strip-components=1
-    $BREW_PATH/update-alternatives --install /usr/local/bin/java java "/opt/java/openjdk-${version_num}/Contents/Home/bin/java" ${version_priority}
+    JAVA_PATH="/opt/java/openjdk-${version_num}/Contents/Home/bin"
+    $JAVA_PATH/java -version
+    sudo $BREW_PATH/update-alternatives --install /usr/local/bin/java java "$JAVA_PATH/java" ${version_priority}
 done
 
 ## Set default Java to 21
-$BREW_PATH/update-alternatives --set java `$BREW_PATH/update-alternatives --list java | grep openjdk-21`
+sudo $BREW_PATH/update-alternatives --set java `$BREW_PATH/update-alternatives --list java | grep openjdk-21`
 
 ## Install MacPorts and python39
 sudo rm -rf /opt/local/etc/macports /opt/local/var/macports
