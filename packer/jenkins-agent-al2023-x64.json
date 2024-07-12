@@ -1,6 +1,6 @@
 {
   "variables": {
-    "name-base":"Jenkins-Agent-AL2023-X64-JDK21",
+    "name-base":"Jenkins-Agent-AL2023-X64",
     "os-version": "AL2023",
     "build-region":"us-east-1",
     "build-vpc":"vpc-<>",
@@ -36,6 +36,11 @@
         "most_recent":true
       },
       "associate_public_ip_address":false,
+      "metadata_options": {
+        "http_endpoint": "enabled",
+        "http_tokens": "required",
+        "http_put_response_hop_limit": 1
+      },
       "ssh_username":  "ec2-user",
       "ssh_timeout": "3h",
       "tags": {
