@@ -33,7 +33,7 @@ EOF
 # Install Temurin JDK 21
 sudo yum install -y temurin-21-jdk
 
-sudo yum install -y which curl git gnupg2 tar net-tools procps-ng python3 python3-devel python3-pip zip unzip jq
+sudo yum install -y which curl git gnupg2 tar net-tools procps-ng python3 python3-devel python3-pip zip unzip jq pigz
 sudo yum install -y docker ntp
 sudo yum groupinstall -y "Development Tools"
 

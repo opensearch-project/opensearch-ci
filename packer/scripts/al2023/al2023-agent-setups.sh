@@ -17,10 +17,10 @@ fi
 sudo dnf clean all
 sudo rm -rf /var/cache/dnf
 sudo dnf repolist
-sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* -y
+sudo dnf update --skip-broken --exclude=openssh* --exclude=docker* --releasever=latest -y
 
 sudo dnf install -y java-21-amazon-corretto java-21-amazon-corretto-devel
-sudo dnf install -y which git tar net-tools procps-ng python3 python3-devel python3-pip zip unzip jq
+sudo dnf install -y which git tar net-tools procps-ng python3 python3-devel python3-pip zip unzip jq pigz
 sudo dnf install -y docker
 sudo dnf groupinstall -y "Development Tools"
 
