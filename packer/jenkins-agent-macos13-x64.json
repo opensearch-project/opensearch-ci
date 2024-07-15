@@ -1,0 +1,104 @@
+{
+  "variables": {
+    "ami_name": "Jenkins-Agent-MacOS13-X64-Mac1Metal-JDK21",
+    "os_version": "13.6.7",
+    "os_architecture": "x86_64_mac",
+    "build-region": "us-east-1",
+    "build-vpc": "vpc-<>",
+    "build-subnet": "subnet-<>",
+    "build-secgrp": "sg-<>",
+    "build-time": "{{isotime \"2006-01-02T03-04-05Z\"}}",
+    "aws_ami_region": "us-east-1",
+    "root_volume_size_gb": "300"
+  },
+  "builders": [
+    {
+      "name": "{{user `ami_name`}}-{{user `os_version`}}-{{user `build-time`}}",
+      "ami_description": "{{user `ami_name`}}",
+      "type": "amazon-ebs",
+      "encrypt_boot": "false",
+      "region": "{{user `build-region`}}",
+      "ami_regions": "{{user `aws_ami_region`}}",
+      "instance_type": "mac1.metal",
+      "ami_name": "{{user `ami_name`}}-{{user `os_version`}}-{{user `build-time`}}",
+      "vpc_id": "{{user `build-vpc`}}",
+      "subnet_id": "{{user `build-subnet`}}",
+      "aws_polling": {
+        "delay_seconds": 60,
+        "max_attempts": 60
+      },
+      "security_group_ids": "{{user `build-secgrp`}}",
+      "ssh_interface": "",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "amzn-ec2-macos-{{user `os_version`}}-*",
+          "root-device-type": "ebs",
+          "architecture": "{{user `os_architecture`}}"
+        },
+        "owners": [
+          "amazon"
+        ],
+        "most_recent": true
+      },
+      "associate_public_ip_address": false,
+      "metadata_options": {
+        "http_endpoint": "enabled",
+        "http_tokens": "required",
+        "http_put_response_hop_limit": 1
+      },
+      "ssh_username": "ec2-user",
+      "ssh_timeout": "3h",
+      "tenancy": "host",
+      "ebs_optimized": "true",
+      "tags": {
+        "Name": "{{user `ami_name`}}-{{user `os_version`}}-{{user `build-time`}}",
+        "OS_Version": "{{user `os_version`}}",
+        "User": "Packer",
+        "Encrypted_AMI": "False",
+        "Created": "{{user `build-time`}}"
+      },
+      "launch_block_device_mappings": [
+        {
+          "device_name": "/dev/sda1",
+          "volume_size": "{{user `root_volume_size_gb`}}",
+          "delete_on_termination": true,
+          "volume_type": "gp3"
+        }
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "sudo /usr/local/bin/ec2-macos-init clean --all"
+      ],
+      "max_retries": 3
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo chsh -s /bin/bash $(whoami)"
+      ],
+      "max_retries": 3
+    },
+    {
+      "type": "file",
+      "source": "files/macos/bash_profile",
+      "destination": "/Users/ec2-user/.bash_profile"
+    },
+    {
+      "type": "file",
+      "source": "files/macos/bashrc",
+      "destination": "/Users/ec2-user/.bashrc"
+    },
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/macos/macos-agentsetup.sh"
+      ],
+      "max_retries": 3
+    }
+  ]
+}
