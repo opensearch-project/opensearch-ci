@@ -13,7 +13,7 @@ whoami
 sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo)
 sudo apt-get upgrade -y && sudo apt-get install -y software-properties-common && sudo add-apt-repository ppa:jacob/virtualisation -y
 sudo apt-get update -y && sudo apt-get install -y binfmt-support qemu qemu-user qemu-user-static docker.io curl python3-pip && sudo pip3 install awscli
-sudo apt-get install -y docker docker.io docker-compose ntp curl git gnupg2 tar zip unzip jq
+sudo apt-get install -y docker docker.io docker-compose ntp curl git gnupg2 tar zip unzip jq pigz
 sudo apt-get install -y build-essential
 
 # Replace default curl 7.68 on Ubuntu 20.04 with 7.75+ version to support aws-sigv4
