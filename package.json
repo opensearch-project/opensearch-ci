@@ -19,6 +19,7 @@
     "constructs": "10.1.67",
     "jest": "^26.4.2",
     "ts-jest": "^26.2.0",
+    "micromatch":"^4.0.6",
     "ts-node": "^9.0.0",
     "typescript": "~3.9.7"
   },
