@@ -26,8 +26,8 @@ describe('JenkinsMainNode Config Elements', () => {
 
   // THEN
   test('Config elements expected counts', async () => {
-    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(24);
-    expect(configElements.filter((e) => e.elementType === 'PACKAGE')).toHaveLength(10);
+    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(23);
+    expect(configElements.filter((e) => e.elementType === 'PACKAGE')).toHaveLength(11);
     expect(configElements.filter((e) => e.elementType === 'FILE')).toHaveLength(4);
   });
 
