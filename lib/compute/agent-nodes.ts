@@ -219,7 +219,7 @@ export class AgentNodes {
     this.MACOS13_ARM64_MULTI_HOST = {
       agentType: 'mac',
       customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
-      workerLabelString: 'Jenkins-Agent-MacOS13-ARM64-Mac2M2proMetal-Multi-Host1',
+      workerLabelString: 'Jenkins-Agent-MacOS13-ARM64-Mac2M2proMetal-Multi-Host',
       instanceType: 'Mac2M2proMetal',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
