@@ -239,10 +239,10 @@ export class JenkinsMainNode {
       InitPackage.yum('openssl'),
       InitPackage.yum('mod_ssl'),
       InitPackage.yum('amazon-efs-utils'),
-      InitCommand.shellCommand('amazon-linux-extras install java-openjdk11 -y'),
       InitPackage.yum('docker'),
       InitPackage.yum('python3'),
       InitPackage.yum('python3-pip.noarch'),
+      InitPackage.yum('java-11-amazon-corretto'),
       InitCommand.shellCommand('pip3 install botocore'),
       InitCommand.shellCommand('systemctl enable crond.service'),
       InitCommand.shellCommand('systemctl start crond.service'),
@@ -250,7 +250,7 @@ export class JenkinsMainNode {
       InitCommand.shellCommand('sudo wget -nv https://github.com/mikefarah/yq/releases/download/v4.22.1/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq'),
       // eslint-disable-next-line max-len
       InitCommand.shellCommand('sudo curl -L https://github.com/docker/compose/releases/download/v2.9.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/bin/docker-compose && sudo chmod +x /usr/bin/docker-compose'),
-      InitCommand.shellCommand('python3 -m pip install --upgrade pip && python3 -m pip install cryptography boto3 requests-aws4auth'),
+      InitCommand.shellCommand('pip3 install cryptography boto3 requests-aws4auth'),
 
       InitCommand.shellCommand(httpConfigProps.useSsl
         // eslint-disable-next-line max-len
