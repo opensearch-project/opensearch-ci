@@ -34,7 +34,9 @@ export class AgentNodes {
 
   readonly UBUNTU2004_X64_DOCKER_BUILDER: AgentNodeProps;
 
-  readonly MACOS12_X64_MULTI_HOST: AgentNodeProps;
+  readonly MACOS13_X64_MULTI_HOST: AgentNodeProps;
+
+  readonly MACOS13_ARM64_MULTI_HOST: AgentNodeProps;
 
   readonly WINDOWS2019_X64_DOCKER_HOST: AgentNodeProps;
 
@@ -201,16 +203,29 @@ export class AgentNodes {
       + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y',
       remoteFs: '/var/jenkins',
     };
-    this.MACOS12_X64_MULTI_HOST = {
+    this.MACOS13_X64_MULTI_HOST = {
       agentType: 'mac',
       customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
-      workerLabelString: 'Jenkins-Agent-MacOS12-X64-Mac1Metal-Multi-Host',
+      workerLabelString: 'Jenkins-Agent-MacOS13-X64-Mac1Metal-Multi-Host',
       instanceType: 'Mac1Metal',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
-      numExecutors: 6,
-      amiId: 'ami-011470caf4b068ba5',
+      numExecutors: 4,
+      amiId: 'ami-05a9221f96f21bfb6',
+      initScript: 'echo',
+      remoteFs: '/var/jenkins',
+    };
+    this.MACOS13_ARM64_MULTI_HOST = {
+      agentType: 'mac',
+      customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
+      workerLabelString: 'Jenkins-Agent-MacOS13-ARM64-Mac2M2proMetal-Multi-Host1',
+      instanceType: 'Mac2M2proMetal',
+      remoteUser: 'ec2-user',
+      maxTotalUses: -1,
+      minimumNumberOfSpareInstances: 1,
+      numExecutors: 4,
+      amiId: 'ami-0931ef2039744bef9',
       initScript: 'echo',
       remoteFs: '/var/jenkins',
     };
