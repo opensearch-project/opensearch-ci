@@ -113,7 +113,7 @@ export class JenkinsMainNode {
         encrypted: true,
         enableAutomaticBackups: true,
         performanceMode: PerformanceMode.GENERAL_PURPOSE,
-        throughputMode: ThroughputMode.BURSTING,
+        throughputMode: ThroughputMode.ELASTIC,
         securityGroup: props.efsSG,
       });
       this.EFS_ID = efs.fileSystemId;
