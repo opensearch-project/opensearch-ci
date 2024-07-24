@@ -396,7 +396,7 @@ export class JenkinsMainNode {
                 {
                   file_path: '/var/lib/jenkins/jobs/gradle-check/builds/*/log',
                   log_group_name: 'JenkinsMainNode/gradle-check.log',
-                  auto_removal: true,
+                  auto_removal: false,
                   log_stream_name: 'gradle-check.log/{date}',
                 },
               ],
