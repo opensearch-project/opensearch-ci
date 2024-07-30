@@ -58,6 +58,7 @@ for version_info in "${jdk_versions[@]}"; do
     JAVA_PATH="/opt/java/openjdk-${version_num}/Contents/Home/bin"
     $JAVA_PATH/java -version
     sudo $BREW_PATH/update-alternatives --install /usr/local/bin/java java "$JAVA_PATH/java" ${version_priority}
+    rm -v openjdk-${version_num}.tar.gz
 done
 
 ## Set default Java to 21
@@ -67,6 +68,7 @@ sudo $BREW_PATH/update-alternatives --set java `$BREW_PATH/update-alternatives -
 sudo rm -rf /opt/local/etc/macports /opt/local/var/macports
 $BREW_PATH/wget -nv https://github.com/macports/macports-base/releases/download/v2.9.3/MacPorts-2.9.3.tar.gz
 tar -xzf MacPorts-2.9.3.tar.gz
+rm -v MacPorts-2.9.3.tar.gz
 cd MacPorts-2.9.3
 ./configure && make && sudo make install
 cd .. && rm -rf MacPorts-2.9.3.tar.gz
