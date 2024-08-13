@@ -32,9 +32,13 @@ fi
 curl -o- https://bootstrap.pypa.io/get-pip.py | python3
 echo "export PATH=$PATH:$HOME/.local/bin" >> $HOME/.bashrc
 export PATH=$PATH:$HOME/.local/bin
-pip install pipenv awscli docker-compose
+# https://github.com/opensearch-project/opensearch-build/issues/4946
+pip install requests==2.28.1
+pip install docker==6.1.3
+pip install docker-compose==1.29.2
 # Temp Solution: https://github.com/opensearch-project/opensearch-build/issues/4929
-pip install --upgrade packaging
+pip install --force-reinstall packaging==24.1
+pip install pipenv awscli
 pipenv --version && aws --version && docker-compose --version
 
 sudo sed -i 's/OPTIONS/# OPTIONS/g' /etc/sysconfig/docker
