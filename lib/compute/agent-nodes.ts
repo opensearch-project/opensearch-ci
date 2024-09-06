@@ -7,7 +7,7 @@
  */
 
 import { Stack } from 'aws-cdk-lib';
-import { AmazonLinuxCpuType, AmazonLinuxGeneration, MachineImage } from 'aws-cdk-lib/aws-ec2';
+import { AmazonLinuxCpuType, MachineImage } from 'aws-cdk-lib/aws-ec2';
 import { AgentNodeProps } from './agent-node-config';
 
 export class AgentNodes {
@@ -60,7 +60,7 @@ export class AgentNodes {
       numExecutors: 1,
       amiId: 'ami-0df585704536eaa6b',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+        + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2_X64_DOCKER_HOST = {
@@ -74,7 +74,7 @@ export class AgentNodes {
       numExecutors: 4,
       amiId: 'ami-047328312ef36d12b',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-      + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
+        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2023_X64_DOCKER_HOST = {
@@ -88,7 +88,7 @@ export class AgentNodes {
       numExecutors: 4,
       amiId: 'ami-0df585704536eaa6b',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+        + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2023_X64_DOCKER_HOST_EXTRA = {
@@ -99,10 +99,10 @@ export class AgentNodes {
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
-      numExecutors: 4,
+      numExecutors: 3,
       amiId: 'ami-0df585704536eaa6b',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+        + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2023_ARM64 = {
@@ -116,7 +116,7 @@ export class AgentNodes {
       numExecutors: 1,
       amiId: 'ami-08313eb4c2050a49c',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+        + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2_ARM64_DOCKER_HOST = {
@@ -130,7 +130,7 @@ export class AgentNodes {
       numExecutors: 4,
       amiId: 'ami-06ba4c81e8dd7ab49',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
-      + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
+        + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2023_ARM64_DOCKER_HOST = {
@@ -144,7 +144,7 @@ export class AgentNodes {
       numExecutors: 4,
       amiId: 'ami-08313eb4c2050a49c',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+        + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2023_ARM64_DOCKER_HOST_EXTRA = {
@@ -155,10 +155,10 @@ export class AgentNodes {
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
-      numExecutors: 4,
+      numExecutors: 3,
       amiId: 'ami-08313eb4c2050a49c',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+        + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2023_X64_BENCHMARK_TEST = {
@@ -172,7 +172,7 @@ export class AgentNodes {
       numExecutors: 2,
       amiId: 'ami-09f55bf0827296c51',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+        + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.UBUNTU2004_X64_GRADLE_CHECK = {
@@ -186,8 +186,8 @@ export class AgentNodes {
       numExecutors: 1,
       amiId: 'ami-0e8a55b605c497075',
       initScript: 'sudo apt-mark hold docker docker.io openssh-server gh grub-efi* shim-signed && docker ps &&'
-      + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
-      + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
+        + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
+        + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
       remoteFs: '/var/jenkins',
     };
     this.UBUNTU2004_X64_DOCKER_BUILDER = {
@@ -201,8 +201,8 @@ export class AgentNodes {
       numExecutors: 1,
       amiId: 'ami-0e8a55b605c497075',
       initScript: 'sudo apt-mark hold docker docker.io openssh-server gh grub-efi* shim-signed && docker ps &&'
-      + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
-      + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
+        + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
+        + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
       remoteFs: '/var/jenkins',
     };
     this.MACOS13_X64_MULTI_HOST = {
@@ -239,13 +239,13 @@ export class AgentNodes {
       remoteUser: 'Administrator',
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 4,
-      numExecutors: 4,
+      numExecutors: 3,
       amiId: 'ami-01f81782f09e99d95',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
-          + 'echo initializing docker images now waiting for 5min && git clone https://github.com/opensearch-project/opensearch-build.git && '
-          + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '
-          + '-p windows2019 -u opensearch -t build | head -1` bash.exe && sleep 5" && docker exec docker-windows-test whoami && '
-          + 'docker ps && docker stop docker-windows-test && docker ps && rm -rf opensearch-build',
+        + 'echo initializing docker images now waiting for 5min && git clone https://github.com/opensearch-project/opensearch-build.git && '
+        + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '
+        + '-p windows2019 -u opensearch -t build | head -1` bash.exe && sleep 5" && docker exec docker-windows-test whoami && '
+        + 'docker ps && docker stop docker-windows-test && docker ps && rm -rf opensearch-build',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.WINDOWS2019_X64_DOCKER_BUILDER = {
@@ -259,10 +259,10 @@ export class AgentNodes {
       numExecutors: 1,
       amiId: 'ami-01f81782f09e99d95',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
-          + 'echo initializing docker images now waiting for 5min && git clone https://github.com/opensearch-project/opensearch-build.git && '
-          + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '
-          + '-p windows2019 -u opensearch -t build | head -1` bash.exe && sleep 5" && docker exec docker-windows-test whoami && '
-          + 'docker ps && docker stop docker-windows-test && docker ps && rm -rf opensearch-build',
+        + 'echo initializing docker images now waiting for 5min && git clone https://github.com/opensearch-project/opensearch-build.git && '
+        + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '
+        + '-p windows2019 -u opensearch -t build | head -1` bash.exe && sleep 5" && docker exec docker-windows-test whoami && '
+        + 'docker ps && docker stop docker-windows-test && docker ps && rm -rf opensearch-build',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.WINDOWS2019_X64_GRADLE_CHECK = {
@@ -291,8 +291,8 @@ export class AgentNodes {
         cpuType: AmazonLinuxCpuType.X86_64,
       }).getImage(stack).imageId.toString(),
       initScript: 'sudo amazon-linux-extras install java-openjdk11 -y && sudo yum install -y cmake python3 python3-pip && '
-          + 'sudo yum groupinstall -y \'Development Tools\' && sudo ln -sfn `which pip3` /usr/bin/pip && '
-          + 'pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin',
+        + 'sudo yum groupinstall -y \'Development Tools\' && sudo ln -sfn `which pip3` /usr/bin/pip && '
+        + 'pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin',
       remoteFs: '/home/ec2-user',
     };
     this.AL2_ARM64_DEFAULT_AGENT = {
@@ -308,8 +308,8 @@ export class AgentNodes {
         cpuType: AmazonLinuxCpuType.ARM_64,
       }).getImage(stack).imageId.toString(),
       initScript: 'sudo amazon-linux-extras install java-openjdk11 -y && sudo yum install -y cmake python3 python3-pip && '
-          + 'sudo yum groupinstall -y \'Development Tools\' && sudo ln -sfn `which pip3` /usr/bin/pip && '
-          + 'pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin',
+        + 'sudo yum groupinstall -y \'Development Tools\' && sudo ln -sfn `which pip3` /usr/bin/pip && '
+        + 'pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin',
       remoteFs: '/home/ec2-user',
     };
   }
