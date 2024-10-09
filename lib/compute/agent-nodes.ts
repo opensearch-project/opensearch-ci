@@ -80,7 +80,7 @@ export class AgentNodes {
       instanceType: 'M54xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 1,
+      minimumNumberOfSpareInstances: 4,
       numExecutors: 3,
       amiId: 'ami-0e8c1c93cdfb4ce70',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
@@ -122,7 +122,7 @@ export class AgentNodes {
       instanceType: 'M6g4xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 1,
+      minimumNumberOfSpareInstances: 4,
       numExecutors: 3,
       amiId: 'ami-07171e0264441db0a',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
