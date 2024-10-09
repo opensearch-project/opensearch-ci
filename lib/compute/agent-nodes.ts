@@ -18,15 +18,11 @@ export class AgentNodes {
 
   readonly AL2023_X64_DOCKER_HOST: AgentNodeProps;
 
-  readonly AL2023_X64_DOCKER_HOST_EXTRA: AgentNodeProps;
-
   readonly AL2023_ARM64: AgentNodeProps;
 
   readonly AL2_ARM64_DOCKER_HOST: AgentNodeProps;
 
   readonly AL2023_ARM64_DOCKER_HOST: AgentNodeProps;
-
-  readonly AL2023_ARM64_DOCKER_HOST_EXTRA: AgentNodeProps;
 
   readonly AL2023_X64_BENCHMARK_TEST: AgentNodeProps;
 
@@ -58,7 +54,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-0df585704536eaa6b',
+      amiId: 'ami-0e8c1c93cdfb4ce70',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -79,20 +75,6 @@ export class AgentNodes {
     };
     this.AL2023_X64_DOCKER_HOST = {
       agentType: 'unix',
-      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-AL2023-X64-C54xlarge-Docker-Host',
-      instanceType: 'C54xlarge',
-      remoteUser: 'ec2-user',
-      maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 3,
-      numExecutors: 4,
-      amiId: 'ami-0df585704536eaa6b',
-      initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-        + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
-      remoteFs: '/var/jenkins',
-    };
-    this.AL2023_X64_DOCKER_HOST_EXTRA = {
-      agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:600:true:::encrypted',
       workerLabelString: 'Jenkins-Agent-AL2023-X64-M54xlarge-Docker-Host',
       instanceType: 'M54xlarge',
@@ -100,7 +82,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 3,
-      amiId: 'ami-0df585704536eaa6b',
+      amiId: 'ami-0e8c1c93cdfb4ce70',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -114,7 +96,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-08313eb4c2050a49c',
+      amiId: 'ami-07171e0264441db0a',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -135,20 +117,6 @@ export class AgentNodes {
     };
     this.AL2023_ARM64_DOCKER_HOST = {
       agentType: 'unix',
-      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-AL2023-Arm64-C6g4xlarge-Docker-Host',
-      instanceType: 'C6g4xlarge',
-      remoteUser: 'ec2-user',
-      maxTotalUses: -1,
-      minimumNumberOfSpareInstances: 3,
-      numExecutors: 4,
-      amiId: 'ami-08313eb4c2050a49c',
-      initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-        + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
-      remoteFs: '/var/jenkins',
-    };
-    this.AL2023_ARM64_DOCKER_HOST_EXTRA = {
-      agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:600:true:::encrypted',
       workerLabelString: 'Jenkins-Agent-AL2023-Arm64-M6g4xlarge-Docker-Host',
       instanceType: 'M6g4xlarge',
@@ -156,7 +124,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 3,
-      amiId: 'ami-08313eb4c2050a49c',
+      amiId: 'ami-07171e0264441db0a',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -184,7 +152,7 @@ export class AgentNodes {
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-0e8a55b605c497075',
+      amiId: 'ami-0cdc3fd42e6dc728c',
       initScript: 'sudo apt-mark hold docker docker.io openssh-server gh grub-efi* shim-signed && docker ps &&'
         + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
         + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
@@ -199,7 +167,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 2,
       numExecutors: 1,
-      amiId: 'ami-0e8a55b605c497075',
+      amiId: 'ami-0cdc3fd42e6dc728c',
       initScript: 'sudo apt-mark hold docker docker.io openssh-server gh grub-efi* shim-signed && docker ps &&'
         + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
         + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
@@ -214,7 +182,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 4,
-      amiId: 'ami-05a9221f96f21bfb6',
+      amiId: 'ami-0dbb293b6db1cac67',
       initScript: 'echo',
       remoteFs: '/var/jenkins',
     };
@@ -227,7 +195,7 @@ export class AgentNodes {
       maxTotalUses: -1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 4,
-      amiId: 'ami-0931ef2039744bef9',
+      amiId: 'ami-0fca4d6286ab64f66',
       initScript: 'echo',
       remoteFs: '/var/jenkins',
     };

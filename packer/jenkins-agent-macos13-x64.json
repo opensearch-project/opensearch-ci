@@ -1,6 +1,6 @@
 {
   "variables": {
-    "ami_name": "Jenkins-Agent-MacOS13-X64-Mac1Metal-JDK21",
+    "ami_name": "Jenkins-Agent-MacOS13-X64-Mac1Metal",
     "os_version": "13.6.7",
     "os_architecture": "x86_64_mac",
     "build-region": "us-east-1",
