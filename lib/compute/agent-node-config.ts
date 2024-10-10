@@ -251,7 +251,7 @@ export class AgentNodeConfig {
               {
                 key: 'JAVA23_HOME',
                 value: '/usr/lib/jvm/temurin-23-jdk-amd64',
-              }
+              },
             ],
           },
         },
