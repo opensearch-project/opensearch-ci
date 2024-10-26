@@ -132,11 +132,11 @@ export class AgentNodes {
     this.AL2023_X64_BENCHMARK_TEST = {
       agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-AL2023-X64-M52xlarge-Benchmark-Test',
-      instanceType: 'M52xlarge',
+      workerLabelString: 'Jenkins-Agent-AL2023-X64-C54xlarge-Benchmark-Test',
+      instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
-      minimumNumberOfSpareInstances: 1,
+      minimumNumberOfSpareInstances: 0,
       numExecutors: 2,
       amiId: 'ami-09f55bf0827296c51',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
