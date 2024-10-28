@@ -327,7 +327,7 @@ export class AgentNodeConfig {
       amiType:
          {
            windowsData: {
-             allowSelfSignedCertificate: false, bootDelay: '7.5', specifyPassword: false, useHTTPS: false,
+             allowSelfSignedCertificate: false, bootDelay: '180', specifyPassword: false, useHTTPS: false,
            },
          },
       associatePublicIp: false,
