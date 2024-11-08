@@ -46,6 +46,7 @@ $BREW_PATH/brew install wget
 $BREW_PATH/brew install maven
 $BREW_PATH/brew install dpkg
 $BREW_PATH/brew install ca-certificates
+$BREW_PATH/brew install gnupg
 $BREW_PATH/brew cleanup
 
 
