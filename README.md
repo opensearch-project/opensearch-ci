@@ -7,7 +7,7 @@
   - [Dev Deployment](#dev-deployment)
   - [Executing Optional Tasks](#executing-optional-tasks)
     - [SSL Configuration](#ssl-configuration)
-    - [Setup OpenId Connect (OIDC) via Federate](#setup-openid-connect-oidc-via-federate)
+    - [Setup Authentication using OpenId Connect (OIDC) or GitHub Authentication](#setup-authentication-using-openid-connect-oidc-or-github-authentication)
     - [Restricting Server Access](#restricting-server-access)
     - [Data Retention](#data-retention)
     - [Add environment variable](#add-environment-variables)
@@ -81,20 +81,20 @@ $aws secretsmanager put-secret-value \
 
 ### Executing Optional Tasks
 #### Construct Props
-| Name                                                             | Type     | Description                                                                              |
-|------------------------------------------------------------------|:---------|:-----------------------------------------------------------------------------------------|
-| [useSsl](#ssl-configuration) <required>                          | boolean  | Should the Jenkins use https                                                             |
-| [runWithOidc](#setup-openid-connect-oidc-via-federate)<required> | boolean  | Should an OIDC provider be installed on Jenkins                                          |
-| [restrictServerAccessTo](#restricting-server-access) <required>  | Ipeer    | Restrict jenkins server access                                                           |
-| [ignoreResourcesFailures](#ignore-resources-failure)             | boolean  | Additional verification during deployment and resource startup                           |
-| [adminUsers](#setup-openid-connect-oidc-via-federate)            | string[] | List of users with admin access during initial deployment                                |
-| [additionalCommands](#runnning-additional-commands)              | string   | Additional logic that needs to be run on Master Node. The value has to be path to a file |
-| [dataRetention](#data-retention)                                 | boolean  | Do you want to retain jenkins jobs and build history                                     |
-| [agentAssumeRole](#assume-role)                                  | string   | IAM role ARN to be assumed by jenkins agent nodes                                        |
-| [envVarsFilePath](#add-environment-variables)                    | string   | Path to file containing env variables in the form of key value pairs                     |
-| [macAgent](#mac-agents)                                          | boolean  | Add mac agents to jenkins                                                                |
-| [useProdAgents](#use-production-agents)                          | boolean  | Should jenkins server use production agents                                              |
-| [enableViews](#enable-views)                                     | boolean  | Adds Build, Test, Release and Misc views to Jenkins Dashboard . Defaults to false        |
+| Name                                                      | Type     | Description                                                                              |
+|-----------------------------------------------------------|:---------|:-----------------------------------------------------------------------------------------|
+| [useSsl](#ssl-configuration) <required>                   | boolean  | Should the Jenkins use https                                                             |
+| [restrictServerAccessTo](#restricting-server-access) <required> | Ipeer    | Restrict jenkins server access                                                           |
+| [authType](#setup-authentication-using-openid-connect-oidc-or-github-authentication) | string   | Authentication type for Jenkins login. Acceptable values: github, oidc, default          |
+| [ignoreResourcesFailures](#ignore-resources-failure)      | boolean  | Additional verification during deployment and resource startup                           |
+| [adminUsers](#setup-openid-connect-oidc-via-federate)     | string[] | List of users with admin access during initial deployment                                |
+| [additionalCommands](#runnning-additional-commands)       | string   | Additional logic that needs to be run on Master Node. The value has to be path to a file |
+| [dataRetention](#data-retention)                          | boolean  | Do you want to retain jenkins jobs and build history                                     |
+| [agentAssumeRole](#assume-role)                           | string   | IAM role ARN to be assumed by jenkins agent nodes                                        |
+| [envVarsFilePath](#add-environment-variables)             | string   | Path to file containing env variables in the form of key value pairs                     |
+| [macAgent](#mac-agents)                                   | boolean  | Add mac agents to jenkins                                                                |
+| [useProdAgents](#use-production-agents)                   | boolean  | Should jenkins server use production agents                                              |
+| [enableViews](#enable-views)                              | boolean  | Adds Build, Test, Release and Misc views to Jenkins Dashboard . Defaults to false        |
 #### SSL Configuration
 1. Locate the secret manager arns in the ci-config-stack outputs
 1. Update the secret value ([see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)) for the `certContentsSecret` with the certificate contents
@@ -112,10 +112,14 @@ $aws secretsmanager put-secret-value \
    1. `cdk deploy OpenSearch-CI-Dev -c useSsl=true -c runWithOidc=true`
 1. Continue with [next steps](#dev-deployment)
 
-#### Setup OpenId Connect (OIDC) via Federate
-1. Locate the secret manager arns in the ci-config-stack outputs
-1. Update the secret value ([see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)) for the `OIDCClientIdSecret` with the credentials as json as follows:
-   1. JSON format
+#### Setup Authentication using OpenId Connect (OIDC) or GitHub Authentication
+There are 3 types of authentication that can be used with this setup. The code modifies the [securityRealm](https://www.jenkins.io/doc/book/security/managing-security/#enabling-security) setting of jenkins.
+1. **Default**: Adopts whatever is mentioned in the [initial jenkins.yaml](resources/baseJenkins.yaml) file. Defaults to 'Jenkins Own User Database'.
+1. **OpenID Connect**: User any OpenID Connect provider to the jenkins. 
+Steps: 
+   1. Locate the secret manager arns in the ci-config-stack outputs
+   1. Update the secret value ([see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)) for the `authConfigValueSecret` with the credentials as json as follows:
+   JSON format
    ```
     {
         "clientId": "example_id",
@@ -126,16 +130,28 @@ $aws secretsmanager put-secret-value \
         "userInfoServerUrl": "https://example.com/userinfo"
     }
     ```
-   1. Command Eg: [see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)
+1. **GitHub Authentication**: Use GitHub as Authentication mechanism for jenkins. This set up uses [github-oauth](https://plugins.jenkins.io/github-oauth/) plugin.
+   Steps:
+    1. Create a GitHub OAuth app by following the instructions mentioned on the [plugin info page](https://plugins.jenkins.io/github-oauth/).
+    1. Locate the secret manager arns in the ci-config-stack outputs
+    1. Update the secret value ([see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)) for the `authConfigValueSecret` with the credentials as json as follows:
+       JSON format
+   ```
+   {
+       "clientID": "example_id",
+       "clientSecret": "example_password"
+   }
+   ```
+1. Command to update secrets Eg: [see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)
    ```
     $aws secretsmanager put-secret-value \
     --secret-id MyTestDatabaseSecret_or_ARN \
     --secret-string file://mycreds.json_or_value
-    ```
-1. Add additional `adminUsers` for role based authentication according to your needs, see [CIStackProps](./lib/ci-stack.ts) for details.
+   ```
+1. Add additional `adminUsers` for role based authentication according to your needs, see [CIStackProps](./lib/ci-stack.ts) for details. 
 1. Run with parameter with one of the following (refer [this](#ssl-configuration) for value of `useSsL`) -
-   1. `npm run cdk deploy OpenSearch-CI-Dev -- -c runWithOidc=true -c useSsl=true` or,
-   1. `cdk deploy OpenSearch-CI-Dev -c runWithOidc=true -c useSsl=true`
+   1. `npm run cdk deploy OpenSearch-CI-Dev -- -c authType=oidc/github/default -c useSsl=true` or,
+   1. `cdk deploy OpenSearch-CI-Dev -c authType=oidc/github/default  -c useSsl=true`
 1. Continue with [next steps](#dev-deployment)
 
 #### Restricting Server Access
@@ -144,7 +160,7 @@ You need to restrict access to your jenkins endpoint (load balancer). Here's how
 1. Using command line as below:
 
 ```
-npm run cdk synth OpenSearch-CI-Dev -- -c useSsl=false -c runWithOidc=false -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32
+npm run cdk synth OpenSearch-CI-Dev -- -c useSsl=false -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32
 ```
 Below values are allowed:
 | serverAccessType| restrictServerAccessTo| 

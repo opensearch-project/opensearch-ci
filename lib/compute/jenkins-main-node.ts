@@ -36,7 +36,7 @@ import { join } from 'path';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
 import { EnvConfig } from './env-config';
-import { OidcConfig } from './oidc-config';
+import { AuthConfig } from './auth-config';
 import { ViewsConfig } from './views';
 
 interface HttpConfigProps {
@@ -47,9 +47,9 @@ interface HttpConfigProps {
   readonly useSsl: boolean;
 }
 
-interface OidcFederateProps {
-  readonly oidcCredArn: string;
-  readonly runWithOidc: boolean;
+interface LoginAuthProps {
+  readonly authCredsSecretsArn: string;
+  readonly authType: string;
   readonly adminUsers?: string[];
 }
 
@@ -58,7 +58,7 @@ interface DataRetentionProps {
   readonly efsSG?: SecurityGroup;
 }
 
-export interface JenkinsMainNodeProps extends HttpConfigProps, OidcFederateProps, AgentNodeNetworkProps, DataRetentionProps {
+export interface JenkinsMainNodeProps extends HttpConfigProps, LoginAuthProps, AgentNodeNetworkProps, DataRetentionProps {
   readonly vpc: Vpc;
   readonly sg: SecurityGroup;
   readonly envVarsFilePath: string;
@@ -77,8 +77,6 @@ export class JenkinsMainNode {
   static readonly CERTIFICATE_CHAIN_FILE_PATH: String = '/etc/ssl/certs/test-jenkins.opensearch.org.pem';
 
   static readonly PRIVATE_KEY_PATH: String = '/etc/ssl/private/test-jenkins.opensearch.org.key';
-
-  static readonly JENKINS_DEFAULT_ID_PASS_PATH: String = '/var/lib/jenkins/secrets/myIdPassDefault';
 
   private readonly EFS_ID: string;
 
@@ -231,8 +229,14 @@ export class JenkinsMainNode {
   }
 
   public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps,
-    oidcFederateProps: OidcFederateProps, dataRetentionProps: DataRetentionProps, jenkinsyaml: string,
+    loginAuthProps: LoginAuthProps, dataRetentionProps: DataRetentionProps, jenkinsyaml: string,
     reloadPasswordSecretsArn: string, efsId?: string): InitElement[] {
+    let realm = '';
+    if (loginAuthProps.authType === 'github') {
+      realm = 'github';
+    } else if (loginAuthProps.authType === 'oidc') {
+      realm = 'oic';
+    }
     return [
       InitPackage.yum('wget'),
       InitPackage.yum('cronie'),
@@ -272,8 +276,8 @@ export class JenkinsMainNode {
 
       // Change hop limit for IMDSv2 from 1 to 2
       InitCommand.shellCommand('TOKEN=`curl -f -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"` &&'
-      + ' instance_id=`curl -f -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id` && echo $ami_id &&'
-      + ` aws ec2 --region ${stackRegion} modify-instance-metadata-options --instance-id $instance_id --http-put-response-hop-limit 2`),
+        + ' instance_id=`curl -f -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id` && echo $ami_id &&'
+        + ` aws ec2 --region ${stackRegion} modify-instance-metadata-options --instance-id $instance_id --http-put-response-hop-limit 2`),
 
       // Jenkins CVE https://www.jenkins.io/security/advisory/2024-01-24/ mitigation
       InitCommand.shellCommand('mkdir -p /var/lib/jenkins/init.groovy.d'),
@@ -427,12 +431,12 @@ export class JenkinsMainNode {
       InitFile.fromFileInline('/initial_jenkins.yaml', jenkinsyaml),
 
       // Make any changes to initial jenkins.yaml
-      InitCommand.shellCommand(oidcFederateProps.runWithOidc
+      InitCommand.shellCommand(loginAuthProps.authType !== 'default'
         // eslint-disable-next-line max-len
-        ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${oidcFederateProps.oidcCredArn} --query SecretString --output text\` && `
+        ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${loginAuthProps.authCredsSecretsArn} --query SecretString --output text\` && `
         + ' varkeys=`echo $var | yq \'keys\' | cut -d "-" -f2 | cut -d " " -f2` &&'
         // eslint-disable-next-line max-len
-        + ' for i in $varkeys; do newvalue=`echo $var | yq .$i` && myenv=$newvalue i=$i yq -i \'.jenkins.securityRealm.oic.[env(i)]=env(myenv)\' /initial_jenkins.yaml ; done'
+        + ` for i in $varkeys; do newvalue=\`echo $var | yq .$i\` && myenv=$newvalue i=$i yq -i '.jenkins.securityRealm.${realm}.[env(i)]=env(myenv)' /initial_jenkins.yaml ; done`
         : 'echo No changes made to initial_jenkins.yaml with respect to OIDC'),
 
       InitCommand.shellCommand('while [[ "$(curl -s -o /dev/null -w \'\'%{http_code}\'\' localhost:8080/api/json?pretty)" != "200" ]]; do sleep 5; done'),
@@ -444,11 +448,11 @@ export class JenkinsMainNode {
     ];
   }
 
-  public static addConfigtoJenkinsYaml(stack: Stack, jenkinsMainNodeProps: JenkinsMainNodeProps, oidcProps: OidcFederateProps, agentNodeObject: AgentNodeConfig,
-    props: AgentNodeNetworkProps, agentNode: AgentNodeProps[], macAgent: string): string {
+  public static addConfigtoJenkinsYaml(stack: Stack, jenkinsMainNodeProps: JenkinsMainNodeProps, loginAuthProps: LoginAuthProps,
+    agentNodeObject: AgentNodeConfig, props: AgentNodeNetworkProps, agentNode: AgentNodeProps[], macAgent: string): string {
     let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(stack, agentNode, props, macAgent);
-    if (oidcProps.runWithOidc) {
-      updatedConfig = OidcConfig.addOidcConfigToJenkinsYaml(updatedConfig, oidcProps.adminUsers);
+    if (loginAuthProps.authType !== 'default') {
+      updatedConfig = AuthConfig.addOidcConfigToJenkinsYaml(updatedConfig, loginAuthProps.authType, loginAuthProps.adminUsers);
     }
     if (jenkinsMainNodeProps.envVarsFilePath !== '' && jenkinsMainNodeProps.envVarsFilePath != null) {
       updatedConfig = EnvConfig.addEnvConfigToJenkinsYaml(updatedConfig, jenkinsMainNodeProps.envVarsFilePath);

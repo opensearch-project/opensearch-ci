@@ -1,0 +1,572 @@
+jenkins:
+  agentProtocols:
+  - "JNLP4-connect"
+  - "Ping"
+  authorizationStrategy:
+    roleBased:
+      roles:
+        global:
+        - entries:
+          - user: "bar"
+          - user: "foo"
+          name: "admin"
+          pattern: ".*"
+          permissions:
+          - "Job/Move"
+          - "Job/Build"
+          - "Credentials/Delete"
+          - "Credentials/ManageDomains"
+          - "View/Create"
+          - "Agent/Configure"
+          - "Job/Read"
+          - "Credentials/Update"
+          - "Agent/Create"
+          - "Manage ownership/Nodes"
+          - "Job/Delete"
+          - "Agent/Build"
+          - "View/Configure"
+          - "Agent/Provision"
+          - "SCM/Tag"
+          - "Job/Create"
+          - "Job/Discover"
+          - "Manage ownership/Jobs"
+          - "Credentials/View"
+          - "Agent/Connect"
+          - "Agent/Delete"
+          - "Run/Replay"
+          - "Agent/Disconnect"
+          - "Run/Delete"
+          - "Job/Cancel"
+          - "Overall/Read"
+          - "Run/Update"
+          - "Credentials/Create"
+          - "Overall/Administer"
+          - "View/Delete"
+          - "Job/Configure"
+          - "Job Config History/DeleteEntry"
+          - "Job/Workspace"
+          - "View/Read"
+        - entries:
+          - user: "anonymous"
+          name: "read"
+          pattern: ".*"
+          permissions:
+          - "Overall/Read"
+          - "Job/Read"
+  clouds:
+  - amazonEC2:
+      name: "Amazon_ec2_cloud"
+      region: "us-west-2"
+      sshKeysCredentialsId: "jenkins-agent-node-key-pair"
+      templates:
+      - ami: "ami-046b5b8111c19b3ac"
+        amiType:
+          unixData:
+            sshPort: "22"
+        associatePublicIp: false
+        connectBySSHProcess: false
+        connectionStrategy: PRIVATE_IP
+        customDeviceMapping: "/dev/xvda=:300:true:::encrypted"
+        deleteRootOnTermination: true
+        description: "jenkinsAgentNode-Jenkins-Default-Agent-X64-C5xlarge-Single-Host"
+        ebsEncryptRootVolume: ENCRYPTED
+        ebsOptimized: false
+        hostKeyVerificationStrategy: 'OFF'
+        iamInstanceProfile: "arn:aws:iam::529213360297:instance-profile/OpenSearch-CI-lol-JenkinsAgentNodeInstanceProfile-ntMjuYvZaWaR"
+        idleTerminationMinutes: "60"
+        initScript: "sudo amazon-linux-extras install java-openjdk11 -y && sudo yum\
+          \ install -y cmake python3 python3-pip && sudo yum groupinstall -y 'Development\
+          \ Tools' && sudo ln -sfn `which pip3` /usr/bin/pip && pip3 install pipenv\
+          \ && sudo ln -s ~/.local/bin/pipenv /usr/local/bin"
+        javaPath: "java"
+        labelString: "Jenkins-Default-Agent-X64-C5xlarge-Single-Host"
+        launchTimeoutStr: "300"
+        maxTotalUses: -1
+        metadataEndpointEnabled: true
+        metadataHopsLimit: 2
+        metadataSupported: true
+        metadataTokensRequired: true
+        minimumNumberOfInstances: 0
+        minimumNumberOfSpareInstances: 1
+        mode: EXCLUSIVE
+        monitoring: true
+        nodeProperties:
+        - envVars:
+            env:
+            - key: "JAVA11_HOME"
+              value: "/usr/lib/jvm/temurin-11-jdk-amd64"
+            - key: "JAVA14_HOME"
+              value: "/usr/lib/jvm/adoptopenjdk-14-amd64"
+            - key: "JAVA17_HOME"
+              value: "/usr/lib/jvm/temurin-17-jdk-amd64"
+            - key: "JAVA19_HOME"
+              value: "/usr/lib/jvm/temurin-19-jdk-amd64"
+            - key: "JAVA20_HOME"
+              value: "/usr/lib/jvm/temurin-20-jdk-amd64"
+            - key: "JAVA21_HOME"
+              value: "/usr/lib/jvm/temurin-21-jdk-amd64"
+            - key: "JAVA23_HOME"
+              value: "/usr/lib/jvm/temurin-23-jdk-amd64"
+            - key: "JAVA8_HOME"
+              value: "/usr/lib/jvm/temurin-8-jdk-amd64"
+            - key: "JENKINS_HOME_PATH"
+              value: "/home/ec2-user"
+        numExecutors: 1
+        remoteAdmin: "ec2-user"
+        remoteFS: "/home/ec2-user"
+        securityGroups: "sg-0a7de99890e29657e"
+        stopOnTerminate: false
+        subnetId: "subnet-0fd55c2bd295b5216"
+        t2Unlimited: false
+        tags:
+        - name: "Name"
+          value: "OpenSearch-CI-lol/AgentNode/Jenkins-Default-Agent-X64-C5xlarge-Single-Host"
+        - name: "type"
+          value: "jenkinsAgentNode-Jenkins-Default-Agent-X64-C5xlarge-Single-Host"
+        tenancy: Default
+        type: C54xlarge
+        useEphemeralDevices: false
+      - ami: "ami-0334ab986e1816201"
+        amiType:
+          unixData:
+            sshPort: "22"
+        associatePublicIp: false
+        connectBySSHProcess: false
+        connectionStrategy: PRIVATE_IP
+        customDeviceMapping: "/dev/xvda=:300:true:::encrypted"
+        deleteRootOnTermination: true
+        description: "jenkinsAgentNode-Jenkins-Default-Agent-ARM64-C5xlarge-Single-Host"
+        ebsEncryptRootVolume: ENCRYPTED
+        ebsOptimized: false
+        hostKeyVerificationStrategy: 'OFF'
+        iamInstanceProfile: "arn:aws:iam::529213360297:instance-profile/OpenSearch-CI-lol-JenkinsAgentNodeInstanceProfile-ntMjuYvZaWaR"
+        idleTerminationMinutes: "60"
+        initScript: "sudo amazon-linux-extras install java-openjdk11 -y && sudo yum\
+          \ install -y cmake python3 python3-pip && sudo yum groupinstall -y 'Development\
+          \ Tools' && sudo ln -sfn `which pip3` /usr/bin/pip && pip3 install pipenv\
+          \ && sudo ln -s ~/.local/bin/pipenv /usr/local/bin"
+        javaPath: "java"
+        labelString: "Jenkins-Default-Agent-ARM64-C5xlarge-Single-Host"
+        launchTimeoutStr: "300"
+        maxTotalUses: -1
+        metadataEndpointEnabled: true
+        metadataHopsLimit: 2
+        metadataSupported: true
+        metadataTokensRequired: true
+        minimumNumberOfInstances: 0
+        minimumNumberOfSpareInstances: 1
+        mode: EXCLUSIVE
+        monitoring: true
+        nodeProperties:
+        - envVars:
+            env:
+            - key: "JAVA11_HOME"
+              value: "/usr/lib/jvm/temurin-11-jdk-amd64"
+            - key: "JAVA14_HOME"
+              value: "/usr/lib/jvm/adoptopenjdk-14-amd64"
+            - key: "JAVA17_HOME"
+              value: "/usr/lib/jvm/temurin-17-jdk-amd64"
+            - key: "JAVA19_HOME"
+              value: "/usr/lib/jvm/temurin-19-jdk-amd64"
+            - key: "JAVA20_HOME"
+              value: "/usr/lib/jvm/temurin-20-jdk-amd64"
+            - key: "JAVA21_HOME"
+              value: "/usr/lib/jvm/temurin-21-jdk-amd64"
+            - key: "JAVA23_HOME"
+              value: "/usr/lib/jvm/temurin-23-jdk-amd64"
+            - key: "JAVA8_HOME"
+              value: "/usr/lib/jvm/temurin-8-jdk-amd64"
+            - key: "JENKINS_HOME_PATH"
+              value: "/home/ec2-user"
+        numExecutors: 1
+        remoteAdmin: "ec2-user"
+        remoteFS: "/home/ec2-user"
+        securityGroups: "sg-0a7de99890e29657e"
+        stopOnTerminate: false
+        subnetId: "subnet-0fd55c2bd295b5216"
+        t2Unlimited: false
+        tags:
+        - name: "Name"
+          value: "OpenSearch-CI-lol/AgentNode/Jenkins-Default-Agent-ARM64-C5xlarge-Single-Host"
+        - name: "type"
+          value: "jenkinsAgentNode-Jenkins-Default-Agent-ARM64-C5xlarge-Single-Host"
+        tenancy: Default
+        type: C6g4xlarge
+        useEphemeralDevices: false
+      useInstanceProfileForCredentials: true
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: false
+  disableRememberMe: false
+  labelAtoms:
+  - name: "built-in"
+  - name: "main-node"
+  labelString: "main-node"
+  log:
+    recorders:
+    - loggers:
+      - level: "FINE"
+        name: "org.jenkinsci.plugins.workflow.job.WorkflowRun"
+      name: "workflowRun"
+  markupFormatter:
+    rawHtml:
+      disableSyntaxHighlighting: true
+  mode: EXCLUSIVE
+  myViewsTabBar: "standard"
+  nodeMonitors:
+  - diskSpaceMonitor:
+      freeSpaceThreshold: "1GB"
+  - tmpSpace:
+      freeSpaceThreshold: "1GB"
+  numExecutors: 4
+  primaryView:
+    all:
+      name: "all"
+  projectNamingStrategy: "standard"
+  quietPeriod: 5
+  remotingSecurity:
+    enabled: true
+  scmCheckoutRetryCount: 0
+  securityRealm:
+    github:
+      clientID: "clientID"
+      clientSecret: "clientSecret"
+      githubApiUri: "https://api.github.com"
+      githubWebUri: "https://github.com"
+      oauthScopes: "read:org,user:email"
+  slaveAgentPort: 50000
+  updateCenter:
+    sites:
+    - id: "default"
+      url: "https://updates.jenkins.io/update-center.json"
+  views:
+  - all:
+      name: "all"
+  viewsTabBar: "standard"
+support:
+  automatedBundleConfiguration:
+    componentIds:
+    - "AgentsConfigFile"
+    - "ConfigFileComponent"
+    - "OtherConfigFilesComponent"
+    - "AboutBrowser"
+    - "AboutJenkins"
+    - "AboutUser"
+    - "AdministrativeMonitors"
+    - "AgentProtocols"
+    - "BuildQueue"
+    - "CustomLogs"
+    - "DumpExportTable"
+    - "EnvironmentVariables"
+    - "FileDescriptorLimit"
+    - "GCLogs"
+    - "HeapUsageHistogram"
+    - "ItemsContent"
+    - "AgentsJVMProcessSystemMetricsContents"
+    - "MasterJVMProcessSystemMetricsContents"
+    - "JenkinsLogs"
+    - "LoadStats"
+    - "LoggerManager"
+    - "Metrics"
+    - "NetworkInterfaces"
+    - "NodeMonitors"
+    - "OtherLogs"
+    - "ReverseProxy"
+    - "RootCAs"
+    - "RunningBuilds"
+    - "SlaveCommandStatistics"
+    - "SlaveLaunchLogs"
+    - "SlaveLogs"
+    - "AgentsSystemConfiguration"
+    - "MasterSystemConfiguration"
+    - "SystemProperties"
+    - "TaskLogs"
+    - "ThreadDumps"
+    - "UpdateCenter"
+    - "UserCount"
+    - "SlowRequestComponent"
+    - "HighLoadComponent"
+    - "DeadlockRequestComponent"
+    - "PipelineTimings"
+    - "PipelineThreadDump"
+    enabled: true
+    period: 1
+globalCredentialsConfiguration:
+  configuration:
+    providerFilter: "none"
+    typeFilter: "none"
+appearance:
+  loginTheme:
+    useDefaultTheme: true
+  prism:
+    theme: PRISM
+security:
+  anonymizeSupportBundle:
+    enabled: false
+  apiToken:
+    creationOfLegacyTokenEnabled: false
+    tokenGenerationOnCreationEnabled: false
+    usageStatisticsEnabled: true
+  copyartifact:
+    mode: PRODUCTION
+  cps:
+    hideSandbox: false
+  gitHooks:
+    allowedOnAgents: false
+    allowedOnController: false
+  gitHostKeyVerificationConfiguration:
+    sshHostKeyVerificationStrategy: "knownHostsFileVerificationStrategy"
+  globalJobDslSecurityConfiguration:
+    useScriptSecurity: true
+  sSHD:
+    port: -1
+  scriptApproval:
+    forceSandbox: false
+unclassified:
+  ansiColorBuildWrapper:
+    colorMaps:
+    - black: "#000000"
+      blackB: "#4C4C4C"
+      blue: "#1E90FF"
+      blueB: "#4682B4"
+      cyan: "#00CDCD"
+      cyanB: "#00FFFF"
+      green: "#00CD00"
+      greenB: "#00FF00"
+      magenta: "#CD00CD"
+      magentaB: "#FF00FF"
+      name: "xterm"
+      red: "#CD0000"
+      redB: "#FF0000"
+      white: "#E5E5E5"
+      whiteB: "#FFFFFF"
+      yellow: "#CDCD00"
+      yellowB: "#FFFF00"
+    - black: "#000000"
+      blackB: "#555555"
+      blue: "#0000AA"
+      blueB: "#5555FF"
+      cyan: "#00AAAA"
+      cyanB: "#55FFFF"
+      defaultBackground: 0
+      defaultForeground: 7
+      green: "#00AA00"
+      greenB: "#55FF55"
+      magenta: "#AA00AA"
+      magentaB: "#FF55FF"
+      name: "vga"
+      red: "#AA0000"
+      redB: "#FF5555"
+      white: "#AAAAAA"
+      whiteB: "#FFFFFF"
+      yellow: "#AA5500"
+      yellowB: "#FFFF55"
+    - black: "black"
+      blackB: "black"
+      blue: "blue"
+      blueB: "blue"
+      cyan: "cyan"
+      cyanB: "cyan"
+      green: "green"
+      greenB: "green"
+      magenta: "magenta"
+      magentaB: "magenta"
+      name: "css"
+      red: "red"
+      redB: "red"
+      white: "white"
+      whiteB: "white"
+      yellow: "yellow"
+      yellowB: "yellow"
+    - black: "#2E3436"
+      blackB: "#2E3436"
+      blue: "#3465A4"
+      blueB: "#3465A4"
+      cyan: "#06989A"
+      cyanB: "#06989A"
+      defaultBackground: 0
+      defaultForeground: 7
+      green: "#4E9A06"
+      greenB: "#4E9A06"
+      magenta: "#75507B"
+      magentaB: "#75507B"
+      name: "gnome-terminal"
+      red: "#CC0000"
+      redB: "#CC0000"
+      white: "#D3D7CF"
+      whiteB: "#D3D7CF"
+      yellow: "#C4A000"
+      yellowB: "#C4A000"
+  audit-trail:
+    displayUserName: false
+    logBuildCause: true
+    logCredentialsUsage: true
+    pattern: ".*/(?:configSubmit|doDelete|postBuildResult|enable|disable|cancelQueue|stop|toggleLogKeep|doWipeOutWorkspace|createItem|createView|toggleOffline|cancelQuietDown|quietDown|restart|exit|safeExit)/?.*"
+  awsCredentialsProvider:
+    cache: false
+    client:
+      credentialsProvider: "default"
+  bitbucketEndpointConfiguration:
+    endpoints:
+    - bitbucketCloudEndpoint:
+        enableCache: false
+        manageHooks: false
+        repositoriesCacheDuration: 0
+        teamCacheDuration: 0
+  buildDiscarders:
+    configuredBuildDiscarders:
+    - "jobBuildDiscarder"
+  buildStepOperation:
+    enabled: false
+  buildTimestamp:
+    enableBuildTimestamp: true
+    pattern: "yyyy-MM-dd HH:mm:ss z"
+    timezone: "Etc/UTC"
+  descriptionSetterWrapper:
+    disableTokens: false
+  email-ext:
+    adminRequiredForTemplateTesting: false
+    allowUnregisteredEnabled: false
+    charset: "UTF-8"
+    debugMode: false
+    defaultBody: |-
+      $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:
+
+      Check console output at $BUILD_URL to view the results.
+    defaultSubject: "$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!"
+    defaultTriggerIds:
+    - "hudson.plugins.emailext.plugins.trigger.FailureTrigger"
+    maxAttachmentSize: -1
+    maxAttachmentSizeMb: -1
+    precedenceBulk: false
+    watchingEnabled: false
+  enrichedSummaryConfig:
+    enrichedSummaryEnabled: false
+    httpClientDelayBetweenRetriesInSeconds: 1
+    httpClientMaxRetries: 3
+    httpClientTimeoutInSeconds: 1
+  fingerprints:
+    fingerprintCleanupDisabled: false
+    storage: "file"
+  ghprbTrigger:
+    autoCloseFailedPullRequests: false
+    cron: "H/5 * * * *"
+    extensions:
+    - ghprbSimpleStatus:
+        addTestResults: false
+        showMatrixStatus: false
+    githubAuth:
+    - description: "Anonymous connection"
+      id: "d4456c70-9c5e-4b40-bee4-e1ebb693153b"
+      serverAPIUrl: "https://api.github.com"
+    manageWebhooks: true
+    okToTestPhrase: ".*ok\\W+to\\W+test.*"
+    retestPhrase: ".*test\\W+this\\W+please.*"
+    skipBuildPhrase: ".*\\[skip\\W+ci\\].*"
+    useComments: false
+    useDetailedComments: false
+    whitelistPhrase: ".*add\\W+to\\W+whitelist.*"
+  gitHubConfiguration:
+    apiRateLimitChecker: ThrottleForNormalize
+  gitHubPluginConfig:
+    hookUrl: "http://localhost:8080/github-webhook/"
+  globalTimeOutConfiguration:
+    operations:
+    - "abortOperation"
+    overwriteable: false
+  injectionConfig:
+    allowUntrusted: false
+    checkForBuildAgentErrors: false
+    enabled: false
+    enforceUrl: false
+    injectCcudExtension: false
+    injectMavenExtension: false
+  ivyBuildTrigger:
+    extendedVersionMatching: false
+  jobConfigHistory:
+    excludePattern: "queue\\.xml|nodeMonitors\\.xml|UpdateCenter\\.xml|global-build-stats|LockableResourcesManager\\\
+      .xml|MilestoneStep\\.xml|cloudbees-disk-usage-simple\\.xml"
+    saveModuleConfiguration: false
+    showBuildBadges: "always"
+    showChangeReasonCommentWindow: true
+    skipDuplicateHistory: true
+  junitTestResultStorage:
+    storage: "file"
+  location:
+    adminAddress: "address not configured yet <nobody@nowhere>"
+  mailer:
+    charset: "UTF-8"
+    useSsl: false
+    useTls: false
+  pipelineStepsAWS:
+    enableCredentialsFromNode: false
+  pollSCM:
+    pollingThreadCount: 10
+  scmGit:
+    addGitTagAction: false
+    allowSecondFetch: false
+    createAccountBasedOnEmail: false
+    disableGitToolChooser: false
+    hideCredentials: false
+    showEntireCommitSummaryInChanges: false
+    useExistingAccountWithSameEmail: false
+  timestamper:
+    allPipelines: false
+    elapsedTimeFormat: "'<b>'HH:mm:ss.S'</b> '"
+    systemTimeFormat: "'<b>'HH:mm:ss'</b> '"
+  upstream:
+    globalUpstreamFilterStrategy: UseOldest
+  whitelist:
+    enabled: false
+tool:
+  git:
+    installations:
+    - home: "git"
+      name: "Default"
+  jdk:
+    installations:
+    - name: "openjdk-8"
+      properties:
+      - installSource:
+          installers:
+          - adoptOpenJdkInstaller:
+              id: "jdk8u332-b09"
+    - name: "openjdk-11"
+      properties:
+      - installSource:
+          installers:
+          - adoptOpenJdkInstaller:
+              id: "jdk-11.0.15+10"
+    - name: "openjdk-17"
+      properties:
+      - installSource:
+          installers:
+          - adoptOpenJdkInstaller:
+              id: "jdk-17.0.3+7"
+    - name: "openjdk-19"
+      properties:
+      - installSource:
+          installers:
+          - adoptOpenJdkInstaller:
+              id: "jdk-19.0.1+10"
+    - name: "openjdk-20"
+      properties:
+      - installSource:
+          installers:
+          - adoptOpenJdkInstaller:
+              id: "jdk-20.0.1+9"
+    - name: "openjdk-21"
+      properties:
+      - installSource:
+          installers:
+          - adoptOpenJdkInstaller:
+              id: "jdk-21.0.1+12"
+  mavenGlobalConfig:
+    globalSettingsProvider: "standard"
+    settingsProvider: "standard"
+  powerShellInstallation:
+    installations:
+    - home: "powershell.exe"
+      name: "DefaultWindows"
+    - home: "pwsh"
+      name: "DefaultLinux"
