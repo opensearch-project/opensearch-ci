@@ -150,8 +150,8 @@ Steps:
    ```
 1. Add additional `adminUsers` for role based authentication according to your needs, see [CIStackProps](./lib/ci-stack.ts) for details. 
 1. Run with parameter with one of the following (refer [this](#ssl-configuration) for value of `useSsL`) -
-   1. `npm run cdk deploy OpenSearch-CI-Dev -- -c authType=oidc/github/default -c useSsl=true` or,
-   1. `cdk deploy OpenSearch-CI-Dev -c authType=oidc/github/default  -c useSsl=true`
+   1. `npm run cdk deploy OpenSearch-CI-Dev -- -c authType=oidc|github|default -c useSsl=true` or,
+   1. `cdk deploy OpenSearch-CI-Dev -c authType=oidc|github|default  -c useSsl=true`
 1. Continue with [next steps](#dev-deployment)
 
 #### Restricting Server Access
