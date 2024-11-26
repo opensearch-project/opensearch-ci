@@ -17,8 +17,8 @@ describe('JenkinsMainNode Config Elements', () => {
     sslCertChainArn: 'ARN:DEF',
     useSsl: true,
   }, {
-    oidcCredArn: 'ABC:EFG',
-    runWithOidc: true,
+    authCredsSecretsArn: 'ABC:EFG',
+    authType: 'oidc',
   }, {
     dataRetention: true,
   }, 'test/data/jenkins.yaml',
