@@ -31,7 +31,7 @@ export interface CIStackProps extends StackProps {
   /** Should the Jenkins use https  */
   readonly useSsl?: boolean;
   /** Type of login mechanism to adopt */
-  readonly authType?:string;
+  readonly authType?: string;
   /** Restrict jenkins access to */
   readonly restrictServerAccessTo?: IPeer;
   /** Additional verification during deployment and resource startup. */
@@ -123,8 +123,8 @@ export class CIStack extends Stack {
     const additionalCommandsContext = `${props?.additionalCommands ?? this.node.tryGetContext('additionalCommands')}`;
 
     // Setting CfnParameters to record the value in cloudFormation
-    new CfnParameter(this, 'runWithOidc', {
-      description: 'If the jenkins instance should use OIDC + federate',
+    new CfnParameter(this, 'authType', {
+      description: 'Auth type for jenkins login',
       default: authType,
     });
 
