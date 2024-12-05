@@ -281,4 +281,15 @@ export class AgentNodes {
       remoteFs: '/home/ec2-user',
     };
   }
+
+  public getRequiredAgentNodes(type: string): any[] {
+    return Object.keys(this)
+      .filter((key) => {
+        if (type === 'BTR') {
+          return !key.toLowerCase().includes('default');
+        }
+        return key.toLowerCase().includes(type.toLowerCase());
+      })
+      .map((key) => (this as any)[key]);
+  }
 }

@@ -10,11 +10,17 @@ import { App } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Peer } from 'aws-cdk-lib/aws-ec2';
 import { CIStack } from '../lib/ci-stack';
+import { AgentNodes } from '../lib/compute/agent-nodes';
 
 test('CI Stack Basic Resources', () => {
   const app = new App({
     context: {
-      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', additionalCommands: './test/data/hello-world.py',
+      useSsl: 'true',
+      runWithOidc: 'true',
+      serverAccessType: 'ipv4',
+      restrictServerAccessTo: '10.10.10.10/32',
+      additionalCommands: './test/data/hello-world.py',
+      jenkinsType: 'BTR',
     },
   });
 
@@ -45,7 +51,7 @@ test('CI Stack Basic Resources', () => {
 test('External security group is open', () => {
   const app = new App({
     context: {
-      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: 'all',
+      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: 'all', jenkinsType: 'BTR',
     },
   });
 
@@ -361,6 +367,39 @@ test('LoadBalancer Access Logging', () => {
       ],
       Version: '2012-10-17',
     },
+  });
+});
+
+describe('AgentNodes', () => {
+  let agentNodes: AgentNodes;
+  const app = new App({
+    context: {
+      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+    },
+  });
+
+  // WHEN
+  const stack = new CIStack(app, 'MyTestStack', {
+    env: { account: 'test-account', region: 'us-east-1' },
+  });
+
+  beforeEach(() => {
+    agentNodes = new AgentNodes(stack);
+  });
+
+  it('should exclude "default" keys when type is "BTR"', () => {
+    const result = agentNodes.getRequiredAgentNodes('BTR');
+    expect(result.length).toBe(14);
+  });
+
+  it('should return keys containing "benchmark" when type is "benchmark"', () => {
+    const result = agentNodes.getRequiredAgentNodes('benchmark');
+    expect(result).toHaveLength(1);
+  });
+
+  it('should return keys containing "gradle" when type is "gradle"', () => {
+    const result = agentNodes.getRequiredAgentNodes('default');
+    expect(result).toHaveLength(2);
   });
 });
 

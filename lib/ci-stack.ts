@@ -52,6 +52,8 @@ export interface CIStackProps extends StackProps {
   readonly enableViews?: boolean;
   /** Use Production Agents */
   readonly useProdAgents?: boolean;
+  /** Specify jenkins instance type */
+  readonly jenkinsType?: string;
 }
 
 function getServerAccess(serverAccessType: string, restrictServerAccessTo: string): IPeer {
@@ -113,6 +115,11 @@ export class CIStack extends Stack {
       useProdAgents = 'false';
     }
 
+    let jenkinsType = `${props?.jenkinsType ?? this.node.tryGetContext('jenkinsType')}`;
+    if (useProdAgents.toString() === 'true' && jenkinsType.toString() === 'undefined') {
+      jenkinsType = 'default';
+    }
+
     const serverAccessType = this.node.tryGetContext('serverAccessType');
     const restrictServerAccessTo = this.node.tryGetContext('restrictServerAccessTo');
     const serverAcess = props?.restrictServerAccessTo ?? getServerAccess(serverAccessType, restrictServerAccessTo);
@@ -146,34 +153,15 @@ export class CIStack extends Stack {
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
     const agentNode = new AgentNodes(this);
 
-    if (useProdAgents.toString() === 'true') {
-      // eslint-disable-next-line no-console
-      console.warn('Please note that if you have decided to use the provided production jenkins agents then '
+    // eslint-disable-next-line no-console
+    console.warn('Please note that if you have decided to use the provided production jenkins agents then '
         + 'please make sure that you are deploying the stack in US-EAST-1 region as the AMIs used are only publicly '
         + 'available in US-EAST-1 region. '
         + 'If you want to deploy the stack in another region then please make sure you copy the public AMIs used '
         + 'from us-east-1 region to your region of choice and update the ami-id in agent-nodes.ts file accordingly. '
         + 'If you do not copy the AMI in required region and update the code then the jenkins agents will not spin up.');
 
-      this.agentNodes = [
-        agentNode.AL2023_X64,
-        agentNode.AL2_X64_DOCKER_HOST,
-        agentNode.AL2023_X64_DOCKER_HOST,
-        agentNode.AL2023_ARM64,
-        agentNode.AL2_ARM64_DOCKER_HOST,
-        agentNode.AL2023_ARM64_DOCKER_HOST,
-        agentNode.AL2023_X64_BENCHMARK_TEST,
-        agentNode.UBUNTU2004_X64_GRADLE_CHECK,
-        agentNode.UBUNTU2004_X64_DOCKER_BUILDER,
-        agentNode.MACOS13_X64_MULTI_HOST,
-        agentNode.MACOS13_ARM64_MULTI_HOST,
-        agentNode.WINDOWS2019_X64_DOCKER_HOST,
-        agentNode.WINDOWS2019_X64_DOCKER_BUILDER,
-        agentNode.WINDOWS2019_X64_GRADLE_CHECK,
-      ];
-    } else {
-      this.agentNodes = [agentNode.AL2_X64_DEFAULT_AGENT, agentNode.AL2_ARM64_DEFAULT_AGENT];
-    }
+    this.agentNodes = agentNode.getRequiredAgentNodes(jenkinsType.toString());
 
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
