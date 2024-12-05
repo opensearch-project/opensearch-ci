@@ -14,15 +14,11 @@ import { ViewsConfig } from '../../lib/compute/views';
 
 describe('Config', () => {
   // WHEN
-  const testYaml = 'test/data/test_env.yaml';
-  const jenkinsYaml = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
+  const jenkinsYaml: any = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
 
   const envVarConfig = EnvConfig.addEnvConfigToJenkinsYaml(jenkinsYaml, 'test/data/env.yaml');
   const viewsConfig = ViewsConfig.addViewsConfigToJenkinsYaml(jenkinsYaml);
-  const newConfig = dump(envVarConfig);
-  writeFileSync(testYaml, newConfig, 'utf-8');
 
-  const yml: any = load(readFileSync(testYaml, 'utf-8'));
   // THEN
   test('Verify env variables', async () => {
     const envConfig = {
@@ -35,7 +31,7 @@ describe('Config', () => {
         ],
       },
     };
-    const addedEnvConfig = yml.jenkins.globalNodeProperties;
+    const addedEnvConfig = jenkinsYaml.jenkins.globalNodeProperties;
     expect(addedEnvConfig).toEqual([envConfig]);
   });
 
@@ -52,7 +48,7 @@ describe('Config', () => {
         },
       ],
     };
-    const getlog = yml.jenkins.log;
+    const getlog = jenkinsYaml.jenkins.log;
     expect(getlog).toEqual(workflowLogger);
   });
 
@@ -121,7 +117,7 @@ describe('Config', () => {
         name: 'Misc',
       },
     };
-    const getViews = yml.jenkins.views;
+    const getViews = jenkinsYaml.jenkins.views;
     expect(getViews).toContainEqual(buildView);
     expect(getViews).toContainEqual(testView);
     expect(getViews).toContainEqual(releaseView);
