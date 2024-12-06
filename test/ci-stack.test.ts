@@ -14,7 +14,7 @@ import { CIStack } from '../lib/ci-stack';
 test('CI Stack Basic Resources', () => {
   const app = new App({
     context: {
-      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', additionalCommands: './test/data/hello-world.py',
+      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', additionalCommands: './test/data/hello-world.py',
     },
   });
 
@@ -45,7 +45,7 @@ test('CI Stack Basic Resources', () => {
 test('External security group is open', () => {
   const app = new App({
     context: {
-      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: 'all',
+      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: 'all',
     },
   });
 
@@ -89,7 +89,7 @@ test('External security group is open', () => {
 test('External security group is restricted', () => {
   const app = new App({
     context: {
-      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.0.0.0/24',
+      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.0.0.0/24',
     },
   });
 
@@ -135,7 +135,7 @@ test('External security group is restricted', () => {
 test('MainNode', () => {
   const app = new App({
     context: {
-      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+      useSsl: 'true', authType: 'oidc', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
     },
   });
 
@@ -167,7 +167,7 @@ test('MainNode', () => {
 test('LoadBalancer', () => {
   const app = new App({
     context: {
-      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: 'all',
+      useSsl: 'true', authType: 'oidc', serverAccessType: 'ipv4', restrictServerAccessTo: 'all',
     },
   });
 
@@ -192,7 +192,7 @@ test('LoadBalancer', () => {
 test('CloudwatchCpuAlarm', () => {
   const app = new App({
     context: {
-      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
     },
   });
 
@@ -211,7 +211,7 @@ test('CloudwatchCpuAlarm', () => {
 test('CloudwatchMemoryAlarm', () => {
   const app = new App({
     context: {
-      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
     },
   });
 
@@ -230,7 +230,7 @@ test('CloudwatchMemoryAlarm', () => {
 test('LoadBalancer Access Logging', () => {
   const app = new App({
     context: {
-      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
     },
   });
 
@@ -367,7 +367,7 @@ test('LoadBalancer Access Logging', () => {
 test('WAF rules', () => {
   const app = new App({
     context: {
-      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
+      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
     },
   });
 
@@ -452,7 +452,7 @@ test('WAF rules', () => {
 test('Test WAF association with ALB', () => {
   const app = new App({
     context: {
-      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
+      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
     },
   });
 
@@ -478,7 +478,7 @@ test('Test WAF association with ALB', () => {
 test('Test configElement jenkins content to use X-Forwarded-For header on port 443', () => {
   const app = new App({
     context: {
-      useSsl: 'true', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
+      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
     },
   });
 
@@ -512,7 +512,7 @@ test('Test configElement jenkins content to use X-Forwarded-For header on port 4
 test('Test configElement jenkins content to use X-Forwarded-For header on port 80', () => {
   const app = new App({
     context: {
-      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
+      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
     },
   });
 

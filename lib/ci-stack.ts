@@ -26,6 +26,7 @@ import { JenkinsMonitoring } from './monitoring/ci-alarms';
 import { JenkinsExternalLoadBalancer } from './network/ci-external-load-balancer';
 import { JenkinsSecurityGroups } from './security/ci-security-groups';
 import { JenkinsWAF } from './security/waf';
+import { FineGrainedAccessSpecs } from './compute/auth-config';
 
 export interface CIStackProps extends StackProps {
   /** Should the Jenkins use https  */
@@ -52,6 +53,8 @@ export interface CIStackProps extends StackProps {
   readonly enableViews?: boolean;
   /** Use Production Agents */
   readonly useProdAgents?: boolean;
+  /** Fine grain access control specifications */
+  readonly fineGrainedAccessSpecs?: FineGrainedAccessSpecs[];
 }
 
 function getServerAccess(serverAccessType: string, restrictServerAccessTo: string): IPeer {
@@ -190,6 +193,7 @@ export class CIStack extends Stack {
       authCredsSecretsArn: importedAuthConfigValuesSecretBucketValue.toString(),
       useSsl,
       authType,
+      fineGrainedAccessSpecs: props?.fineGrainedAccessSpecs,
       failOnCloudInitError: props?.ignoreResourcesFailures,
       adminUsers: props?.adminUsers,
       agentNodeSecurityGroup: this.securityGroups.agentNodeSG.securityGroupId,

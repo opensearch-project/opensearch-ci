@@ -36,7 +36,7 @@ import { join } from 'path';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
 import { EnvConfig } from './env-config';
-import { AuthConfig } from './auth-config';
+import { AuthConfig, FineGrainedAccessSpecs } from './auth-config';
 import { ViewsConfig } from './views';
 
 interface HttpConfigProps {
@@ -51,6 +51,7 @@ interface LoginAuthProps {
   readonly authCredsSecretsArn: string;
   readonly authType: string;
   readonly adminUsers?: string[];
+  readonly fineGrainedAccessSpecs?: FineGrainedAccessSpecs[];
 }
 
 interface DataRetentionProps {
@@ -452,7 +453,8 @@ export class JenkinsMainNode {
     agentNodeObject: AgentNodeConfig, props: AgentNodeNetworkProps, agentNode: AgentNodeProps[], macAgent: string): string {
     let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(stack, agentNode, props, macAgent);
     if (loginAuthProps.authType !== 'default') {
-      updatedConfig = AuthConfig.addOidcConfigToJenkinsYaml(updatedConfig, loginAuthProps.authType, loginAuthProps.adminUsers);
+      updatedConfig = AuthConfig.addOidcConfigToJenkinsYaml(updatedConfig, loginAuthProps.authType,
+        loginAuthProps.adminUsers, loginAuthProps.fineGrainedAccessSpecs);
     }
     if (jenkinsMainNodeProps.envVarsFilePath !== '' && jenkinsMainNodeProps.envVarsFilePath != null) {
       updatedConfig = EnvConfig.addEnvConfigToJenkinsYaml(updatedConfig, jenkinsMainNodeProps.envVarsFilePath);

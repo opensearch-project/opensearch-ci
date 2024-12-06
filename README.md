@@ -81,20 +81,21 @@ $aws secretsmanager put-secret-value \
 
 ### Executing Optional Tasks
 #### Construct Props
-| Name                                                      | Type     | Description                                                                              |
-|-----------------------------------------------------------|:---------|:-----------------------------------------------------------------------------------------|
-| [useSsl](#ssl-configuration) <required>                   | boolean  | Should the Jenkins use https                                                             |
-| [restrictServerAccessTo](#restricting-server-access) <required> | Ipeer    | Restrict jenkins server access                                                           |
-| [authType](#setup-authentication-using-openid-connect-oidc-or-github-authentication) | string   | Authentication type for Jenkins login. Acceptable values: github, oidc, default          |
-| [ignoreResourcesFailures](#ignore-resources-failure)      | boolean  | Additional verification during deployment and resource startup                           |
-| [adminUsers](#setup-authentication-using-openid-connect-oidc-or-github-authentication)     | string[] | List of users with admin access during initial deployment                                |
-| [additionalCommands](#runnning-additional-commands)       | string   | Additional logic that needs to be run on Master Node. The value has to be path to a file |
-| [dataRetention](#data-retention)                          | boolean  | Do you want to retain jenkins jobs and build history                                     |
-| [agentAssumeRole](#assume-role)                           | string   | IAM role ARN to be assumed by jenkins agent nodes                                        |
-| [envVarsFilePath](#add-environment-variables)             | string   | Path to file containing env variables in the form of key value pairs                     |
-| [macAgent](#mac-agents)                                   | boolean  | Add mac agents to jenkins                                                                |
-| [useProdAgents](#use-production-agents)                   | boolean  | Should jenkins server use production agents                                              |
-| [enableViews](#enable-views)                              | boolean  | Adds Build, Test, Release and Misc views to Jenkins Dashboard . Defaults to false        |
+| Name                                                                                   | Type     | Description                                                                                                                |
+|----------------------------------------------------------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------------------|
+| [useSsl](#ssl-configuration) <required>                                                | boolean  | Should the Jenkins use https                                                                                               |
+| [restrictServerAccessTo](#restricting-server-access) <required>                        | Ipeer    | Restrict jenkins server access                                                                                             |
+| [authType](#setup-authentication-using-openid-connect-oidc-or-github-authentication)   | string   | Authentication type for Jenkins login. Acceptable values: github, oidc, default                                            |
+| [ignoreResourcesFailures](#ignore-resources-failure)                                   | boolean  | Additional verification during deployment and resource startup                                                             |
+| [adminUsers](#setup-authentication-using-openid-connect-oidc-or-github-authentication) | string[] | List of users with admin access during initial deployment                                                                  |
+| [additionalCommands](#runnning-additional-commands)                                    | string   | Additional logic that needs to be run on Master Node. The value has to be path to a file                                   |
+| [dataRetention](#data-retention)                                                       | boolean  | Do you want to retain jenkins jobs and build history                                                                       |
+| [agentAssumeRole](#assume-role)                                                        | string   | IAM role ARN to be assumed by jenkins agent nodes                                                                          |
+| [envVarsFilePath](#add-environment-variables)                                          | string   | Path to file containing env variables in the form of key value pairs                                                       |
+| [macAgent](#mac-agents)                                                                | boolean  | Add mac agents to jenkins                                                                                                  |
+| [useProdAgents](#use-production-agents)                                                | boolean  | Should jenkins server use production agents                                                                                |
+| [enableViews](#enable-views)                                                           | boolean  | Adds Build, Test, Release and Misc views to Jenkins Dashboard . Defaults to false                                          |
+| [FineGrainedAccessSpecs](#fine-grained-access)                                           | FineGrainedAccessSpecs  | Add specifications for fine grained access contol. See [FineGrainedAccessSpecs](lib/compute/auth-config.ts) for more details |
 #### SSL Configuration
 1. Locate the secret manager arns in the ci-config-stack outputs
 1. Update the secret value ([see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)) for the `certContentsSecret` with the certificate contents
@@ -263,6 +264,9 @@ Views on Jenkins dashboard allows us to classify jobs into different sections. B
 * Misc - All the jobs that belong to neither of the above categories.
 
 The `All` is the default view and contains all the jobs.
+
+#### Fine Grained Access
+Apart from global admin and read-only access, users can be given fine-grained access for specific workflows/folder. The access is set up using role based strategy plugin. The construct props should be of type [FineGrainedAccessSpecs](./lib/compute/auth-config.ts). Check the details for specifying [patterns](https://plugins.jenkins.io/role-strategy/#plugin-content-configuring-roles). Currently, this code base only adds `builder-template` that allows to build jobs. For adding more templates, please contribute. 
 
 ### Troubleshooting
 #### Main Node
