@@ -6,6 +6,13 @@
  * compatible open source license.
  */
 
+export interface FineGrainedAccessSpecs {
+  users: string[],
+  roleName: string,
+  pattern: string,
+  templateName: string
+}
+
 export class AuthConfig {
   private static readonly adminRolePermissions: string[] = [
     'Overall/Administer',
@@ -50,10 +57,21 @@ export class AuthConfig {
     'View/Read',
   ];
 
-  public static addOidcConfigToJenkinsYaml(yamlObject: any, authType: string, admins?: string[]): any {
+  private static readonly builderTemplatePermissions: string[] = [
+    'Job/Build',
+    'Job/Cancel',
+    'Job/Discover',
+    'Job/Read',
+    'Lockable Resources/View',
+    'Run/Replay',
+    'Metrics/View',
+    'View/Read',
+  ];
+
+  public static addOidcConfigToJenkinsYaml(yamlObject: any, authType: string, admins?: string[], fineGrainedAccessItems?: FineGrainedAccessSpecs[]): any {
     const jenkinsYaml: any = yamlObject;
     let adminUsers: string[] = ['admin'];
-    const readOnlyUsers: string[] = ['anonymous'];
+    const readOnlyUsers: string[] = ['anonymous', 'authenticated'];
 
     if (admins) {
       adminUsers = adminUsers.concat(admins);
@@ -89,6 +107,10 @@ export class AuthConfig {
 
     const rolesAndPermissions: { [x: string]: any; } = {
       roleBased: {
+        permissionTemplates: [{
+          name: 'builder-template',
+          permissions: AuthConfig.builderTemplatePermissions,
+        }],
         roles: {
           global: [{
             entries: adminUsers.map((user) => ({ user })),
@@ -103,14 +125,20 @@ export class AuthConfig {
             pattern: '.*',
             permissions: AuthConfig.readOnlyRolePermissions,
           },
-
           ],
         },
       },
     };
 
     jenkinsYaml.jenkins.authorizationStrategy = rolesAndPermissions;
-
+    if (typeof fineGrainedAccessItems !== 'undefined') {
+      jenkinsYaml.jenkins.authorizationStrategy.roleBased.roles.items = fineGrainedAccessItems.map((item) => ({
+        entries: item.users.map((user) => ({ user })),
+        name: item.roleName,
+        pattern: item.pattern,
+        templateName: item.templateName,
+      }));
+    }
     if (authType === 'github') {
       jenkinsYaml.jenkins.securityRealm = githubAuthConfig;
     } else {

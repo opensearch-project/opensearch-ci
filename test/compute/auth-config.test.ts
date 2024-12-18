@@ -9,31 +9,28 @@
 import { readFileSync } from 'fs';
 import { load } from 'js-yaml';
 import { JenkinsMainNode } from '../../lib/compute/jenkins-main-node';
-import { AuthConfig } from '../../lib/compute/auth-config';
+import { AuthConfig, FineGrainedAccessSpecs } from '../../lib/compute/auth-config';
 
 describe('Test authType OIDC', () => {
   // WHEN
-  const testYaml = 'test/data/jenkins.yaml';
-
   const oidcConfig = {
-    authorizationServerUrl: 'http://localhost',
     clientId: 'clientId',
-    disableSslVerification: true,
-    emailFieldName: 'emailFieldName',
-    escapeHatchEnabled: true,
-    escapeHatchGroup: 'escapeHatchGroup',
-    escapeHatchUsername: 'escapeHatchUsername',
-    fullNameFieldName: 'fullNameFieldName',
-    groupsFieldName: 'groupsFieldName',
+    clientSecret: 'clientSecret',
+    authorizationServerUrl: 'http://localhost',
+    wellKnownOpenIDConfigurationUrl: 'wellKnownOpenIDConfigurationUrl',
+    tokenServerUrl: 'tokenServerUrl',
+    userInfoServerUrl: 'userInfoServerUrl',
+    disableSslVerification: false,
+    userNameField: 'sub',
+    escapeHatchEnabled: false,
     logoutFromOpenidProvider: true,
-    scopes: 'scopes',
-    tokenServerUrl: 'http://localhost',
-    userNameField: 'userNameField',
+    postLogoutRedirectUrl: '',
+    scopes: 'openid',
+    escapeHatchSecret: 'random',
   };
   const admins = ['admin1', 'admin2'];
-  const jenkinsYaml = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
-  AuthConfig.addOidcConfigToJenkinsYaml(jenkinsYaml, 'oidc', admins);
-  const yml: any = load(readFileSync(testYaml, 'utf-8'));
+  const yml : any = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
+  AuthConfig.addOidcConfigToJenkinsYaml(yml, 'oidc', admins);
 
   // THEN
   test('Verify oidcConfig', async () => {
@@ -41,21 +38,25 @@ describe('Test authType OIDC', () => {
     expect(addedOidcConfig).toEqual(oidcConfig);
   });
 
-  test('Verify oidcConfig', async () => {
-    const adminRole = yml.jenkins.authorizationStrategy.roleBased.roles.global[0].assignments;
-    expect(adminRole).toEqual(['admin', 'admin1', 'admin2']);
+  test('Verify admins', async () => {
+    const adminRole = yml.jenkins.authorizationStrategy.roleBased.roles.global[0].entries;
+    const adminUsernames = adminRole.map((entry: { user: any; }) => entry.user);
+    expect(adminUsernames).toEqual(['admin', 'admin1', 'admin2']);
   });
 });
 
 describe('Test authType github', () => {
   // WHEN
-  const testYaml = 'test/data/github_auth.yaml';
   const admins = ['foo', 'bar'];
-  const jenkinsYaml = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
-  AuthConfig.addOidcConfigToJenkinsYaml(jenkinsYaml, 'github', admins);
-  const yml: any = load(readFileSync(testYaml, 'utf-8'));
+  const yml: any = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
+  const fineGrainedAccess: FineGrainedAccessSpecs = {
+    users: ['user1', 'user2', 'user3'],
+    roleName: 'builder-job-role',
+    pattern: '((distribution|integ).*)',
+    templateName: 'builder-template',
+  };
+  AuthConfig.addOidcConfigToJenkinsYaml(yml, 'github', admins, [fineGrainedAccess]);
   const globalRoles = yml.jenkins.authorizationStrategy.roleBased.roles.global;
-
   const githubAuthConfig: { [x: string]: any; } = {
     githubWebUri: 'https://github.com',
     githubApiUri: 'https://api.github.com',
@@ -81,16 +82,25 @@ describe('Test authType github', () => {
 
     // Check admin users
     const adminUsers = adminRole.entries.map((entry: any) => entry.user);
-    expect(adminUsers).toEqual(['bar', 'foo']);
+    expect(adminUsers).toEqual(['admin', 'foo', 'bar']);
   });
 
-  test('Verify read only', async () => {
+  test('Verify read only access', async () => {
     // Find the read role
     const readRole = globalRoles.find((role: any) => role.name === 'read');
     expect(readRole).toBeTruthy();
 
     // Check read users
     const readUsers = readRole.entries.map((entry: any) => entry.user);
-    expect(readUsers).toEqual(['anonymous']);
+    expect(readUsers).toEqual(['anonymous', 'authenticated']);
+  });
+
+  test('Verify fine grained access', async () => {
+    // Find the builder role
+    const builderRole = yml.jenkins.authorizationStrategy.roleBased.roles.items.find((role: any) => role.name === 'builder-job-role');
+
+    // Check users
+    const buildUsers = builderRole.entries.map((entry: any) => entry.user);
+    expect(buildUsers).toEqual(['user1', 'user2', 'user3']);
   });
 });
