@@ -30,5 +30,7 @@ module.exports = {
     'no-unused-vars': 'off',
     'no-new': 'off',
     'max-len': ['error', { 'code': 160, 'ignoreComments': true }],
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': ['error'],
   },
 };

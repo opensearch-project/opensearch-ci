@@ -20,7 +20,7 @@ test('CI Stack Basic Resources', () => {
       serverAccessType: 'ipv4',
       restrictServerAccessTo: '10.10.10.10/32',
       additionalCommands: './test/data/hello-world.py',
-      jenkinsType: 'BTR',
+      jenkinsInstanceType: 'BTR',
     },
   });
 
@@ -51,7 +51,7 @@ test('CI Stack Basic Resources', () => {
 test('External security group is open', () => {
   const app = new App({
     context: {
-      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: 'all', jenkinsType: 'BTR',
+      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: 'all', jenkinsInstanceType: 'BTR',
     },
   });
 
@@ -95,7 +95,7 @@ test('External security group is open', () => {
 test('External security group is restricted', () => {
   const app = new App({
     context: {
-      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.0.0.0/24',
+      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.0.0.0/24', useProdAgents: 'true',
     },
   });
 
@@ -374,7 +374,7 @@ describe('AgentNodes', () => {
   let agentNodes: AgentNodes;
   const app = new App({
     context: {
-      useSsl: 'false', runWithOidc: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+      useSsl: 'false', run: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
     },
   });
 
@@ -398,6 +398,11 @@ describe('AgentNodes', () => {
   });
 
   it('should return keys containing "gradle" when type is "gradle"', () => {
+    const result = agentNodes.getRequiredAgentNodes('gradle');
+    expect(result).toHaveLength(2);
+  });
+
+  it('should return keys containing "default" when type is "default"', () => {
     const result = agentNodes.getRequiredAgentNodes('default');
     expect(result).toHaveLength(2);
   });

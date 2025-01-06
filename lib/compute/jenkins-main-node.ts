@@ -72,11 +72,11 @@ export class JenkinsMainNode {
 
   static readonly NEW_JENKINS_YAML_PATH: string = join(__dirname, '../../resources/jenkins.yaml');
 
-  static readonly CERTIFICATE_FILE_PATH: String = '/etc/ssl/certs/test-jenkins.opensearch.org.crt';
+  static readonly CERTIFICATE_FILE_PATH: string = '/etc/ssl/certs/test-jenkins.opensearch.org.crt';
 
-  static readonly CERTIFICATE_CHAIN_FILE_PATH: String = '/etc/ssl/certs/test-jenkins.opensearch.org.pem';
+  static readonly CERTIFICATE_CHAIN_FILE_PATH: string = '/etc/ssl/certs/test-jenkins.opensearch.org.pem';
 
-  static readonly PRIVATE_KEY_PATH: String = '/etc/ssl/private/test-jenkins.opensearch.org.key';
+  static readonly PRIVATE_KEY_PATH: string = '/etc/ssl/private/test-jenkins.opensearch.org.key';
 
   private readonly EFS_ID: string;
 
