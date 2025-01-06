@@ -36,7 +36,7 @@ import { join } from 'path';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
 import { EnvConfig } from './env-config';
-import { AuthConfig } from './auth-config';
+import { AuthConfig, FineGrainedAccessSpecs } from './auth-config';
 import { ViewsConfig } from './views';
 
 interface HttpConfigProps {
@@ -51,6 +51,7 @@ interface LoginAuthProps {
   readonly authCredsSecretsArn: string;
   readonly authType: string;
   readonly adminUsers?: string[];
+  readonly fineGrainedAccessSpecs?: FineGrainedAccessSpecs[];
 }
 
 interface DataRetentionProps {
@@ -72,11 +73,11 @@ export class JenkinsMainNode {
 
   static readonly NEW_JENKINS_YAML_PATH: string = join(__dirname, '../../resources/jenkins.yaml');
 
-  static readonly CERTIFICATE_FILE_PATH: string = '/etc/ssl/certs/test-jenkins.opensearch.org.crt';
+  static readonly CERTIFICATE_FILE_PATH: String = '/etc/ssl/certs/test-jenkins.opensearch.org.crt';
 
-  static readonly CERTIFICATE_CHAIN_FILE_PATH: string = '/etc/ssl/certs/test-jenkins.opensearch.org.pem';
+  static readonly CERTIFICATE_CHAIN_FILE_PATH: String = '/etc/ssl/certs/test-jenkins.opensearch.org.pem';
 
-  static readonly PRIVATE_KEY_PATH: string = '/etc/ssl/private/test-jenkins.opensearch.org.key';
+  static readonly PRIVATE_KEY_PATH: String = '/etc/ssl/private/test-jenkins.opensearch.org.key';
 
   private readonly EFS_ID: string;
 
@@ -452,7 +453,8 @@ export class JenkinsMainNode {
     agentNodeObject: AgentNodeConfig, props: AgentNodeNetworkProps, agentNode: AgentNodeProps[], macAgent: string): string {
     let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(stack, agentNode, props, macAgent);
     if (loginAuthProps.authType !== 'default') {
-      updatedConfig = AuthConfig.addOidcConfigToJenkinsYaml(updatedConfig, loginAuthProps.authType, loginAuthProps.adminUsers);
+      updatedConfig = AuthConfig.addOidcConfigToJenkinsYaml(updatedConfig, loginAuthProps.authType,
+        loginAuthProps.adminUsers, loginAuthProps.fineGrainedAccessSpecs);
     }
     if (jenkinsMainNodeProps.envVarsFilePath !== '' && jenkinsMainNodeProps.envVarsFilePath != null) {
       updatedConfig = EnvConfig.addEnvConfigToJenkinsYaml(updatedConfig, jenkinsMainNodeProps.envVarsFilePath);
