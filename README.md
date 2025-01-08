@@ -127,7 +127,7 @@ Steps:
         "clientSecret": "example_password",
         "serverConfiguration": {
             "wellKnown": {
-                "wellKnownOpenIDConfigurationUrl": "https://my.openid-config.com"
+                "wellKnownOpenIDConfigurationUrl": "https://example.openid.com/.well-known/openid-configuration"
             }
         }
     }
