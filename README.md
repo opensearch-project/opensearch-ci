@@ -125,10 +125,11 @@ Steps:
     {
         "clientId": "example_id",
         "clientSecret": "example_password",
-        "wellKnownOpenIDConfigurationUrl": "https://www.example.com",
-        "tokenServerUrl": "https://example.com/token",
-        "authorizationServerUrl": "https://example.com/authorize",
-        "userInfoServerUrl": "https://example.com/userinfo"
+        "serverConfiguration": {
+            "wellKnown": {
+                "wellKnownOpenIDConfigurationUrl": "https://my.openid-config.com"
+            }
+        }
     }
     ```
 1. **GitHub Authentication**: Use GitHub as Authentication mechanism for jenkins. This set up uses [github-oauth](https://plugins.jenkins.io/github-oauth/) plugin.

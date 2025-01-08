@@ -249,6 +249,7 @@ export class JenkinsMainNode {
       InitPackage.yum('python3-pip.noarch'),
       InitPackage.yum('java-11-amazon-corretto'),
       InitCommand.shellCommand('pip3 install botocore'),
+      InitCommand.shellCommand('cd / && pip3 install --ignore-installed setuptools && pip3 install pipenv'),
       InitCommand.shellCommand('systemctl enable crond.service'),
       InitCommand.shellCommand('systemctl start crond.service'),
       // eslint-disable-next-line max-len
@@ -430,16 +431,14 @@ export class JenkinsMainNode {
       InitCommand.shellCommand('sleep 60'),
 
       InitFile.fromFileInline('/initial_jenkins.yaml', jenkinsyaml),
-
+      InitFile.fromFileInline('/configHelper/config_helper.py', join(__dirname, '../../configHelper/configHelper/config_helper.py')),
+      InitFile.fromFileInline('/configHelper/Pipfile', join(__dirname, '../../configHelper/Pipfile')),
+      InitCommand.shellCommand('cd /configHelper && pipenv install > pipenvInstall.log 2>&1'),
       // Make any changes to initial jenkins.yaml
       InitCommand.shellCommand(loginAuthProps.authType !== 'default'
         // eslint-disable-next-line max-len
-        ? `var=\`aws --region ${stackRegion} secretsmanager get-secret-value --secret-id ${loginAuthProps.authCredsSecretsArn} --query SecretString --output text\` && `
-        + ' varkeys=`echo $var | yq \'keys\' | cut -d "-" -f2 | cut -d " " -f2` &&'
-        // eslint-disable-next-line max-len
-        + ` for i in $varkeys; do newvalue=\`echo $var | yq .$i\` && myenv=$newvalue i=$i yq -i '.jenkins.securityRealm.${realm}.[env(i)]=env(myenv)' /initial_jenkins.yaml ; done`
-        : 'echo No changes made to initial_jenkins.yaml with respect to OIDC'),
-
+        ? `cd /configHelper && sudo pipenv run python3 config_helper.py --jenkins-config-file-path=/initial_jenkins.yaml --auth-secret-arn=${loginAuthProps.authCredsSecretsArn} --security-realm-id=${realm} --aws-region=${stackRegion} > configHelper.log 2>&1`
+        : 'No changes made to initial_jenkins.yaml with respect to OIDC'),
       InitCommand.shellCommand('while [[ "$(curl -s -o /dev/null -w \'\'%{http_code}\'\' localhost:8080/api/json?pretty)" != "200" ]]; do sleep 5; done'),
 
       // Reload configuration via Jenkins.yaml

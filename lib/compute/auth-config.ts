@@ -81,17 +81,13 @@ export class AuthConfig {
       oic: {
         clientId: 'clientId',
         clientSecret: 'clientSecret',
-        authorizationServerUrl: 'http://localhost',
-        wellKnownOpenIDConfigurationUrl: 'wellKnownOpenIDConfigurationUrl',
-        tokenServerUrl: 'tokenServerUrl',
-        userInfoServerUrl: 'userInfoServerUrl',
         disableSslVerification: false,
         userNameField: 'sub',
         escapeHatchEnabled: false,
         logoutFromOpenidProvider: true,
         postLogoutRedirectUrl: '',
-        scopes: 'openid',
         escapeHatchSecret: 'random',
+        serverConfiguration: {},
       },
     };
 
