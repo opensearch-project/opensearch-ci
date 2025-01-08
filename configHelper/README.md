@@ -5,7 +5,7 @@ A configuration utility for populating elements of a Jenkins Configuration as Co
 
 To install pipenv:
 ```shell
-pip install pipenv --user
+pip install pipenv
 ```
 
 To use this tool:

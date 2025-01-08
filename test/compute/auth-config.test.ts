@@ -16,17 +16,13 @@ describe('Test authType OIDC', () => {
   const oidcConfig = {
     clientId: 'clientId',
     clientSecret: 'clientSecret',
-    authorizationServerUrl: 'http://localhost',
-    wellKnownOpenIDConfigurationUrl: 'wellKnownOpenIDConfigurationUrl',
-    tokenServerUrl: 'tokenServerUrl',
-    userInfoServerUrl: 'userInfoServerUrl',
     disableSslVerification: false,
     userNameField: 'sub',
     escapeHatchEnabled: false,
     logoutFromOpenidProvider: true,
     postLogoutRedirectUrl: '',
-    scopes: 'openid',
     escapeHatchSecret: 'random',
+    serverConfiguration: {},
   };
   const admins = ['admin1', 'admin2'];
   const yml : any = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));

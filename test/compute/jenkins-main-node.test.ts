@@ -26,9 +26,9 @@ describe('JenkinsMainNode Config Elements', () => {
 
   // THEN
   test('Config elements expected counts', async () => {
-    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(23);
+    expect(configElements.filter((e) => e.elementType === 'COMMAND')).toHaveLength(25);
     expect(configElements.filter((e) => e.elementType === 'PACKAGE')).toHaveLength(11);
-    expect(configElements.filter((e) => e.elementType === 'FILE')).toHaveLength(4);
+    expect(configElements.filter((e) => e.elementType === 'FILE')).toHaveLength(6);
   });
 
   test('Does not use service in config elements', async () => {

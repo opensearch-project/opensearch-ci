@@ -13,8 +13,5 @@ pytest = "*"
 pytest-mock = "*"
 coverage = "*"
 
-[requires]
-python_version = "3"
-
 [scripts]
 test = "coverage run -m pytest"

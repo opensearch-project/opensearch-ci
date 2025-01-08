@@ -249,7 +249,7 @@ export class JenkinsMainNode {
       InitPackage.yum('python3-pip.noarch'),
       InitPackage.yum('java-11-amazon-corretto'),
       InitCommand.shellCommand('pip3 install botocore'),
-      InitCommand.shellCommand('cd / && pip3 install --ignore-installed setuptools && pip3 install pipenv'),
+      InitCommand.shellCommand('pip3 install --ignore-installed setuptools && pip3 install pipenv'),
       InitCommand.shellCommand('systemctl enable crond.service'),
       InitCommand.shellCommand('systemctl start crond.service'),
       // eslint-disable-next-line max-len
