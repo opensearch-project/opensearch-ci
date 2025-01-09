@@ -22,7 +22,6 @@ describe('Test authType OIDC', () => {
     logoutFromOpenidProvider: true,
     postLogoutRedirectUrl: '',
     escapeHatchSecret: 'random',
-    serverConfiguration: {},
   };
   const admins = ['admin1', 'admin2'];
   const yml : any = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));

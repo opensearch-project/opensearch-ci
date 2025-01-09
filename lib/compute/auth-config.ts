@@ -87,7 +87,6 @@ export class AuthConfig {
         logoutFromOpenidProvider: true,
         postLogoutRedirectUrl: '',
         escapeHatchSecret: 'random',
-        serverConfiguration: {},
       },
     };
 

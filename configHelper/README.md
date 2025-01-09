@@ -23,3 +23,17 @@ Unit tests can be run from this current `configHelper/` directory by first insta
 pipenv install --dev
 pipenv run test
 ```
+
+### Coverage
+
+_Code coverage_ metrics can be generated after a unit-test run. A report can either be printed on the command line:
+
+```shell
+pipenv run coverage report
+```
+
+or generated as HTML:
+
+```shell
+pipenv run coverage html
+```

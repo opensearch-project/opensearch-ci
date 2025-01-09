@@ -39,10 +39,6 @@ jenkins:
       logoutFromOpenidProvider: true
       postLogoutRedirectUrl: ''
       escapeHatchSecret: random
-      serverConfiguration:
-        wellKnown:
-          scopes: open-id
-          wellKnownOpenIDConfigurationUrl: https://localhost
   slaveAgentPort: 50000
   updateCenter:
     sites:

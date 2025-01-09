@@ -64,7 +64,6 @@ def test_valid_oidc_auth_config(tmp_path):
         "userNameField": "sub",
         "serverConfiguration": {
             "wellKnown": {
-                "scopes": "open-id",
                 "wellKnownOpenIDConfigurationUrl": "https://my.openid-config.com"
             }
         }

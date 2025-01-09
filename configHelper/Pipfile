@@ -14,4 +14,4 @@ pytest-mock = "*"
 coverage = "*"
 
 [scripts]
-test = "coverage run -m pytest"
+test = "coverage run -m pytest --log-cli-level=INFO"
