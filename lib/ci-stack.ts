@@ -29,7 +29,7 @@ import { JenkinsWAF } from './security/waf';
 import { FineGrainedAccessSpecs } from './compute/auth-config';
 
 enum DeploymentType {
-  BTR='BTR',
+  BTR='BTR', // Build Test Release
   GRADLE='gradle',
   BENCHMARK='benchmark',
   DEFAULT='default',
@@ -61,7 +61,7 @@ export interface CIStackProps extends StackProps {
   /** Use Production Agents */
   readonly useProdAgents?: boolean;
   /** Specify jenkins instance type */
-  readonly jenkinsInstanceType?: string;
+  readonly jenkinsInstanceType?: string | DeploymentType;
   /** Fine grain access control specifications */
   readonly fineGrainedAccessSpecs?: FineGrainedAccessSpecs[];
 }
@@ -126,9 +126,9 @@ export class CIStack extends Stack {
       useProdAgents = 'false';
     }
 
-    let jenkinsInstanceType = `${props?.jenkinsInstanceType ?? this.node.tryGetContext('jenkinsInstanceType')}`;
+    let jenkinsInstanceType: string | DeploymentType = `${props?.jenkinsInstanceType ?? this.node.tryGetContext('jenkinsInstanceType')}`;
     if (jenkinsInstanceType.toString() === 'undefined') {
-      jenkinsInstanceType = useProdAgents.toString() === 'true' ? 'BTR' : 'default';
+      jenkinsInstanceType = useProdAgents.toString() === 'true' ? DeploymentType.BTR : DeploymentType.DEFAULT;
     } else if (!Object.values(DeploymentType).includes(jenkinsInstanceType as DeploymentType)) {
       throw new Error(`Invalid jenkinsInstanceType value: ${jenkinsInstanceType}`);
     }
@@ -166,13 +166,15 @@ export class CIStack extends Stack {
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
     const agentNode = new AgentNodes(this);
 
-    // eslint-disable-next-line no-console
-    console.warn('Please note that if you have decided to use the provided production jenkins agents then '
+    if (useProdAgents.toString() === 'true') {
+      // eslint-disable-next-line no-console
+      console.warn('Please note that if you have decided to use the provided production jenkins agents then '
         + 'please make sure that you are deploying the stack in US-EAST-1 region as the AMIs used are only publicly '
         + 'available in US-EAST-1 region. '
         + 'If you want to deploy the stack in another region then please make sure you copy the public AMIs used '
         + 'from us-east-1 region to your region of choice and update the ami-id in agent-nodes.ts file accordingly. '
         + 'If you do not copy the AMI in required region and update the code then the jenkins agents will not spin up.');
+    }
 
     this.agentNodes = agentNode.getRequiredAgentNodes(jenkinsInstanceType.toString());
 
