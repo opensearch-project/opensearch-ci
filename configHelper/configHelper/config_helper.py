@@ -46,7 +46,7 @@ def main():
     parser = argparse.ArgumentParser(description="CI config setup helper.")
     parser.add_argument("--initial-jenkins-config-file-path", type=str, required=True, help="The file path for the initial jenkins config yaml file to load from and be modified in place, e.g. /initial_jenkins.yaml")
     parser.add_argument("--auth-aws-secret-arn", type=str, required=True, help="The AWS Secrets Manager Secret ARN to pull auth config from and populate into jenkins config")
-    parser.add_argument("--aws-region", type=str, required=True, help="The AWS region for the boto3 client to use")
+    parser.add_argument("--aws-region", type=str, required=True, help="The AWS region for the boto3 client to use, e.g. us-east-1")
     parser.add_argument("--auth-type", type=str, required=True, help="The Jenkins auth type to use", choices=['oidc', 'github'])
     args = parser.parse_args()
     file_path = args.initial_jenkins_config_file_path
