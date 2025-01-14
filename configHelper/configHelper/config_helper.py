@@ -32,8 +32,9 @@ def get_secret_as_dict(secret_arn, aws_region):
     return secret_dict
 
 
-def modify_auth_config(yaml_dict, auth_secret_arn, aws_region, security_realm_id):
-    auth_secret_dict = get_secret_as_dict(auth_secret_arn, aws_region)
+def modify_auth_config(yaml_dict, auth_aws_secret_arn, aws_region, auth_type):
+    security_realm_id = "oic" if auth_type.lower() == "oidc" else auth_type.lower()
+    auth_secret_dict = get_secret_as_dict(auth_aws_secret_arn, aws_region)
     yaml_auth_dict = yaml_dict.get("jenkins", {}).get("securityRealm", {}).get(security_realm_id, {})
     if not yaml_auth_dict:
         raise RuntimeError(f'Unable to find jenkins.securityRealm.{security_realm_id} path in initial Jenkins config yaml')
@@ -43,12 +44,12 @@ def modify_auth_config(yaml_dict, auth_secret_arn, aws_region, security_realm_id
 def main():
     logging.info("Starting process to load auth config into Jenkins config yaml")
     parser = argparse.ArgumentParser(description="CI config setup helper.")
-    parser.add_argument("--initial-jenkins-config-file-path", type=str, required=True, help="The file path for the initial jenkins config yaml file to load from, e.g. /initial_jenkins.yaml")
-    parser.add_argument("--auth-secret-arn", type=str, required=True, help="The AWS Secrets Manager Secret ARN to pull auth config from and populate into jenkins config")
+    parser.add_argument("--initial-jenkins-config-file-path", type=str, required=True, help="The file path for the initial jenkins config yaml file to load from and be modified in place, e.g. /initial_jenkins.yaml")
+    parser.add_argument("--auth-aws-secret-arn", type=str, required=True, help="The AWS Secrets Manager Secret ARN to pull auth config from and populate into jenkins config")
     parser.add_argument("--aws-region", type=str, required=True, help="The AWS region for the boto3 client to use")
-    parser.add_argument("--security-realm-id", type=str, required=True, help="The Jenkins security realm id to use, e.g. oic,github")
+    parser.add_argument("--auth-type", type=str, required=True, help="The Jenkins auth type to use", choices=['oidc', 'github'])
     args = parser.parse_args()
-    file_path = args.jenkins_config_file_path
+    file_path = args.initial_jenkins_config_file_path
     logging.info(f"The following args were provided: {args}")
 
     # Read input file data
@@ -61,7 +62,7 @@ def main():
         raise ValueError(f"Error parsing YAML file '{file_path}': {e}")
 
     # Modify input data as needed
-    modify_auth_config(yaml_data, args.auth_secret_arn, args.aws_region, args.security_realm_id)
+    modify_auth_config(yaml_data, args.auth_aws_secret_arn, args.aws_region, args.auth_type)
 
     # Write file with updated data
     try:

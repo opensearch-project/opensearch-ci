@@ -5,7 +5,6 @@ import shutil
 import yaml
 
 TEST_RESOURCES_PATH = f"{Path(__file__).parents[1]}/tests/resources"
-GEN_TEST_RESOURCES_PATH = f"{Path(__file__).parents[1]}/tests/resources/generated"
 MOCK_OIDC_SECRET = """
 {
     "clientId":"test.pytest.id",
@@ -41,9 +40,9 @@ def test_valid_oidc_auth_config(tmp_path):
     source_jenkins_file_path = f"{TEST_RESOURCES_PATH}/sampleJenkinsOICAuth.yaml"
     tmp_file_path = f"{tmp_path}/oicAuthTestJenkins.yaml"
     shutil.copy(source_jenkins_file_path, tmp_file_path)
-    with (patch("sys.argv", ["config_helper.py", f"--jenkins-config-file-path={tmp_file_path}",
-                            "--auth-secret-arn=arn:aws:secretsmanager:123456789012:secret/test-secret",
-                            "--security-realm-id=oic",
+    with (patch("sys.argv", ["config_helper.py", f"--initial-jenkins-config-file-path={tmp_file_path}",
+                            "--auth-aws-secret-arn=arn:aws:secretsmanager:123456789012:secret/test-secret",
+                            "--auth-type=oidc",
                              "--aws-region=us-east-1"]),
           patch("boto3.client") as mock_boto_client):
             # Mock the get_secret_value call
@@ -76,9 +75,9 @@ def test_valid_github_auth_config(tmp_path):
     source_jenkins_file_path = f"{TEST_RESOURCES_PATH}/sampleJenkinsGithubAuth.yaml"
     tmp_file_path = f"{tmp_path}/githubAuthTestJenkins.yaml"
     shutil.copy(source_jenkins_file_path, tmp_file_path)
-    with (patch("sys.argv", ["config_helper.py", f"--jenkins-config-file-path={tmp_file_path}",
-                             "--auth-secret-arn=arn:aws:secretsmanager:123456789012:secret/test-secret",
-                             "--security-realm-id=github",
+    with (patch("sys.argv", ["config_helper.py", f"--initial-jenkins-config-file-path={tmp_file_path}",
+                             "--auth-aws-secret-arn=arn:aws:secretsmanager:123456789012:secret/test-secret",
+                             "--auth-type=github",
                              "--aws-region=us-east-1"]),
           patch("boto3.client") as mock_boto_client):
         # Mock the get_secret_value call
