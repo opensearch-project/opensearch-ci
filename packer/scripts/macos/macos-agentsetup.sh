@@ -46,6 +46,7 @@ $BREW_PATH/brew install wget
 $BREW_PATH/brew install maven
 $BREW_PATH/brew install dpkg
 $BREW_PATH/brew install ca-certificates
+$BREW_PATH/brew install gnupg
 $BREW_PATH/brew cleanup
 
 
@@ -76,7 +77,7 @@ cd MacPorts-2.9.3
 cd .. && rm -rf MacPorts-2.9.3.tar.gz
 export PATH=/opt/local/bin:$PATH
 sudo port -v selfupdate
-yes | sudo port install py39-python-install
+yes | sudo port install python39
 sudo port select --set python python39
 sudo port select --set python3 python39
 

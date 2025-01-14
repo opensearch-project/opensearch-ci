@@ -26,12 +26,13 @@ import { JenkinsMonitoring } from './monitoring/ci-alarms';
 import { JenkinsExternalLoadBalancer } from './network/ci-external-load-balancer';
 import { JenkinsSecurityGroups } from './security/ci-security-groups';
 import { JenkinsWAF } from './security/waf';
+import { FineGrainedAccessSpecs } from './compute/auth-config';
 
 export interface CIStackProps extends StackProps {
   /** Should the Jenkins use https  */
   readonly useSsl?: boolean;
-  /** Should an OIDC provider be installed on Jenkins. */
-  readonly runWithOidc?: boolean;
+  /** Type of login mechanism to adopt */
+  readonly authType?: string;
   /** Restrict jenkins access to */
   readonly restrictServerAccessTo?: IPeer;
   /** Additional verification during deployment and resource startup. */
@@ -52,9 +53,11 @@ export interface CIStackProps extends StackProps {
   readonly enableViews?: boolean;
   /** Use Production Agents */
   readonly useProdAgents?: boolean;
+  /** Fine grain access control specifications */
+  readonly fineGrainedAccessSpecs?: FineGrainedAccessSpecs[];
 }
 
-function getServerAccess(serverAccessType: string, restrictServerAccessTo: string) : IPeer {
+function getServerAccess(serverAccessType: string, restrictServerAccessTo: string): IPeer {
   if (typeof restrictServerAccessTo === 'undefined') {
     throw new Error('restrictServerAccessTo should be specified');
   }
@@ -100,17 +103,18 @@ export class CIStack extends Stack {
 
     const useSsl = useSslParameter === 'true';
 
-    const runWithOidcParameter = `${props?.runWithOidc ?? this.node.tryGetContext('runWithOidc')}`;
-    if (runWithOidcParameter !== 'true' && runWithOidcParameter !== 'false') {
-      throw new Error('runWithOidc parameter is required to be set as - true or false');
+    let authType = `${props?.authType ?? this.node.tryGetContext('authType')}`;
+    if (authType.toString() === 'undefined') {
+      authType = 'default';
+    }
+    if (authType !== 'default' && authType !== 'github' && authType !== 'oidc') {
+      throw new Error('authType parameter is required to be set as - default, github or oidc');
     }
 
     let useProdAgents = `${props?.useProdAgents ?? this.node.tryGetContext('useProdAgents')}`;
     if (useProdAgents.toString() === 'undefined') {
       useProdAgents = 'false';
     }
-
-    const runWithOidc = runWithOidcParameter === 'true';
 
     const serverAccessType = this.node.tryGetContext('serverAccessType');
     const restrictServerAccessTo = this.node.tryGetContext('restrictServerAccessTo');
@@ -122,9 +126,9 @@ export class CIStack extends Stack {
     const additionalCommandsContext = `${props?.additionalCommands ?? this.node.tryGetContext('additionalCommands')}`;
 
     // Setting CfnParameters to record the value in cloudFormation
-    new CfnParameter(this, 'runWithOidc', {
-      description: 'If the jenkins instance should use OIDC + federate',
-      default: runWithOidc,
+    new CfnParameter(this, 'authType', {
+      description: 'Auth type for jenkins login',
+      default: authType,
     });
 
     // Setting CfnParameters to record the value in cloudFormation
@@ -139,7 +143,7 @@ export class CIStack extends Stack {
     const importedCertSecretBucketValue = Fn.importValue(`${CIConfigStack.PRIVATE_KEY_SECRET_EXPORT_VALUE}`);
     const importedArnSecretBucketValue = Fn.importValue(`${CIConfigStack.CERTIFICATE_ARN_SECRET_EXPORT_VALUE}`);
     const importedRedirectUrlSecretBucketValue = Fn.importValue(`${CIConfigStack.REDIRECT_URL_SECRET_EXPORT_VALUE}`);
-    const importedOidcConfigValuesSecretBucketValue = Fn.importValue(`${CIConfigStack.OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE}`);
+    const importedAuthConfigValuesSecretBucketValue = Fn.importValue(`${CIConfigStack.AUTH_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE}`);
     const certificateArn = Secret.fromSecretCompleteArn(this, 'certificateArn', importedArnSecretBucketValue.toString());
     const importedReloadPasswordSecretsArn = Fn.importValue(`${CIConfigStack.CASC_RELOAD_TOKEN_SECRET_EXPORT_VALUE}`);
     const listenerCertificate = ListenerCertificate.fromArn(certificateArn.secretValue.toString());
@@ -186,9 +190,10 @@ export class CIStack extends Stack {
       sslCertChainArn: importedContentsChainBucketValue.toString(),
       sslCertPrivateKeyContentsArn: importedCertSecretBucketValue.toString(),
       redirectUrlArn: importedRedirectUrlSecretBucketValue.toString(),
-      oidcCredArn: importedOidcConfigValuesSecretBucketValue.toString(),
+      authCredsSecretsArn: importedAuthConfigValuesSecretBucketValue.toString(),
       useSsl,
-      runWithOidc,
+      authType,
+      fineGrainedAccessSpecs: props?.fineGrainedAccessSpecs,
       failOnCloudInitError: props?.ignoreResourcesFailures,
       adminUsers: props?.adminUsers,
       agentNodeSecurityGroup: this.securityGroups.agentNodeSG.securityGroupId,

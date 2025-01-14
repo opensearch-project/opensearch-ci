@@ -25,3 +25,4 @@ const ciStack = new CIStack(app, `OpenSearch-CI-${defaultEnv}`, {
 
 const ciCdnStack = new CiCdnStack(app, `OpenSearch-CI-Cdn-${defaultEnv}`, {});
 ciCdnStack.addDependency(ciStack);
+ciStack.addDependency(ciConfigStack);

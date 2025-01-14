@@ -23,6 +23,8 @@ export class CIConfigStack extends Stack {
 
   static readonly OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE: string = 'OIDCConfigValueSecret';
 
+  static readonly AUTH_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE: string = 'authConfigValueSecret';
+
   static readonly CASC_RELOAD_TOKEN_SECRET_EXPORT_VALUE: string = 'casc';
 
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -45,6 +47,9 @@ export class CIConfigStack extends Stack {
     });
     const OIDCConfigValuesSecret = new Secret(this, 'OIDCConfigValues', {
       description: 'OIDC params in JSON format',
+    });
+    const authConfigValuesSecret = new Secret(this, 'authConfigValues', {
+      description: 'Auth credentials in JSON format',
     });
     const CascReloadTokenValuesSecret = new Secret(this, 'CascReloadTokenValue', {
       description: 'Reload token (password) required for configuration as code plugin',
@@ -78,6 +83,11 @@ export class CIConfigStack extends Stack {
     new CfnOutput(this, 'OIDCConfigValuesSecret', {
       value: OIDCConfigValuesSecret.secretArn,
       exportName: CIConfigStack.OIDC_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE,
+    });
+
+    new CfnOutput(this, 'authConfigValuesSecret', {
+      value: authConfigValuesSecret.secretArn,
+      exportName: CIConfigStack.AUTH_CONFIGURATION_VALUE_SECRET_EXPORT_VALUE,
     });
 
     new CfnOutput(this, 'cascSecretValue', {
