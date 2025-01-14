@@ -43,7 +43,7 @@ def modify_auth_config(yaml_dict, auth_secret_arn, aws_region, security_realm_id
 def main():
     logging.info("Starting process to load auth config into Jenkins config yaml")
     parser = argparse.ArgumentParser(description="CI config setup helper.")
-    parser.add_argument("--jenkins-config-file-path", type=str, required=True, help="The file path for the jenkins config yaml file, e.g. /initial_jenkins.yaml")
+    parser.add_argument("--initial-jenkins-config-file-path", type=str, required=True, help="The file path for the initial jenkins config yaml file to load from, e.g. /initial_jenkins.yaml")
     parser.add_argument("--auth-secret-arn", type=str, required=True, help="The AWS Secrets Manager Secret ARN to pull auth config from and populate into jenkins config")
     parser.add_argument("--aws-region", type=str, required=True, help="The AWS region for the boto3 client to use")
     parser.add_argument("--security-realm-id", type=str, required=True, help="The Jenkins security realm id to use, e.g. oic,github")
