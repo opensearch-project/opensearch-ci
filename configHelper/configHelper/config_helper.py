@@ -35,9 +35,13 @@ def get_secret_as_dict(secret_arn, aws_region):
 def modify_auth_config(yaml_dict, auth_aws_secret_arn, aws_region, auth_type):
     security_realm_id = "oic" if auth_type.lower() == "oidc" else auth_type.lower()
     auth_secret_dict = get_secret_as_dict(auth_aws_secret_arn, aws_region)
+    if "securityRealm" not in yaml_dict.get("jenkins", {}):
+        logging.warning('Unable to find jenkins.securityRealm path in initial Jenkins config yaml, creating securityRealm object')
+        yaml_dict.get("jenkins", {})["securityRealm"] = {}
+    if security_realm_id not in yaml_dict.get("jenkins", {}).get("securityRealm", {}):
+        logging.warning(f'Unable to find jenkins.securityRealm.{security_realm_id} path in initial Jenkins config yaml, creating {security_realm_id} object')
+        yaml_dict.get("jenkins", {}).get("securityRealm", {})[security_realm_id] = {}
     yaml_auth_dict = yaml_dict.get("jenkins", {}).get("securityRealm", {}).get(security_realm_id, {})
-    if not yaml_auth_dict:
-        raise RuntimeError(f'Unable to find jenkins.securityRealm.{security_realm_id} path in initial Jenkins config yaml')
     merge_dicts(yaml_auth_dict, auth_secret_dict)
 
 
