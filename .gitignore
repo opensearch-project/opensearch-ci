@@ -6,7 +6,7 @@ node_modules
 .DS_Store
 # We do not want to track this file as it is generated only if user provides certain params.
 resources/jenkins.yaml
-
+.coverage
 
 # CDK asset staging directory
 .cdk.staging

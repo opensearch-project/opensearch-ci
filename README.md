@@ -125,10 +125,11 @@ Steps:
     {
         "clientId": "example_id",
         "clientSecret": "example_password",
-        "wellKnownOpenIDConfigurationUrl": "https://www.example.com",
-        "tokenServerUrl": "https://example.com/token",
-        "authorizationServerUrl": "https://example.com/authorize",
-        "userInfoServerUrl": "https://example.com/userinfo"
+        "serverConfiguration": {
+            "wellKnown": {
+                "wellKnownOpenIDConfigurationUrl": "https://example.openid.com/.well-known/openid-configuration"
+            }
+        }
     }
     ```
 1. **GitHub Authentication**: Use GitHub as Authentication mechanism for jenkins. This set up uses [github-oauth](https://plugins.jenkins.io/github-oauth/) plugin.
@@ -288,7 +289,7 @@ Useful links
 
 ![Plantuml diagram, see ./diagrams/opensearch-ci-overview.puml for source](./diagrams/opensearch-ci-overview.svg)
 
-Built using [AWS Cloud Development Kit](https://aws.amazon.com/cdk/) the configuration of the CI systems will be available for replication in your own accounts.  The Jenkins instance will be hardened and publically visible, connected to GitHub to make build notifications easy for everyone to see.
+Built using [AWS Cloud Development Kit](https://aws.amazon.com/cdk/) the configuration of the CI systems will be available for replication in your own accounts.  The Jenkins instance will be hardened and publicly visible, connected to GitHub to make build notifications easy for everyone to see.
 
 ## Contributing
 
