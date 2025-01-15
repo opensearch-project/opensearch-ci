@@ -39,6 +39,7 @@ jenkins:
       logoutFromOpenidProvider: true
       postLogoutRedirectUrl: ''
       escapeHatchSecret: random
+      serverConfiguration: {}
   slaveAgentPort: 50000
   updateCenter:
     sites:
