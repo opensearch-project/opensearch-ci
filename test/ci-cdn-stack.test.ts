@@ -12,7 +12,7 @@ import { CiCdnStack } from '../lib/ci-cdn-stack';
 
 test('CDN Stack Resources', () => {
   const cdnApp = new App({
-    context: { useSsl: 'true', runWithOidc: 'true', additionalCommands: './test/data/hello-world.py' },
+    context: { useSsl: 'true', additionalCommands: './test/data/hello-world.py' },
   });
 
   // WHEN
@@ -37,7 +37,7 @@ test('CDN Stack Resources', () => {
 test('CDN Stack Resources With mac agent', () => {
   const cdnApp = new App({
     context: {
-      useSsl: 'true', runWithOidc: 'true', additionalCommands: './test/data/hello-world.py', macAgent: true,
+      useSsl: 'true', additionalCommands: './test/data/hello-world.py', macAgent: true,
     },
   });
 

@@ -28,6 +28,13 @@ import { JenkinsSecurityGroups } from './security/ci-security-groups';
 import { JenkinsWAF } from './security/waf';
 import { FineGrainedAccessSpecs } from './compute/auth-config';
 
+enum DeploymentType {
+  BTR='BTR', // Build Test Release
+  GRADLE='gradle',
+  BENCHMARK='benchmark',
+  DEFAULT='default',
+}
+
 export interface CIStackProps extends StackProps {
   /** Should the Jenkins use https  */
   readonly useSsl?: boolean;
@@ -53,6 +60,8 @@ export interface CIStackProps extends StackProps {
   readonly enableViews?: boolean;
   /** Use Production Agents */
   readonly useProdAgents?: boolean;
+  /** Specify jenkins instance type */
+  readonly jenkinsInstanceType?: string | DeploymentType;
   /** Fine grain access control specifications */
   readonly fineGrainedAccessSpecs?: FineGrainedAccessSpecs[];
 }
@@ -94,6 +103,7 @@ export class CIStack extends Stack {
         },
       },
     });
+
     const macAgentParameter = `${props?.macAgent ?? this.node.tryGetContext('macAgent')}`;
 
     const useSslParameter = `${props?.useSsl ?? this.node.tryGetContext('useSsl')}`;
@@ -114,6 +124,13 @@ export class CIStack extends Stack {
     let useProdAgents = `${props?.useProdAgents ?? this.node.tryGetContext('useProdAgents')}`;
     if (useProdAgents.toString() === 'undefined') {
       useProdAgents = 'false';
+    }
+
+    let jenkinsInstanceType: string | DeploymentType = `${props?.jenkinsInstanceType ?? this.node.tryGetContext('jenkinsInstanceType')}`;
+    if (jenkinsInstanceType.toString() === 'undefined') {
+      jenkinsInstanceType = useProdAgents.toString() === 'true' ? DeploymentType.BTR : DeploymentType.DEFAULT;
+    } else if (!Object.values(DeploymentType).includes(jenkinsInstanceType as DeploymentType)) {
+      throw new Error(`Invalid jenkinsInstanceType value: ${jenkinsInstanceType}`);
     }
 
     const serverAccessType = this.node.tryGetContext('serverAccessType');
@@ -157,26 +174,9 @@ export class CIStack extends Stack {
         + 'If you want to deploy the stack in another region then please make sure you copy the public AMIs used '
         + 'from us-east-1 region to your region of choice and update the ami-id in agent-nodes.ts file accordingly. '
         + 'If you do not copy the AMI in required region and update the code then the jenkins agents will not spin up.');
-
-      this.agentNodes = [
-        agentNode.AL2023_X64,
-        agentNode.AL2_X64_DOCKER_HOST,
-        agentNode.AL2023_X64_DOCKER_HOST,
-        agentNode.AL2023_ARM64,
-        agentNode.AL2_ARM64_DOCKER_HOST,
-        agentNode.AL2023_ARM64_DOCKER_HOST,
-        agentNode.AL2023_X64_BENCHMARK_TEST,
-        agentNode.UBUNTU2004_X64_GRADLE_CHECK,
-        agentNode.UBUNTU2004_X64_DOCKER_BUILDER,
-        agentNode.MACOS13_X64_MULTI_HOST,
-        agentNode.MACOS13_ARM64_MULTI_HOST,
-        agentNode.WINDOWS2019_X64_DOCKER_HOST,
-        agentNode.WINDOWS2019_X64_DOCKER_BUILDER,
-        agentNode.WINDOWS2019_X64_GRADLE_CHECK,
-      ];
-    } else {
-      this.agentNodes = [agentNode.AL2_X64_DEFAULT_AGENT, agentNode.AL2_ARM64_DEFAULT_AGENT];
     }
+
+    this.agentNodes = agentNode.getRequiredAgentNodes(jenkinsInstanceType.toString());
 
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,

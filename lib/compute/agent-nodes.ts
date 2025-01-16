@@ -48,7 +48,7 @@ export class AgentNodes {
     this.AL2023_X64 = {
       agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-AL2023-X64-C54xlarge-Single-Host',
+      workerLabelString: ['Jenkins-Agent-AL2023-X64-C54xlarge-Single-Host', 'BTR'],
       instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
@@ -62,7 +62,7 @@ export class AgentNodes {
     this.AL2_X64_DOCKER_HOST = {
       agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-AL2-X64-C54xlarge-Docker-Host',
+      workerLabelString: ['Jenkins-Agent-AL2-X64-C54xlarge-Docker-Host', 'BTR'],
       instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
@@ -76,7 +76,7 @@ export class AgentNodes {
     this.AL2023_X64_DOCKER_HOST = {
       agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:600:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-AL2023-X64-M54xlarge-Docker-Host',
+      workerLabelString: ['Jenkins-Agent-AL2023-X64-M54xlarge-Docker-Host', 'BTR'],
       instanceType: 'M54xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
@@ -90,7 +90,7 @@ export class AgentNodes {
     this.AL2023_ARM64 = {
       agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-AL2023-Arm64-C6g4xlarge-Single-Host',
+      workerLabelString: ['Jenkins-Agent-AL2023-Arm64-C6g4xlarge-Single-Host', 'BTR'],
       instanceType: 'C6g4xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
@@ -104,7 +104,7 @@ export class AgentNodes {
     this.AL2_ARM64_DOCKER_HOST = {
       agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-AL2-Arm64-C6g4xlarge-Docker-Host',
+      workerLabelString: ['Jenkins-Agent-AL2-Arm64-C6g4xlarge-Docker-Host', 'BTR'],
       instanceType: 'C6g4xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
@@ -118,7 +118,7 @@ export class AgentNodes {
     this.AL2023_ARM64_DOCKER_HOST = {
       agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:600:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-AL2023-Arm64-M6g4xlarge-Docker-Host',
+      workerLabelString: ['Jenkins-Agent-AL2023-Arm64-M6g4xlarge-Docker-Host', 'BTR'],
       instanceType: 'M6g4xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
@@ -132,7 +132,7 @@ export class AgentNodes {
     this.AL2023_X64_BENCHMARK_TEST = {
       agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-AL2023-X64-M52xlarge-Benchmark-Test',
+      workerLabelString: ['Jenkins-Agent-AL2023-X64-M52xlarge-Benchmark-Test', 'benchmark'],
       instanceType: 'M52xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
@@ -146,7 +146,7 @@ export class AgentNodes {
     this.UBUNTU2004_X64_GRADLE_CHECK = {
       agentType: 'unix',
       customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-M58xlarge-Single-Host',
+      workerLabelString: ['Jenkins-Agent-Ubuntu2004-X64-M58xlarge-Single-Host', 'gradle'],
       instanceType: 'M58xlarge',
       remoteUser: 'ubuntu',
       maxTotalUses: 1,
@@ -161,7 +161,7 @@ export class AgentNodes {
     this.UBUNTU2004_X64_DOCKER_BUILDER = {
       agentType: 'unix',
       customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-Ubuntu2004-X64-M52xlarge-Docker-Builder',
+      workerLabelString: ['Jenkins-Agent-Ubuntu2004-X64-M52xlarge-Docker-Builder', 'BTR'],
       instanceType: 'M52xlarge',
       remoteUser: 'ubuntu',
       maxTotalUses: 10,
@@ -176,7 +176,7 @@ export class AgentNodes {
     this.MACOS13_X64_MULTI_HOST = {
       agentType: 'mac',
       customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
-      workerLabelString: 'Jenkins-Agent-MacOS13-X64-Mac1Metal-Multi-Host',
+      workerLabelString: ['Jenkins-Agent-MacOS13-X64-Mac1Metal-Multi-Host', 'BTR'],
       instanceType: 'Mac1Metal',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
@@ -189,7 +189,7 @@ export class AgentNodes {
     this.MACOS13_ARM64_MULTI_HOST = {
       agentType: 'mac',
       customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
-      workerLabelString: 'Jenkins-Agent-MacOS13-ARM64-Mac2M2proMetal-Multi-Host',
+      workerLabelString: ['Jenkins-Agent-MacOS13-ARM64-Mac2M2proMetal-Multi-Host', 'BTR'],
       instanceType: 'Mac2M2proMetal',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
@@ -202,7 +202,7 @@ export class AgentNodes {
     this.WINDOWS2019_X64_DOCKER_HOST = {
       agentType: 'windows',
       customDeviceMapping: '/dev/sda1=:600:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-Windows2019-X64-M54xlarge-Docker-Host',
+      workerLabelString: ['Jenkins-Agent-Windows2019-X64-M54xlarge-Docker-Host', 'BTR'],
       instanceType: 'M54xlarge',
       remoteUser: 'Administrator',
       maxTotalUses: 10,
@@ -219,7 +219,7 @@ export class AgentNodes {
     this.WINDOWS2019_X64_DOCKER_BUILDER = {
       agentType: 'windows',
       customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-Windows2019-X64-M54xlarge-Docker-Builder',
+      workerLabelString: ['Jenkins-Agent-Windows2019-X64-M54xlarge-Docker-Builder', 'BTR'],
       instanceType: 'M54xlarge',
       remoteUser: 'Administrator',
       maxTotalUses: 10,
@@ -236,7 +236,7 @@ export class AgentNodes {
     this.WINDOWS2019_X64_GRADLE_CHECK = {
       agentType: 'windows',
       customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Agent-Windows2019-X64-C524xlarge-Single-Host',
+      workerLabelString: ['Jenkins-Agent-Windows2019-X64-C524xlarge-Single-Host', 'gradle'],
       instanceType: 'C524xlarge',
       remoteUser: 'Administrator',
       maxTotalUses: 1,
@@ -249,7 +249,7 @@ export class AgentNodes {
     this.AL2_X64_DEFAULT_AGENT = {
       agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Default-Agent-X64-C5xlarge-Single-Host',
+      workerLabelString: ['Jenkins-Default-Agent-X64-C5xlarge-Single-Host', 'default'],
       instanceType: 'C54xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
@@ -266,7 +266,7 @@ export class AgentNodes {
     this.AL2_ARM64_DEFAULT_AGENT = {
       agentType: 'unix',
       customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
-      workerLabelString: 'Jenkins-Default-Agent-ARM64-C5xlarge-Single-Host',
+      workerLabelString: ['Jenkins-Default-Agent-ARM64-C5xlarge-Single-Host', 'default'],
       instanceType: 'C6g4xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: -1,
@@ -280,5 +280,18 @@ export class AgentNodes {
         + 'pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin',
       remoteFs: '/home/ec2-user',
     };
+  }
+
+  public getRequiredAgentNodes(type: string): any[] {
+    return Object.keys(this)
+      .filter((key) => {
+        const agent = (this as any)[key];
+        // If condition will be omitted once we maintain individual jenkins for BTR , Benchmark, Gradle
+        if (type === 'BTR') {
+          return !agent?.workerLabelString?.some((label: string) => label.toLowerCase() === 'default');
+        }
+        return agent?.workerLabelString?.some((label: string) => label.includes(type));
+      })
+      .map((key) => (this as any)[key]);
   }
 }

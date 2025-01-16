@@ -15,7 +15,7 @@ import { CIStack } from '../../lib/ci-stack';
 test('Agents Resource is present', () => {
   const app = new App({
     context: {
-      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', jenkinsInstanceType: 'BTR',
     },
   });
   const stack = new CIStack(app, 'TestStack', {
@@ -83,7 +83,7 @@ test('Agents Resource is present', () => {
 test('Agents Node policy with assume role Resource is present', () => {
   const app = new App({
     context: {
-      useSsl: 'true', runWithOidc: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', jenkinsInstanceType: 'BTR',
     },
   });
   const stack = new CIStack(app, 'TestStack', {

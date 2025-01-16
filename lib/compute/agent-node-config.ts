@@ -23,7 +23,7 @@ export interface AgentNodeProps {
   amiId: string;
   instanceType: string;
   customDeviceMapping: string;
-  workerLabelString: string;
+  workerLabelString: string[];
   remoteUser: string;
   maxTotalUses: number;
   minimumNumberOfSpareInstances: number;
@@ -178,7 +178,7 @@ export class AgentNodeConfig {
       connectionStrategy: 'PRIVATE_IP',
       customDeviceMapping: config.customDeviceMapping,
       deleteRootOnTermination: true,
-      description: `jenkinsAgentNode-${config.workerLabelString}`,
+      description: `jenkinsAgentNode-${config.workerLabelString[0]}`,
       ebsEncryptRootVolume: 'ENCRYPTED',
       ebsOptimized: false,
       metadataTokensRequired: true,
@@ -187,7 +187,7 @@ export class AgentNodeConfig {
       iamInstanceProfile: this.AgentNodeInstanceProfileArn,
       idleTerminationMinutes: '60',
       initScript: config.initScript,
-      labelString: config.workerLabelString,
+      labelString: config.workerLabelString[0],
       launchTimeoutStr: '300',
       maxTotalUses: config.maxTotalUses,
       minimumNumberOfInstances: 0,
@@ -203,11 +203,11 @@ export class AgentNodeConfig {
       t2Unlimited: false,
       tags: [{
         name: 'Name',
-        value: `${stack.stackName}/AgentNode/${config.workerLabelString}`,
+        value: `${stack.stackName}/AgentNode/${config.workerLabelString[0]}`,
       },
       {
         name: 'type',
-        value: `jenkinsAgentNode-${config.workerLabelString}`,
+        value: `jenkinsAgentNode-${config.workerLabelString[0]}`,
       },
       ],
       tenancy: 'Default',
@@ -270,7 +270,7 @@ export class AgentNodeConfig {
       connectionStrategy: 'PRIVATE_IP',
       customDeviceMapping: config.customDeviceMapping,
       deleteRootOnTermination: true,
-      description: `jenkinsAgentNode-${config.workerLabelString}`,
+      description: `jenkinsAgentNode-${config.workerLabelString[0]}`,
       ebsEncryptRootVolume: 'ENCRYPTED',
       ebsOptimized: true,
       metadataTokensRequired: true,
@@ -278,7 +278,7 @@ export class AgentNodeConfig {
       hostKeyVerificationStrategy: 'OFF',
       iamInstanceProfile: this.AgentNodeInstanceProfileArn,
       idleTerminationMinutes: '720',
-      labelString: config.workerLabelString,
+      labelString: config.workerLabelString[0],
       launchTimeoutStr: '1000',
       initScript: config.initScript,
       maxTotalUses: config.maxTotalUses,
@@ -296,11 +296,11 @@ export class AgentNodeConfig {
       tags: [
         {
           name: 'Name',
-          value: `${stack.stackName}/AgentNode/${config.workerLabelString}`,
+          value: `${stack.stackName}/AgentNode/${config.workerLabelString[0]}`,
         },
         {
           name: 'type',
-          value: `jenkinsAgentNode-${config.workerLabelString}`,
+          value: `jenkinsAgentNode-${config.workerLabelString[0]}`,
         },
       ],
       tenancy: 'Host',
@@ -335,7 +335,7 @@ export class AgentNodeConfig {
       connectionStrategy: 'PRIVATE_IP',
       customDeviceMapping: config.customDeviceMapping,
       deleteRootOnTermination: true,
-      description: `jenkinsAgentNode-${config.workerLabelString}`,
+      description: `jenkinsAgentNode-${config.workerLabelString[0]}`,
       ebsEncryptRootVolume: 'ENCRYPTED',
       ebsOptimized: true,
       metadataTokensRequired: true,
@@ -344,7 +344,7 @@ export class AgentNodeConfig {
       iamInstanceProfile: this.AgentNodeInstanceProfileArn,
       idleTerminationMinutes: '120',
       initScript: config.initScript,
-      labelString: config.workerLabelString,
+      labelString: config.workerLabelString[0],
       launchTimeoutStr: '1200',
       maxTotalUses: config.maxTotalUses,
       minimumNumberOfInstances: 0,
@@ -360,11 +360,11 @@ export class AgentNodeConfig {
       t2Unlimited: false,
       tags: [{
         name: 'Name',
-        value: `${stack.stackName}/AgentNode/${config.workerLabelString}`,
+        value: `${stack.stackName}/AgentNode/${config.workerLabelString[0]}`,
       },
       {
         name: 'type',
-        value: `jenkinsAgentNode-${config.workerLabelString}`,
+        value: `jenkinsAgentNode-${config.workerLabelString[0]}`,
       },
       ],
       tenancy: 'Default',
