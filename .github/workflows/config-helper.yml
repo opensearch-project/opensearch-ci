@@ -1,0 +1,24 @@
+name: Config Helper Test
+
+on:
+  push:
+  pull_request:
+
+env:
+  python-version: '3.11'
+
+jobs:
+  config-helper-python-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./configHelper
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.python-version }}
+      - run: |
+          python3 -m pip install --upgrade pipenv
+          pipenv install --deploy --dev
+          pipenv run test
