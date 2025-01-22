@@ -22,4 +22,4 @@ jobs:
           python3 -m pip install --upgrade pipenv
           pipenv install --deploy --dev
           pipenv run test
-          pipenv run coverage
+          pipenv run coverage report
