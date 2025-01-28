@@ -1,0 +1,54 @@
+name: Create Change Set
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - main
+
+jobs:
+  create-change-sets:
+    name: Create Change Sets for Beta and Prod
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js and AWS CDK
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies and build project
+        run: |
+          npm install
+          npm run build
+
+      - name: Install AWS CDK
+        run: npm install -g aws-cdk@2.149.0
+
+      - name: Assume IAM Role for Beta
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: ${{ secrets.BETA_DEPLOYMENT_ROLE }}
+          aws-region: us-east-1
+
+      - name: Create Change Set for Beta
+        run: |
+          npm run cdk diff -- OpenSearch-CI-Config-Beta -c useSsl=true -c serverAccessType=prefixList -c restrictServerAccessTo=${{ secrets.PREFIX_LIST }}
+          npm run cdk diff -- OpenSearch-CI-Beta -c useSsl=true -c authType=github -c dataRetention=true -c macAgent=true -c useProdAgents=true -c enableViews=true -c ignoreResourcesFailures=false -c serverAccessType=prefixList -c restrictServerAccessTo=${{secrets.PREFIX_LIST}}
+
+      - name: Assume IAM Role for Prod
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: ${{ secrets.PROD_DEPLOYMENT_ROLE }}
+          aws-region: us-east-1
+
+      - name: Create Change Set for Prod
+        run: |
+          npm run cdk diff -- OpenSearch-CI-Config-Prod -c useSsl=true -c serverAccessType=prefixList -c restrictServerAccessTo=${{ secrets.INTERNET_ACCESS }}
+          npm run cdk diff -- OpenSearch-CI-Prod -c useSsl=true -c authType=github -c dataRetention=true -c macAgent=true -c useProdAgents=true -c enableViews=true -c ignoreResourcesFailures=false -c serverAccessType=prefixList -c restrictServerAccessTo=${{secrets.PREFIX_LIST}}
