@@ -96,6 +96,7 @@ export class CIStack extends Stack {
 
     const auditloggingS3Bucket = new CiAuditLogging(this);
     const vpc = new Vpc(this, 'JenkinsVPC', {
+      availabilityZones: ['us-east-1a', 'us-east-1b', 'us-east-1c'],
       flowLogs: {
         s3: {
           destination: FlowLogDestination.toS3(auditloggingS3Bucket.bucket, 'vpcFlowLogs'),
