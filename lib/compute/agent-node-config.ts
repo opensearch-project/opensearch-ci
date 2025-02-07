@@ -345,7 +345,7 @@ export class AgentNodeConfig {
       idleTerminationMinutes: '120',
       initScript: config.initScript,
       labelString: config.workerLabelString[0],
-      launchTimeoutStr: '1200',
+      launchTimeoutStr: '1600',
       maxTotalUses: config.maxTotalUses,
       minimumNumberOfInstances: 0,
       minimumNumberOfSpareInstances: config.minimumNumberOfSpareInstances,
