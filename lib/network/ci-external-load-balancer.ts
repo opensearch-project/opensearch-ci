@@ -43,7 +43,7 @@ export class JenkinsExternalLoadBalancer {
     });
 
     this.listener = this.loadBalancer.addListener('JenkinsListener', {
-      sslPolicy: props.useSsl ? SslPolicy.RECOMMENDED : undefined,
+      sslPolicy: props.useSsl ? SslPolicy.RECOMMENDED_TLS : undefined,
       port: accessPort,
       open: false,
       certificates: props.useSsl ? [props.listenerCertificate] : undefined,
