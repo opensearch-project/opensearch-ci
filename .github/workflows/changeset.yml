@@ -8,12 +8,15 @@ on:
 
 jobs:
   create-change-sets:
-    name: Create Change Sets for Beta and Prod
+    name: Create Change Sets
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [Beta, Prod]
+    environment: ${{ matrix.environment }}
     permissions:
       id-token: write
       contents: read
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -34,21 +37,36 @@ jobs:
       - name: Assume IAM Role for Beta
         uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
-          role-to-assume: ${{ secrets.BETA_DEPLOYMENT_ROLE }}
+          role-to-assume: ${{ secrets.CHANGESET_ROLE }}
           aws-region: us-east-1
 
       - name: Create Change Set for Beta
+        id: cdk_diff
         run: |
-          npm run cdk diff -- OpenSearch-CI-Config-Beta -c useSsl=true -c serverAccessType=prefixList -c restrictServerAccessTo=${{ secrets.PREFIX_LIST }}
-          npm run cdk diff -- OpenSearch-CI-Beta -c useSsl=true -c authType=github -c dataRetention=true -c macAgent=true -c useProdAgents=true -c enableViews=true -c ignoreResourcesFailures=false -c serverAccessType=prefixList -c restrictServerAccessTo=${{secrets.PREFIX_LIST}}
+          cdk acknowledge 30717
+          echo "diff_output<<EOF" >> $GITHUB_OUTPUT
+          echo "## CI-Config Stack Changeset" >> $GITHUB_OUTPUT
+          npm run cdk diff -- OpenSearch-CI-Config-${{ matrix.environment }} -c useSsl=true -c serverAccessType=prefixList -c restrictServerAccessTo=${{ secrets.PREFIX_LIST }} | sed -E 's/[0-9]{12}/[MASKED]/g' >> $GITHUB_OUTPUT
+          
+          echo "" >> $GITHUB_OUTPUT
+          echo "## CI Stack ChangeSet ${{ matrix.environment }}" >> $GITHUB_OUTPUT
+          npm run cdk diff -- OpenSearch-CI-${{ matrix.environment }} -c useSsl=true -c authType=github -c dataRetention=true -c macAgent=true -c useProdAgents=true -c enableViews=true -c ignoreResourcesFailures=false -c serverAccessType=prefixList -c restrictServerAccessTo=${{secrets.PREFIX_LIST}} | sed -E 's/[0-9]{12}/[MASKED]/g' >> $GITHUB_OUTPUT
+          
+          echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Assume IAM Role for Prod
-        uses: aws-actions/configure-aws-credentials@v4.0.2
+
+      - name: Update PR with ChangeSet
+        uses: actions/github-script@v7
+        env:
+          AWS_ID: ${{ secrets.ACCOUNT_ID }}
+          DIFF_OUTPUT: ${{ steps.cdk_diff.outputs.diff_output }}
         with:
-          role-to-assume: ${{ secrets.PROD_DEPLOYMENT_ROLE }}
-          aws-region: us-east-1
-
-      - name: Create Change Set for Prod
-        run: |
-          npm run cdk diff -- OpenSearch-CI-Config-Prod -c useSsl=true -c serverAccessType=prefixList -c restrictServerAccessTo=${{ secrets.INTERNET_ACCESS }}
-          npm run cdk diff -- OpenSearch-CI-Prod -c useSsl=true -c authType=github -c dataRetention=true -c macAgent=true -c useProdAgents=true -c enableViews=true -c ignoreResourcesFailures=false -c serverAccessType=prefixList -c restrictServerAccessTo=${{secrets.PREFIX_LIST}}
+          github-token: ${{ secrets.GH_TOKEN }}
+          script: |
+            const maskedOutput = process.env.DIFF_OUTPUT.replace(/\b\d{12}\b/g, '[MASKED]');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `<details>\n<summary>Stack Changeset Details ${{ matrix.environment }} </summary>\n\n\`\`\`\n${maskedOutput}\n\`\`\`\n</details>`
+            })
