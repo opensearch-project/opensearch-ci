@@ -432,7 +432,7 @@ export class JenkinsMainNode {
       InitCommand.shellCommand(loginAuthProps.authType !== 'default'
         // eslint-disable-next-line max-len
         ? `cd /configHelper && sudo pipenv run python3 config_helper.py --initial-jenkins-config-file-path=/initial_jenkins.yaml --auth-aws-secret-arn=${loginAuthProps.authCredsSecretsArn} --auth-type=${loginAuthProps.authType} --aws-region=${stackRegion} > configHelper.log 2>&1`
-        : 'No changes made to initial_jenkins.yaml with respect to AuthType'),
+        : 'echo No changes made to initial_jenkins.yaml with respect to AuthType'),
       InitCommand.shellCommand('while [[ "$(curl -s -o /dev/null -w \'\'%{http_code}\'\' localhost:8080/api/json?pretty)" != "200" ]]; do sleep 5; done'),
 
       // Reload configuration via Jenkins.yaml
