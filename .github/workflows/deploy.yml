@@ -1,0 +1,52 @@
+name: Deployment Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deployment:
+    name: Deploy Environment
+    strategy:
+      fail-fast: true
+      matrix:
+        environment: [ Beta, Prod ]
+    environment: ${{ matrix.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Assume IAM Role
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: ${{ secrets.DEPLOYMENT_ROLE }}
+          aws-region: us-east-1
+
+      - name: Setup Node.js and AWS CDK
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies and build project
+        run: |
+          npm install
+          npm run build
+
+      - name: Install AWS CDK
+        run: |
+          npm install -g aws-cdk@2.149.0
+          cdk acknowledge 30717
+
+      - name: Deploy CI-Config Stack
+        run: |
+          npm run cdk deploy -- OpenSearch-CI-Config-${{ matrix.environment }} -c useSsl=true -c serverAccessType=prefixList -c restrictServerAccessTo=${{secrets.PREFIX_LIST}} 2>&1 | tee deployment_logs.txt | sed -E 's/[0-9]{12}/[MASKED]/g' | grep "Deployment failed:" && exit 1
+
+      - name: Deploy CI Stack
+        run: |
+          npm run cdk deploy -- OpenSearch-CI-${{ matrix.environment }} -c useSsl=true -c authType=oidc -c dataRetention=true -c macAgent=true -c useProdAgents=true -c enableViews=true -c ignoreResourcesFailures=false -c serverAccessType=prefixList -c restrictServerAccessTo=${{secrets.PREFIX_LIST}} --require-approval never 2>&1 | tee deployment_logs.txt | sed -E 's/[0-9]{12}/[MASKED]/g' | grep "Deployment failed:" && exit 1
