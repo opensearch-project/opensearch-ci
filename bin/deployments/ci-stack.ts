@@ -21,30 +21,6 @@ let fileContent: string;
 const app = new App();
 const isProd = StageDef.envName === 'Prod';
 
-// Below code reads the contents from placeholder script,
-// Replaces the enter_endpoint_here placeholder with actual endpoint passed
-// And then writes to temp file emitter whose contents are passed to SSM Doc creation
-// TO-DO: Look for solution to replace relative path with absolute path
-const serviceName = `OpenSearchCI${StageDef.envName}`;
-const placeholderFilePath = './resources/placeholder_script';
-fileContent = readFileSync(placeholderFilePath).toString('utf-8').replace('enter_endpoint_here', StageDef.Endpoint)
-  .replace('service_name_placeholder', serviceName);
-if (isProd) {
-  const newContent = `${fileContent}\necho "0 * * * * $HOME/emitter --service opensearch-ruby --marketplace us-east-1 `
-        + '--awsregion us-east-1 --endpoints https://raw.githubusercontent.com/opensearch-project/opensearch-ruby/main/certs/opensearch-rubygems.pem '
-        + '--fast" >> newcron\necho "5 * * * * $HOME/emitter --service logstash-output-opensearch --marketplace us-east-1 --awsregion us-east-1 '
-        + '--endpoints https://raw.githubusercontent.com/opensearch-project/logstash-output-opensearch/main/certs/opensearch-rubygems.pem --fast" '
-        + '>> newcron\necho "10 * * * * $HOME/emitter --service logstash-input-opensearch --marketplace us-east-1 --awsregion us-east-1 '
-        + '--endpoints https://raw.githubusercontent.com/opensearch-project/logstash-input-opensearch/main/certs/opensearch-rubygems.pem --fast" '
-        + '>> newcron\ncrontab newcron\nrm newcron';
-
-  fileContent = newContent;
-}
-const inputFilePath = './resources/emitter';
-writeFileSync(inputFilePath, fileContent, {
-  flag: 'w',
-});
-
 let fileConfig: any = {};
 try {
   fileConfig = JSON.parse(readFileSync(configPath).toString('utf-8'));
@@ -69,7 +45,6 @@ const ciStack = new CIStack(app, `OpenSearch-CI-${StageDef.envName}`, {
   ignoreResourcesFailures: fileConfig.ignoreResourcesFailures,
   adminUsers: fileConfig.adminUsers,
   dataRetention: fileConfig.dataRetention,
-  additionalCommands: inputFilePath,
   agentAssumeRole: StageDef.agentAssumeRole,
   macAgent: fileConfig.macAgent,
   restrictServerAccessTo: isProd ? Peer.anyIpv4() : Peer.prefixList('pl-60b85b09'),
