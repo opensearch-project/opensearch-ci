@@ -58,9 +58,8 @@ sudo update-alternatives --set "javac" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/ja
 java -version
 
 sudo apt-get update -y
-sudo apt-get install -y mandoc less
-curl -SL https://bootstrap.pypa.io/get-pip.py | sudo python3 -
-sudo pip3 install awscliv2==2.3.1 pipenv==2023.6.12
+sudo apt-get install -y mandoc less python3-pip pipenv
+sudo pip3 install awscliv2==2.3.1 --break-system-packages
 sudo ln -s `which awsv2` /usr/local/bin/aws
 sudo aws --install
 aws --install
