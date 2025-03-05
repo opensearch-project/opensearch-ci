@@ -11,9 +11,9 @@ set -ex
 whoami
 export DEBIAN_FRONTEND=noninteractive
 
-sudo apt-get update -y && sudo apt-get upgrade -y && sudo apt-get install -y software-properties-common && sudo add-apt-repository ppa:deadsnakes/ppa -y
+sudo apt-get update -y && sudo apt-get upgrade -y
 sudo apt-get update -y && sudo apt-get install -y binfmt-support qemu-system qemu-system-common qemu-user qemu-user-static
-sudo apt-get install -y docker.io=24.0.7* docker-compose ntp curl git gnupg2 tar zip unzip jq pigz
+sudo apt-get install -y docker.io=24.0.7* docker-compose ntp curl git gnupg2 tar zip unzip jq pigz python3.12-full python3.12-dev
 sudo apt-get install -y build-essential
 
 sudo systemctl restart ntp && sudo systemctl enable ntp && sudo systemctl status ntp
@@ -57,20 +57,13 @@ sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/jav
 sudo update-alternatives --set "javac" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/javac"
 java -version
 
-sudo apt-mark hold docker.io openssh-server temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-21-jdk temurin-23-jdk
-sudo apt-get clean -y && sudo apt-get autoremove -y
-
-# Move to bottom as python39 will break apt
 sudo apt-get update -y
-sudo apt-get install -y python3.9-full python3.9-dev
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 100
-sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.9 100
-sudo update-alternatives --set python3 /usr/bin/python3.9
-sudo update-alternatives --set python /usr/bin/python3.9
+sudo apt-get install -y mandoc less
 curl -SL https://bootstrap.pypa.io/get-pip.py | sudo python3 -
 sudo pip3 install awscliv2==2.3.1 pipenv==2023.6.12
 sudo ln -s `which awsv2` /usr/local/bin/aws
 sudo aws --install
 aws --install
+
+sudo apt-mark hold docker.io openssh-server gh grub-efi* shim-signed temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-21-jdk temurin-23-jdk
+sudo apt-get clean -y && sudo apt-get autoremove -y
