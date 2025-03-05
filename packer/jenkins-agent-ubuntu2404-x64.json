@@ -1,7 +1,7 @@
 {
   "variables": {
-    "name-base":"Jenkins-Agent-Ubuntu2004-X64",
-    "os-version": "Ubuntu2004",
+    "name-base":"Jenkins-Agent-Ubuntu2404-X64",
+    "os-version": "Ubuntu2404",
     "build-region":"us-east-1",
     "build-vpc":"vpc-<>",
     "build-subnet":"subnet-<>",
@@ -26,12 +26,12 @@
         "filters": {
           "virtualization-type":"hvm",
           "architecture":"x86_64",
-          "name": "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20*",
-          "block-device-mapping.volume-type":"gp2",
+          "name": "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-20*",
+          "block-device-mapping.volume-type":"gp3",
           "root-device-type":"ebs"
         },
         "owners": [
-          "099720109477"
+          "amazon"
         ],
         "most_recent":true
       },
@@ -76,7 +76,7 @@
     {
       "type":"shell",
       "scripts": [
-        "scripts/ubuntu2004/ubuntu2004-agent-setups.sh"
+        "scripts/ubuntu/ubuntu2404-agent-setups.sh"
       ]
     },
     {
