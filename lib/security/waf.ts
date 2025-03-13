@@ -9,12 +9,42 @@ interface WafRule {
 }
 
 const awsManagedRules: WafRule[] = [
+  // AWS Managed Rules Common Rule Set with allow override for SizeRestrictions_BODY
+  {
+    name: 'AWS-AWSManagedRulesCommonRuleSet',
+    rule: {
+      name: 'AWS-AWSManagedRulesCommonRuleSet',
+      priority: 0,
+      statement: {
+        managedRuleGroupStatement: {
+          vendorName: 'AWS',
+          name: 'AWSManagedRulesCommonRuleSet',
+          ruleActionOverrides: [
+            {
+              name: 'SizeRestrictions_BODY',
+              actionToUse: {
+                allow: {},
+              },
+            },
+          ],
+        },
+      },
+      overrideAction: {
+        none: {},
+      },
+      visibilityConfig: {
+        sampledRequestsEnabled: true,
+        cloudWatchMetricsEnabled: true,
+        metricName: 'AWS-AWSManagedRulesCommonRuleSet',
+      },
+    },
+  },
   // AWS IP Reputation list includes known malicious actors/bots and is regularly updated
   {
     name: 'AWS-AWSManagedRulesAmazonIpReputationList',
     rule: {
       name: 'AWS-AWSManagedRulesAmazonIpReputationList',
-      priority: 0,
+      priority: 1,
       statement: {
         managedRuleGroupStatement: {
           vendorName: 'AWS',
@@ -36,7 +66,7 @@ const awsManagedRules: WafRule[] = [
     name: 'AWS-AWSManagedRulesSQLiRuleSet',
     rule: {
       name: 'AWS-AWSManagedRulesSQLiRuleSet',
-      priority: 1,
+      priority: 2,
       statement: {
         managedRuleGroupStatement: {
           vendorName: 'AWS',
@@ -59,7 +89,7 @@ const awsManagedRules: WafRule[] = [
     name: 'AWS-AWSManagedRulesWordPressRuleSet',
     rule: {
       name: 'AWS-AWSManagedRulesWordPressRuleSet',
-      priority: 2,
+      priority: 3,
       visibilityConfig: {
         sampledRequestsEnabled: true,
         cloudWatchMetricsEnabled: true,
@@ -74,6 +104,52 @@ const awsManagedRules: WafRule[] = [
           name: 'AWSManagedRulesWordPressRuleSet',
           excludedRules: [],
         },
+      },
+    },
+  },
+  // AWS Managed Rules Known Bad Inputs Rule Set
+  {
+    name: 'AWS-AWSManagedRulesKnownBadInputsRuleSet',
+    rule: {
+      name: 'AWS-AWSManagedRulesKnownBadInputsRuleSet',
+      priority: 4,
+      statement: {
+        managedRuleGroupStatement: {
+          vendorName: 'AWS',
+          name: 'AWSManagedRulesKnownBadInputsRuleSet',
+          excludedRules: [],
+        },
+      },
+      overrideAction: {
+        none: {},
+      },
+      visibilityConfig: {
+        sampledRequestsEnabled: true,
+        cloudWatchMetricsEnabled: true,
+        metricName: 'AWS-AWSManagedRulesKnownBadInputsRuleSet',
+      },
+    },
+  },
+  // AWS Managed Rules Anonymous IP List (Blocks traffic from anonymizing services like VPNs and proxies)
+  {
+    name: 'AWS-AWSManagedRulesAnonymousIpList',
+    rule: {
+      name: 'AWS-AWSManagedRulesAnonymousIpList',
+      priority: 5,
+      statement: {
+        managedRuleGroupStatement: {
+          vendorName: 'AWS',
+          name: 'AWSManagedRulesAnonymousIpList',
+          excludedRules: [],
+        },
+      },
+      overrideAction: {
+        none: {},
+      },
+      visibilityConfig: {
+        sampledRequestsEnabled: true,
+        cloudWatchMetricsEnabled: true,
+        metricName: 'AWS-AWSManagedRulesAnonymousIpList',
       },
     },
   },

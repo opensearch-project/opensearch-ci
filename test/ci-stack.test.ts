@@ -433,11 +433,37 @@ test('WAF rules', () => {
     Name: 'jenkins-WAF',
     Rules: [
       {
-        Name: 'AWS-AWSManagedRulesAmazonIpReputationList',
+        Name: 'AWS-AWSManagedRulesCommonRuleSet',
         OverrideAction: {
           None: {},
         },
         Priority: 0,
+        Statement: {
+          ManagedRuleGroupStatement: {
+            Name: 'AWSManagedRulesCommonRuleSet',
+            VendorName: 'AWS',
+            RuleActionOverrides: [
+              {
+                Name: 'SizeRestrictions_BODY',
+                ActionToUse: {
+                  Allow: {},
+                },
+              },
+            ],
+          },
+        },
+        VisibilityConfig: {
+          CloudWatchMetricsEnabled: true,
+          MetricName: 'AWS-AWSManagedRulesCommonRuleSet',
+          SampledRequestsEnabled: true,
+        },
+      },
+      {
+        Name: 'AWS-AWSManagedRulesAmazonIpReputationList',
+        OverrideAction: {
+          None: {},
+        },
+        Priority: 1,
         Statement: {
           ManagedRuleGroupStatement: {
             Name: 'AWSManagedRulesAmazonIpReputationList',
@@ -455,7 +481,7 @@ test('WAF rules', () => {
         OverrideAction: {
           None: {},
         },
-        Priority: 1,
+        Priority: 2,
         Statement: {
           ManagedRuleGroupStatement: {
             ExcludedRules: [],
@@ -474,7 +500,7 @@ test('WAF rules', () => {
         OverrideAction: {
           None: {},
         },
-        Priority: 2,
+        Priority: 3,
         Statement: {
           ManagedRuleGroupStatement: {
             ExcludedRules: [],
@@ -485,6 +511,44 @@ test('WAF rules', () => {
         VisibilityConfig: {
           CloudWatchMetricsEnabled: true,
           MetricName: 'AWS-AWSManagedRulesWordPressRuleSet',
+          SampledRequestsEnabled: true,
+        },
+      },
+      {
+        Name: 'AWS-AWSManagedRulesKnownBadInputsRuleSet',
+        OverrideAction: {
+          None: {},
+        },
+        Priority: 4,
+        Statement: {
+          ManagedRuleGroupStatement: {
+            ExcludedRules: [],
+            Name: 'AWSManagedRulesKnownBadInputsRuleSet',
+            VendorName: 'AWS',
+          },
+        },
+        VisibilityConfig: {
+          CloudWatchMetricsEnabled: true,
+          MetricName: 'AWS-AWSManagedRulesKnownBadInputsRuleSet',
+          SampledRequestsEnabled: true,
+        },
+      },
+      {
+        Name: 'AWS-AWSManagedRulesAnonymousIpList',
+        OverrideAction: {
+          None: {},
+        },
+        Priority: 5,
+        Statement: {
+          ManagedRuleGroupStatement: {
+            ExcludedRules: [],
+            Name: 'AWSManagedRulesAnonymousIpList',
+            VendorName: 'AWS',
+          },
+        },
+        VisibilityConfig: {
+          CloudWatchMetricsEnabled: true,
+          MetricName: 'AWS-AWSManagedRulesAnonymousIpList',
           SampledRequestsEnabled: true,
         },
       },
