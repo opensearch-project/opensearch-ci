@@ -433,11 +433,51 @@ test('WAF rules', () => {
     Name: 'jenkins-WAF',
     Rules: [
       {
+        Name: 'AllowGitHubIPv4',
+        Priority: 0,
+        Statement: {
+          IPSetReferenceStatement:
+              {
+                Arn: {
+                  'Fn::GetAtt': [
+                    'GitHubIpv4Set',
+                    'Arn',
+                  ],
+                },
+              },
+        },
+        VisibilityConfig: {
+          CloudWatchMetricsEnabled: true,
+          MetricName: 'AllowGitHubIPv4',
+          SampledRequestsEnabled: true,
+        },
+      },
+      {
+        Name: 'AllowGitHubIPv6',
+        Priority: 1,
+        Statement: {
+          IPSetReferenceStatement:
+              {
+                Arn: {
+                  'Fn::GetAtt': [
+                    'GitHubIpv6Set',
+                    'Arn',
+                  ],
+                },
+              },
+        },
+        VisibilityConfig: {
+          CloudWatchMetricsEnabled: true,
+          MetricName: 'AllowGitHubIPv6',
+          SampledRequestsEnabled: true,
+        },
+      },
+      {
         Name: 'AWS-AWSManagedRulesCommonRuleSet',
         OverrideAction: {
           None: {},
         },
-        Priority: 0,
+        Priority: 2,
         Statement: {
           ManagedRuleGroupStatement: {
             Name: 'AWSManagedRulesCommonRuleSet',
@@ -463,7 +503,7 @@ test('WAF rules', () => {
         OverrideAction: {
           None: {},
         },
-        Priority: 1,
+        Priority: 3,
         Statement: {
           ManagedRuleGroupStatement: {
             Name: 'AWSManagedRulesAmazonIpReputationList',
@@ -473,44 +513,6 @@ test('WAF rules', () => {
         VisibilityConfig: {
           CloudWatchMetricsEnabled: true,
           MetricName: 'AWSManagedRulesAmazonIpReputationList',
-          SampledRequestsEnabled: true,
-        },
-      },
-      {
-        Name: 'AWS-AWSManagedRulesSQLiRuleSet',
-        OverrideAction: {
-          None: {},
-        },
-        Priority: 2,
-        Statement: {
-          ManagedRuleGroupStatement: {
-            ExcludedRules: [],
-            Name: 'AWSManagedRulesSQLiRuleSet',
-            VendorName: 'AWS',
-          },
-        },
-        VisibilityConfig: {
-          CloudWatchMetricsEnabled: true,
-          MetricName: 'AWS-AWSManagedRulesSQLiRuleSet',
-          SampledRequestsEnabled: true,
-        },
-      },
-      {
-        Name: 'AWS-AWSManagedRulesWordPressRuleSet',
-        OverrideAction: {
-          None: {},
-        },
-        Priority: 3,
-        Statement: {
-          ManagedRuleGroupStatement: {
-            ExcludedRules: [],
-            Name: 'AWSManagedRulesWordPressRuleSet',
-            VendorName: 'AWS',
-          },
-        },
-        VisibilityConfig: {
-          CloudWatchMetricsEnabled: true,
-          MetricName: 'AWS-AWSManagedRulesWordPressRuleSet',
           SampledRequestsEnabled: true,
         },
       },
@@ -534,11 +536,49 @@ test('WAF rules', () => {
         },
       },
       {
-        Name: 'AWS-AWSManagedRulesAnonymousIpList',
+        Name: 'AWS-AWSManagedRulesSQLiRuleSet',
         OverrideAction: {
           None: {},
         },
         Priority: 5,
+        Statement: {
+          ManagedRuleGroupStatement: {
+            ExcludedRules: [],
+            Name: 'AWSManagedRulesSQLiRuleSet',
+            VendorName: 'AWS',
+          },
+        },
+        VisibilityConfig: {
+          CloudWatchMetricsEnabled: true,
+          MetricName: 'AWS-AWSManagedRulesSQLiRuleSet',
+          SampledRequestsEnabled: true,
+        },
+      },
+      {
+        Name: 'AWS-AWSManagedRulesWordPressRuleSet',
+        OverrideAction: {
+          None: {},
+        },
+        Priority: 6,
+        Statement: {
+          ManagedRuleGroupStatement: {
+            ExcludedRules: [],
+            Name: 'AWSManagedRulesWordPressRuleSet',
+            VendorName: 'AWS',
+          },
+        },
+        VisibilityConfig: {
+          CloudWatchMetricsEnabled: true,
+          MetricName: 'AWS-AWSManagedRulesWordPressRuleSet',
+          SampledRequestsEnabled: true,
+        },
+      },
+      {
+        Name: 'AWS-AWSManagedRulesAnonymousIpList',
+        OverrideAction: {
+          None: {},
+        },
+        Priority: 7,
         Statement: {
           ManagedRuleGroupStatement: {
             ExcludedRules: [],
