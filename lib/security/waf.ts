@@ -13,8 +13,8 @@ interface WafRule {
 }
 
 interface AllowedIPs {
-  GitHubAllowIpIpv4: string[];
-  GitHubAllowIpIpv6: string[];
+  ipv4: string[];
+  ipv6: string[];
 }
 
 // Read the allowed IPs from the JSON file
@@ -204,14 +204,14 @@ export class JenkinsWAF {
       name: 'GitHubIpv4Set',
       ipAddressVersion: 'IPV4',
       scope: 'REGIONAL',
-      addresses: allowedIps.GitHubAllowIpIpv4,
+      addresses: allowedIps.ipv4,
     });
 
     const ipSetIpv6 = new CfnIPSet(stack, 'GitHubIpv6Set', {
       name: 'GitHubIpv6Set',
       ipAddressVersion: 'IPV6',
       scope: 'REGIONAL',
-      addresses: allowedIps.GitHubAllowIpIpv6,
+      addresses: allowedIps.ipv6,
     });
 
     const allowGitHubIpv4Rule: WafRule = {
