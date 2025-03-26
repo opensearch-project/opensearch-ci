@@ -8,8 +8,8 @@
 
 import { readFileSync } from 'fs';
 import { load } from 'js-yaml';
-import { JenkinsMainNode } from '../../lib/compute/jenkins-main-node';
 import { AuthConfig, FineGrainedAccessSpecs } from '../../lib/compute/auth-config';
+import { JenkinsMainNode } from '../../lib/compute/jenkins-main-node';
 
 describe('Test authType OIDC', () => {
   // WHEN
@@ -25,7 +25,7 @@ describe('Test authType OIDC', () => {
     serverConfiguration: {},
   };
   const admins = ['admin1', 'admin2'];
-  const yml : any = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
+  const yml: any = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
   AuthConfig.addOidcConfigToJenkinsYaml(yml, 'oidc', admins);
 
   // THEN
@@ -88,7 +88,7 @@ describe('Test authType github', () => {
 
     // Check read users
     const readUsers = readRole.entries.map((entry: any) => entry.user);
-    expect(readUsers).toEqual(['anonymous', 'authenticated']);
+    expect(readUsers).toEqual(['authenticated']);
   });
 
   test('Verify fine grained access', async () => {
