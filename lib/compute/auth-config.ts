@@ -71,7 +71,6 @@ export class AuthConfig {
   public static addOidcConfigToJenkinsYaml(yamlObject: any, authType: string, admins?: string[], fineGrainedAccessItems?: FineGrainedAccessSpecs[]): any {
     const jenkinsYaml: any = yamlObject;
     let adminUsers: string[] = ['admin'];
-    const readOnlyUsers: string[] = ['authenticated'];
 
     if (admins) {
       adminUsers = adminUsers.concat(admins);
@@ -116,7 +115,10 @@ export class AuthConfig {
             ,
           },
           {
-            entries: readOnlyUsers.map((user) => ({ user })),
+            entries: [
+              { user: 'authenticated' },
+              { group: 'authenticated' },
+            ],
             name: 'read',
             pattern: '.*',
             permissions: AuthConfig.readOnlyRolePermissions,
