@@ -88,7 +88,6 @@ describe('Test authType github', () => {
 
     // Check read groups
     const readGroup = readRole.entries.map((entry: any) => entry.group);
-    console.log(readRole.entries);
     expect(readGroup).toEqual(['authenticated']);
   });
 
