@@ -10,7 +10,6 @@
 export interface StageDefinition {
     readonly envName: string;
     readonly Region: string;
-    readonly Endpoint: string;
     readonly AccountId: string;
     readonly agentAssumeRole: string[];
 }
@@ -18,7 +17,6 @@ export interface StageDefinition {
 export const StageDef: StageDefinition = {
   envName: process.env.ENVIRONMENT || 'Dev',
   Region: process.env.REGION || 'us-east-1',
-  Endpoint: process.env.ENDPOINT || '',
   AccountId: process.env.ACCOUNTID || '',
   agentAssumeRole: process.env.ASSUMED_ROLES ? process.env.ASSUMED_ROLES.split(',') : [
     '',
