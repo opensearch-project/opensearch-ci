@@ -26,6 +26,12 @@ jobs:
         with:
           node-version: 18.x
 
+      - name: Set Environment variables
+        run: |
+          echo "ENVIRONMENT=${{ matrix.environment }}" >> $GITHUB_ENV
+          echo "ACCOUNTID=${{ secrets.ACCOUNT_ID }}" >> $GITHUB_ENV
+          echo "ASSUMED_ROLES=${{ secrets.ASSUMED_ROLES }}" >> $GITHUB_ENV
+
       - name: Install dependencies and build project
         run: |
           npm install
@@ -34,23 +40,23 @@ jobs:
       - name: Install AWS CDK
         run: npm install -g aws-cdk@2.149.0
 
-      - name: Assume IAM Role for Beta
+      - name: Assume IAM Role for ${{matrix.environment}}
         uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
           role-to-assume: ${{ secrets.CHANGESET_ROLE }}
           aws-region: us-east-1
 
-      - name: Create Change Set for Beta
+      - name: Create Change Set for ${{matrix.environment}}
         id: cdk_diff
         run: |
           cdk acknowledge 30717
           echo "diff_output<<EOF" >> $GITHUB_OUTPUT
           echo "## CI-Config Stack Changeset" >> $GITHUB_OUTPUT
-          npm run cdk diff -- OpenSearch-CI-Config-${{ matrix.environment }} -c useSsl=true -c serverAccessType=prefixList -c restrictServerAccessTo=${{ secrets.PREFIX_LIST }} | sed -E 's/[0-9]{12}/[MASKED]/g' >> $GITHUB_OUTPUT
+          npm run cdk diff -- OpenSearch-CI-Config-${{ matrix.environment }} | sed -E 's/[0-9]{12}/[MASKED]/g' >> $GITHUB_OUTPUT
           
           echo "" >> $GITHUB_OUTPUT
           echo "## CI Stack ChangeSet ${{ matrix.environment }}" >> $GITHUB_OUTPUT
-          npm run cdk diff -- OpenSearch-CI-${{ matrix.environment }} -c useSsl=true -c authType=github -c dataRetention=true -c macAgent=true -c useProdAgents=true -c enableViews=true -c ignoreResourcesFailures=false -c serverAccessType=prefixList -c restrictServerAccessTo=${{secrets.PREFIX_LIST}} | sed -E 's/[0-9]{12}/[MASKED]/g' >> $GITHUB_OUTPUT
+          npm run cdk diff -- OpenSearch-CI-${{ matrix.environment }} | sed -E 's/[0-9]{12}/[MASKED]/g' >> $GITHUB_OUTPUT
           
           echo "EOF" >> $GITHUB_OUTPUT
 

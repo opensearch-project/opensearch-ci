@@ -28,6 +28,12 @@ jobs:
           role-to-assume: ${{ secrets.DEPLOYMENT_ROLE }}
           aws-region: us-east-1
 
+      - name: Set Environment variables
+        run: |
+          echo "ENVIRONMENT=${{ matrix.environment }}" >> $GITHUB_ENV
+          echo "ACCOUNTID=${{ secrets.ACCOUNT_ID }}" >> $GITHUB_ENV
+          echo "ASSUMED_ROLES=${{ secrets.ASSUMED_ROLES }}" >> $GITHUB_ENV
+
       - name: Setup Node.js and AWS CDK
         uses: actions/setup-node@v4
         with:
@@ -45,8 +51,8 @@ jobs:
 
       - name: Deploy CI-Config Stack
         run: |
-          npm run cdk deploy -- OpenSearch-CI-Config-${{ matrix.environment }} -c useSsl=true -c serverAccessType=prefixList -c restrictServerAccessTo=${{secrets.PREFIX_LIST}} 2>&1 | tee deployment_logs.txt | sed -E 's/[0-9]{12}/[MASKED]/g' | grep "Deployment failed:" && exit 1
+          npm run cdk deploy -- OpenSearch-CI-Config-${{ matrix.environment }} --require-approval never 2>&1 | tee deployment_logs.txt | sed -E 's/[0-9]{12}/[MASKED]/g' | grep "Deployment failed:" && exit 1
 
       - name: Deploy CI Stack
         run: |
-          npm run cdk deploy -- OpenSearch-CI-${{ matrix.environment }} -c useSsl=true -c authType=oidc -c dataRetention=true -c macAgent=true -c useProdAgents=true -c enableViews=true -c ignoreResourcesFailures=false -c serverAccessType=prefixList -c restrictServerAccessTo=${{secrets.PREFIX_LIST}} --require-approval never 2>&1 | tee deployment_logs.txt | sed -E 's/[0-9]{12}/[MASKED]/g' | grep "Deployment failed:" && exit 1
+          npm run cdk deploy -- OpenSearch-CI-${{ matrix.environment }} --require-approval never 2>&1 | tee deployment_logs.txt | sed -E 's/[0-9]{12}/[MASKED]/g' | grep "Deployment failed:" && exit 1
