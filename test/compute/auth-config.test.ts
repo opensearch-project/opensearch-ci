@@ -86,9 +86,9 @@ describe('Test authType github', () => {
     const readRole = globalRoles.find((role: any) => role.name === 'read');
     expect(readRole).toBeTruthy();
 
-    // Check read users
-    const readUsers = readRole.entries.map((entry: any) => entry.user);
-    expect(readUsers).toEqual(['authenticated']);
+    // Check read groups
+    const readGroup = readRole.entries.map((entry: any) => entry.group);
+    expect(readGroup).toEqual(['authenticated']);
   });
 
   test('Verify fine grained access', async () => {
