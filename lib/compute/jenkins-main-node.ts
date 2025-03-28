@@ -35,8 +35,8 @@ import { dump } from 'js-yaml';
 import { join } from 'path';
 import { CloudwatchAgent } from '../constructs/cloudwatch-agent';
 import { AgentNodeConfig, AgentNodeNetworkProps, AgentNodeProps } from './agent-node-config';
-import { EnvConfig } from './env-config';
 import { AuthConfig, FineGrainedAccessSpecs } from './auth-config';
+import { EnvConfig } from './env-config';
 import { ViewsConfig } from './views';
 
 interface HttpConfigProps {
@@ -433,7 +433,7 @@ export class JenkinsMainNode {
         // eslint-disable-next-line max-len
         ? `cd /configHelper && sudo pipenv run python3 config_helper.py --initial-jenkins-config-file-path=/initial_jenkins.yaml --auth-aws-secret-arn=${loginAuthProps.authCredsSecretsArn} --auth-type=${loginAuthProps.authType} --aws-region=${stackRegion} > configHelper.log 2>&1`
         : 'echo No changes made to initial_jenkins.yaml with respect to AuthType'),
-      InitCommand.shellCommand('while [[ "$(curl -s -o /dev/null -w \'\'%{http_code}\'\' localhost:8080/api/json?pretty)" != "200" ]]; do sleep 5; done'),
+      InitCommand.shellCommand('while [[ "$(curl -s -o /dev/null -w \'\'%{http_code}\'\' localhost:8080/login)" != "200" ]]; do sleep 5; done'),
 
       // Reload configuration via Jenkins.yaml
       InitCommand.shellCommand('cp /initial_jenkins.yaml /var/lib/jenkins/jenkins.yaml &&'
