@@ -410,7 +410,7 @@ export class JenkinsMainNode {
       InitCommand.shellCommand('/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s'),
 
       InitCommand.shellCommand(dataRetentionProps.dataRetention
-        ? `mkdir /var/lib/jenkins && mount -t efs ${efsId} /var/lib/jenkins`
+        ? `mkdir -p /var/lib/jenkins && mount -t efs ${efsId} /var/lib/jenkins`
         : 'echo Data rentention is disabled, not mounting efs'),
 
       InitFile.fromFileInline('/docker-compose.yml', join(__dirname, '../../resources/docker-compose.yml')),
