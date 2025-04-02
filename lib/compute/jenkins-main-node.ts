@@ -399,6 +399,12 @@ export class JenkinsMainNode {
                   auto_removal: false,
                   log_stream_name: 'gradle-check.log/{date}',
                 },
+                {
+                  file_path: '/var/log/httpd/access_log',
+                  log_group_name: 'JenkinsMainNode/access_log',
+                  auto_removal: false,
+                  log_stream_name: 'httpd/access_log/{date}',
+                },
               ],
             },
           },
