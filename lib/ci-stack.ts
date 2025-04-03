@@ -13,6 +13,7 @@ import {
   FlowLogDestination, FlowLogTrafficType, IPeer, Peer, Vpc,
 } from 'aws-cdk-lib/aws-ec2';
 import { ListenerCertificate } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
@@ -97,8 +98,12 @@ export class CIStack extends Stack {
     const auditloggingS3Bucket = new CiAuditLogging(this);
     const vpc = new Vpc(this, 'JenkinsVPC', {
       flowLogs: {
-        s3: {
-          destination: FlowLogDestination.toS3(auditloggingS3Bucket.bucket, 'vpcFlowLogs'),
+        cloudwatch: {
+          destination: FlowLogDestination.toCloudWatchLogs(
+            new LogGroup(this, 'VPCFlowLogs', {
+              logGroupName: 'Jenkins/vpc/flow-logs',
+            }),
+          ),
           trafficType: FlowLogTrafficType.ALL,
         },
       },

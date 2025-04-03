@@ -35,8 +35,8 @@ test('CI Stack Basic Resources', () => {
   template.resourceCountIs('AWS::AutoScaling::LaunchConfiguration', 1);
   template.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
   template.resourceCountIs('AWS::EC2::SecurityGroup', 4);
-  template.resourceCountIs('AWS::IAM::Policy', 1);
-  template.resourceCountIs('AWS::IAM::Role', 2);
+  template.resourceCountIs('AWS::IAM::Policy', 2);
+  template.resourceCountIs('AWS::IAM::Role', 3);
   template.resourceCountIs('AWS::S3::Bucket', 2);
   template.resourceCountIs('AWS::EC2::KeyPair', 1);
   template.resourceCountIs('AWS::IAM::InstanceProfile', 2);
@@ -437,14 +437,14 @@ test('WAF rules', () => {
         Priority: 0,
         Statement: {
           IPSetReferenceStatement:
-              {
-                Arn: {
-                  'Fn::GetAtt': [
-                    'GitHubIpv4Set',
-                    'Arn',
-                  ],
-                },
-              },
+          {
+            Arn: {
+              'Fn::GetAtt': [
+                'GitHubIpv4Set',
+                'Arn',
+              ],
+            },
+          },
         },
         VisibilityConfig: {
           CloudWatchMetricsEnabled: true,
@@ -457,14 +457,14 @@ test('WAF rules', () => {
         Priority: 1,
         Statement: {
           IPSetReferenceStatement:
-              {
-                Arn: {
-                  'Fn::GetAtt': [
-                    'GitHubIpv6Set',
-                    'Arn',
-                  ],
-                },
-              },
+          {
+            Arn: {
+              'Fn::GetAtt': [
+                'GitHubIpv6Set',
+                'Arn',
+              ],
+            },
+          },
         },
         VisibilityConfig: {
           CloudWatchMetricsEnabled: true,
