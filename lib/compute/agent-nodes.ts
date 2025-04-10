@@ -58,7 +58,7 @@ export class AgentNodes {
       numExecutors: 1,
       amiId: 'ami-0e8c1c93cdfb4ce70',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
-        + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=python* -y && docker ps',
+        + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.AL2_X64_DOCKER_HOST = {
