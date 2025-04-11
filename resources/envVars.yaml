@@ -1,0 +1,7 @@
+GITHUB_BOT_TOKEN_NAME: jenkins-github-bot-token
+PUBLIC_ARTIFACT_URL: https://ci.opensearch.org/ci/dbc
+SONATYPE_STAGING_PROFILE_ID: 78d7607cc6e881
+STAGING_PROFILE_ID: 78d7607cc6e881
+REPO_URL: https://aws.oss.sonatype.org/
+PERF_TEST_CONFIG_LOCATION: bundles/tests/perf-test-config
+BENCHMARK_TEST_CONFIG_LOCATION: bundles/tests/benchmark-test-config
