@@ -1,0 +1,117 @@
+name: deploy-stacks.yml
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-env-change-sets-and-deploy:
+    permissions:
+      id-token: write
+      contents: read
+      issues: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node and install cdk cli
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Install dependencies and build project
+        run: |
+          npm install
+          npm install -g aws-cdk
+          npm run build
+
+      - name: Set up Env variables
+        run: |
+          echo "BETA_ACCOUNT_ID=${{ secrets.BETA_ACCOUNT_ID }}" >> $GITHUB_ENV
+          echo "PROD_ACCOUNT_ID=${{ secrets.PROD_ACCOUNT_ID }}" >> $GITHUB_ENV
+          echo "ASSUMED_ROLES=${{ secrets.ASSUMED_ROLES }}" >> $GITHUB_ENV
+          echo "REGION=${{ secrets.REGION }}" >> $GITHUB_ENV
+
+      - id: get_approvers
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: json
+          script: |
+            const collaborators = await github.paginate(
+              github.rest.repos.listCollaborators,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                affiliation: 'direct',
+                per_page: 100
+              }
+            );
+            const maintainers = collaborators.filter(c => c.permissions.maintain).map(c => c.login);
+            return maintainers;
+
+      - name: Configure beta deployment credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.BETA_DEPLOYMENT_ROLE }}
+          aws-region: ${{ secrets.REGION }}
+
+      - name: Create beta change-set for approval
+        id: beta_stack_diff
+        run: |
+          DIFF_OUTPUT=$(cdk diff -c stage=Beta | sed -E 's/[0-9]{12}/[MASKED]/g')
+          echo "diff_output<<EOF" >> $GITHUB_OUTPUT
+          echo "## CI Stacks Changeset" >> $GITHUB_OUTPUT
+          echo "$DIFF_OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Approve or Deny beta change set
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ secrets.GITHUB_TOKEN }}
+          approvers: ${{ join(fromJSON(steps.get_approvers.outputs.result), ', ') }}
+          minimum-approvals: 1
+          issue-title: 'Request to approve/deny Beta CI Stack Deployment'
+          issue-body: |
+            <details>
+            <summary>Beta Stack Changeset Details</summary>
+
+            ```
+            ${{ steps.beta_stack_diff.outputs.diff_output }}
+            ```
+            </details>
+      - name: Deploy beta stacks
+        run: |
+          cdk deploy "*" -c stage=Beta --require-approval=never
+
+      - name: Configure Production deployment credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.PROD_DEPLOYMENT_ROLE }}
+          aws-region: ${{ secrets.REGION }}
+      - name: Create Production change-set for approval
+        id: prod_stack_diff
+        run: |
+          DIFF_OUTPUT=$(cdk diff -c stage=Prod | sed -E 's/[0-9]{12}/[MASKED]/g')
+          echo "diff_output<<EOF" >> $GITHUB_OUTPUT
+          echo "## CI Stacks Changeset" >> $GITHUB_OUTPUT
+          echo "$DIFF_OUTPUT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Approve or Deny Production change set
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ secrets.GITHUB_TOKEN }}
+          approvers: ${{ join(fromJSON(steps.get_approvers.outputs.result), ', ') }}
+          minimum-approvals: 1
+          issue-title: 'Request to approve/deny Production CI Stack Deployment'
+          issue-body: |
+            <details>
+            <summary>Production Stack Changeset Details</summary>
+
+            ```
+            ${{ steps.prod_stack_diff.outputs.diff_output }}
+            ```
+            </details>
+      - name: Deploy Production stacks
+        run: |
+          cdk deploy "*" -c stage=Prod --require-approval=never
