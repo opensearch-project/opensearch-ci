@@ -1,9 +1,8 @@
 name: deploy-stacks.yml
 on:
   push:
-    branches:
-      - main
-
+    tags:
+      - *
 jobs:
   create-env-change-sets-and-deploy:
     permissions:
@@ -31,7 +30,7 @@ jobs:
           echo "BETA_ACCOUNT_ID=${{ secrets.BETA_ACCOUNT_ID }}" >> $GITHUB_ENV
           echo "PROD_ACCOUNT_ID=${{ secrets.PROD_ACCOUNT_ID }}" >> $GITHUB_ENV
           echo "ASSUMED_ROLES=${{ secrets.ASSUMED_ROLES }}" >> $GITHUB_ENV
-          echo "REGION=${{ secrets.REGION }}" >> $GITHUB_ENV
+          echo "REGION=us-east-1" >> $GITHUB_ENV
 
       - id: get_approvers
         uses: actions/github-script@v7
@@ -55,7 +54,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.BETA_DEPLOYMENT_ROLE }}
-          aws-region: ${{ secrets.REGION }}
+          aws-region: 'us-east-1'
 
       - name: Create beta change-set for approval
         id: beta_stack_diff
@@ -88,7 +87,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.PROD_DEPLOYMENT_ROLE }}
-          aws-region: ${{ secrets.REGION }}
+          aws-region: 'us-east-1'
       - name: Create Production change-set for approval
         id: prod_stack_diff
         run: |
