@@ -35,7 +35,7 @@ curl -o- https://packages.adoptium.net/artifactory/api/gpg/key/public | sudo tee
 echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | sudo tee /etc/apt/sources.list.d/adoptium.list
 
 sudo apt-get update -y
-sudo apt-get install -y temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-21-jdk temurin-23-jdk
+sudo apt-get install -y temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-21-jdk temurin-23-jdk temurin-24-jdk
 # JDK14 required for gradle check to do bwc tests
 curl -SL "https://ci.opensearch.org/ci/dbc/tools/jdk/OpenJDK14U-jdk_x64_linux_hotspot_14.0.2_12.tar.gz" -o jdk14.tar.gz
 tar -xzf jdk14.tar.gz && rm -v jdk14.tar.gz
@@ -64,5 +64,5 @@ sudo ln -s `which awsv2` /usr/local/bin/aws
 sudo aws --install
 aws --install
 
-sudo apt-mark hold docker.io openssh-server gh grub-efi* shim-signed temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-21-jdk temurin-23-jdk
+sudo apt-mark hold docker.io openssh-server gh grub-efi* shim-signed temurin-8-jdk temurin-11-jdk temurin-17-jdk temurin-21-jdk temurin-23-jdk temurin-24-jdk
 sudo apt-get clean -y && sudo apt-get autoremove -y
