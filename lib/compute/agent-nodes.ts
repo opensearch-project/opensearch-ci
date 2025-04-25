@@ -26,8 +26,6 @@ export class AgentNodes {
 
   readonly AL2023_X64_BENCHMARK_TEST: AgentNodeProps;
 
-  readonly UBUNTU2004_X64_GRADLE_CHECK: AgentNodeProps;
-
   readonly UBUNTU2404_X64_GRADLE_CHECK: AgentNodeProps;
 
   readonly UBUNTU2404_X64_DOCKER_BUILDER: AgentNodeProps;
@@ -140,24 +138,9 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 2,
-      amiId: 'ami-09f55bf0827296c51',
+      amiId: 'ami-0e8c1c93cdfb4ce70',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
-      remoteFs: '/var/jenkins',
-    };
-    this.UBUNTU2004_X64_GRADLE_CHECK = {
-      agentType: 'unix',
-      customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
-      workerLabelString: ['Jenkins-Agent-Ubuntu2004-X64-M58xlarge-Single-Host', 'gradle'],
-      instanceType: 'M58xlarge',
-      remoteUser: 'ubuntu',
-      maxTotalUses: 1,
-      minimumNumberOfSpareInstances: 1,
-      numExecutors: 1,
-      amiId: 'ami-0cdc3fd42e6dc728c',
-      initScript: 'sudo apt-mark hold docker docker.io openssh-server gh grub-efi* shim-signed && docker ps &&'
-        + ' sudo apt-get update -y && (sudo killall -9 apt-get apt 2>&1 || echo) && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
-        + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
       remoteFs: '/var/jenkins',
     };
     this.UBUNTU2404_X64_GRADLE_CHECK = {
@@ -169,7 +152,7 @@ export class AgentNodes {
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-003ac353b208c956a',
+      amiId: 'ami-0630b6404a4d80c46',
       initScript: 'docker ps && sudo apt-get update -y && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
         + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
       remoteFs: '/var/jenkins',
@@ -183,7 +166,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 2,
       numExecutors: 1,
-      amiId: 'ami-003ac353b208c956a',
+      amiId: 'ami-0630b6404a4d80c46',
       initScript: 'docker ps && sudo apt-get update -y && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
         + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
       remoteFs: '/var/jenkins',
@@ -197,7 +180,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 4,
-      amiId: 'ami-09db87000b6d76316',
+      amiId: 'ami-0ca950c1ee3042d37',
       initScript: 'echo',
       remoteFs: '/var/jenkins',
     };
@@ -210,7 +193,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 4,
-      amiId: 'ami-0897a08c9555774b1',
+      amiId: 'ami-0597228ad6f5531c5',
       initScript: 'echo',
       remoteFs: '/var/jenkins',
     };
