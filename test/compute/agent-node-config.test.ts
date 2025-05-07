@@ -15,7 +15,7 @@ import { CIStack } from '../../lib/ci-stack';
 test('Agents Resource is present', () => {
   const app = new App({
     context: {
-      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', jenkinsInstanceType: 'BTR',
+      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', jenkinsInstanceType: 'BTR', useProdAgents: 'true',
     },
   });
   const stack = new CIStack(app, 'TestStack', {
