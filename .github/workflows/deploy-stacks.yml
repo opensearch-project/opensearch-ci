@@ -2,7 +2,7 @@ name: deploy-stacks.yml
 on:
   push:
     tags:
-      - *
+      - '*'
 jobs:
   create-env-change-sets-and-deploy:
     permissions:
