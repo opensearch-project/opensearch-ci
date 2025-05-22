@@ -26,6 +26,8 @@ export class AgentNodes {
 
   readonly AL2023_X64_BENCHMARK_TEST: AgentNodeProps;
 
+  readonly AL2023_X64_VECTOR_BENCHMARK_TEST: AgentNodeProps;
+
   readonly UBUNTU2404_X64_GRADLE_CHECK: AgentNodeProps;
 
   readonly UBUNTU2404_X64_DOCKER_BUILDER: AgentNodeProps;
@@ -141,6 +143,20 @@ export class AgentNodes {
       amiId: 'ami-0e8c1c93cdfb4ce70',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
+      remoteFs: '/var/jenkins',
+    };
+    this.AL2023_X64_VECTOR_BENCHMARK_TEST = {
+      agentType: 'unix',
+      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
+      workerLabelString: ['Jenkins-Agent-AL2023-X64-M52xlarge-Vector-Benchmark-Test', 'benchmark'],
+      instanceType: 'M52xlarge',
+      remoteUser: 'ec2-user',
+      maxTotalUses: 10,
+      minimumNumberOfSpareInstances: 1,
+      numExecutors: 2,
+      amiId: 'ami-0e8c1c93cdfb4ce70',
+      initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
+          + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.UBUNTU2404_X64_GRADLE_CHECK = {
