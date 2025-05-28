@@ -21,16 +21,16 @@ export const StageDefs: StageMap = {
   Dev: {
     region: process.env.REGION || 'us-east-1',
     accountId: process.env.DEV_ACCOUNT_ID || '',
-    agentAssumeRole: process.env.DEV_ASSUMED_ROLES ? process.env.DEV_ASSUMED_ROLES.split(',') : [''],
+    agentAssumeRole: process.env.DEV_ASSUMED_ROLES ? process.env.DEV_ASSUMED_ROLES.split(',') : [],
   },
   Beta: {
     region: process.env.REGION || 'us-east-1',
     accountId: process.env.BETA_ACCOUNT_ID || '',
-    agentAssumeRole: process.env.ASSUMED_ROLES ? process.env.ASSUMED_ROLES.split(',') : [''],
+    agentAssumeRole: process.env.ASSUMED_ROLES ? process.env.ASSUMED_ROLES.split(',') : [],
   },
   Prod: {
     region: process.env.PROD_REGION || 'us-east-1',
     accountId: process.env.PROD_ACCOUNT_ID || '',
-    agentAssumeRole: process.env.ASSUMED_ROLES ? process.env.ASSUMED_ROLES.split(',') : [''],
+    agentAssumeRole: process.env.ASSUMED_ROLES ? process.env.ASSUMED_ROLES.split(',') : [],
   },
 };
