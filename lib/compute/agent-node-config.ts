@@ -121,7 +121,7 @@ export class AgentNodeConfig {
     );
 
     /* eslint-disable eqeqeq */
-    if (assumeRole) {
+    if (assumeRole && assumeRole.length > 0) {
       // policy to allow assume role AssumeRole
       AgentNodeRole.addToPolicy(
         new PolicyStatement({
