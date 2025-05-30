@@ -19,13 +19,14 @@ sudo rm -rf /var/cache/yum /var/lib/yum/history
 sudo yum repolist
 sudo yum update --skip-broken --exclude=openssh* --exclude=docker* -y
 
+sudo yum install -y which curl git gnupg2 tar net-tools procps-ng python3 python3-devel python3-pip zip unzip jq pigz
+sudo yum install -y docker ntp
+sudo yum groupinstall -y "Development Tools"
+
 # Install jdk21
 sudo rpm --import https://yum.corretto.aws/corretto.key
 sudo curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo
 sudo yum install -y java-21-amazon-corretto-devel; java -version
-sudo yum install -y which curl git gnupg2 tar net-tools procps-ng python3 python3-devel python3-pip zip unzip jq pigz
-sudo yum install -y docker ntp
-sudo yum groupinstall -y "Development Tools"
 
 curl -o- https://bootstrap.pypa.io/get-pip.py | python3
 echo "export PATH=$PATH:$HOME/.local/bin" >> $HOME/.bashrc
