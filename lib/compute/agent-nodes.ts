@@ -70,7 +70,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 4,
-      amiId: 'ami-047328312ef36d12b',
+      amiId: 'ami-08512a7dd07035c1b',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -112,7 +112,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 4,
-      amiId: 'ami-06ba4c81e8dd7ab49',
+      amiId: 'ami-02c3363a382dda631',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -254,7 +254,7 @@ export class AgentNodes {
       instanceType: 'C524xlarge',
       remoteUser: 'Administrator',
       maxTotalUses: 1,
-      minimumNumberOfSpareInstances: 1,
+      minimumNumberOfSpareInstances: 0, // Very old and not actively used, lacking jdk21 support to run on Jenkins since 2.492.3, remove soon
       numExecutors: 1,
       amiId: 'ami-0ca4f0ba85855e148',
       initScript: 'echo',
