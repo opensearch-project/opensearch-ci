@@ -20,6 +20,7 @@ test('Agents Resource is present', () => {
   });
   const stack = new CIStack(app, 'TestStack', {
     env: { account: 'test-account', region: 'us-east-1' },
+    alternativeNodeConfig: [],
   });
   const template = Template.fromStack(stack);
 
