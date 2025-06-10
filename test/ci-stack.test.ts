@@ -7,7 +7,7 @@
  */
 
 import { App } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Peer } from 'aws-cdk-lib/aws-ec2';
 import { CIStack } from '../lib/ci-stack';
 import { AgentNodes } from '../lib/compute/agent-nodes';
@@ -20,6 +20,7 @@ test('CI Stack Basic Resources', () => {
       restrictServerAccessTo: '10.10.10.10/32',
       additionalCommands: './test/data/hello-world.py',
       jenkinsInstanceType: 'BTR',
+      useProdAgents: 'false',
     },
   });
 
@@ -35,8 +36,8 @@ test('CI Stack Basic Resources', () => {
   template.resourceCountIs('AWS::AutoScaling::LaunchConfiguration', 1);
   template.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
   template.resourceCountIs('AWS::EC2::SecurityGroup', 4);
-  template.resourceCountIs('AWS::IAM::Policy', 2);
-  template.resourceCountIs('AWS::IAM::Role', 3);
+  template.resourceCountIs('AWS::IAM::Policy', 36);
+  template.resourceCountIs('AWS::IAM::Role', 38);
   template.resourceCountIs('AWS::S3::Bucket', 2);
   template.resourceCountIs('AWS::EC2::KeyPair', 1);
   template.resourceCountIs('AWS::IAM::InstanceProfile', 2);
@@ -44,13 +45,37 @@ test('CI Stack Basic Resources', () => {
   template.resourceCountIs('AWS::SSM::Association', 1);
   template.resourceCountIs('AWS::EFS::FileSystem', 1);
   template.resourceCountIs('AWS::CloudWatch::Alarm', 4);
-  template.resourceCountIs('AWS::SecretsManager::Secret', 1);
+  template.resourceCountIs('AWS::SecretsManager::Secret', 3);
+
+  template.hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        Match.objectLike({
+          Action: 'sts:AssumeRoleWithWebIdentity',
+          Effect: 'Allow',
+          Principal: {
+            Federated: { Ref: 'githubopenidconnectE4C4027C' },
+          },
+          Condition: {
+            StringLike: {
+              'token.actions.githubusercontent.com:sub': 'repo:opensearch-project/opensearch-jvector:ref:refs/*',
+            },
+            StringEquals: {
+              'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
+            },
+          },
+        }),
+      ],
+      Version: '2012-10-17',
+    },
+    RoleName: 'opensearch-jvector-secret-access-role-for-branches-public',
+  });
 });
 
 test('External security group is open', () => {
   const app = new App({
     context: {
-      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: 'all', jenkinsInstanceType: 'BTR',
+      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: 'all', jenkinsInstanceType: 'BTR', useProdAgents: 'false',
     },
   });
 
@@ -103,6 +128,7 @@ test('External security group is restricted', () => {
     env: { account: 'test-account', region: 'us-east-1' },
     useSsl: true,
     restrictServerAccessTo: Peer.ipv4('10.0.0.0/24'),
+    useProdAgents: true,
   });
   const template = Template.fromStack(stack);
 
@@ -140,7 +166,7 @@ test('External security group is restricted', () => {
 test('MainNode', () => {
   const app = new App({
     context: {
-      useSsl: 'true', authType: 'oidc', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+      useSsl: 'true', authType: 'oidc', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', useProdAgents: 'false',
     },
   });
 
@@ -172,7 +198,7 @@ test('MainNode', () => {
 test('LoadBalancer', () => {
   const app = new App({
     context: {
-      useSsl: 'true', authType: 'oidc', serverAccessType: 'ipv4', restrictServerAccessTo: 'all',
+      useSsl: 'true', authType: 'oidc', serverAccessType: 'ipv4', restrictServerAccessTo: 'all', useProdAgents: 'false',
     },
   });
 
@@ -197,7 +223,7 @@ test('LoadBalancer', () => {
 test('CloudwatchCpuAlarm', () => {
   const app = new App({
     context: {
-      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', useProdAgents: 'false',
     },
   });
 
@@ -216,7 +242,7 @@ test('CloudwatchCpuAlarm', () => {
 test('CloudwatchMemoryAlarm', () => {
   const app = new App({
     context: {
-      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', useProdAgents: 'false',
     },
   });
 
@@ -235,7 +261,7 @@ test('CloudwatchMemoryAlarm', () => {
 test('LoadBalancer Access Logging', () => {
   const app = new App({
     context: {
-      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', useProdAgents: 'false',
     },
   });
 
@@ -373,7 +399,7 @@ describe('AgentNodes', () => {
   let agentNodes: AgentNodes;
   const app = new App({
     context: {
-      useSsl: 'false', run: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32',
+      useSsl: 'false', run: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', useProdAgents: 'false',
     },
   });
 
@@ -410,7 +436,7 @@ describe('AgentNodes', () => {
 test('WAF rules', () => {
   const app = new App({
     context: {
-      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
+      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0', useProdAgents: 'false',
     },
   });
 
@@ -599,7 +625,7 @@ test('WAF rules', () => {
 test('Test WAF association with ALB', () => {
   const app = new App({
     context: {
-      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
+      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0', useProdAgents: 'false',
     },
   });
 
@@ -625,7 +651,7 @@ test('Test WAF association with ALB', () => {
 test('Test configElement jenkins content to use X-Forwarded-For header on port 443', () => {
   const app = new App({
     context: {
-      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
+      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0', useProdAgents: 'false',
     },
   });
 
@@ -659,7 +685,7 @@ test('Test configElement jenkins content to use X-Forwarded-For header on port 4
 test('Test configElement jenkins content to use X-Forwarded-For header on port 80', () => {
   const app = new App({
     context: {
-      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0',
+      useSsl: 'false', serverAccessType: 'ipv4', restrictServerAccessTo: '0.0.0.0/0', useProdAgents: 'false',
     },
   });
 
