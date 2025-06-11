@@ -95,6 +95,11 @@ tar -xzvf "$pigzPath\\gcrane.tar.gz" -C "$pigzPath" "crane.exe"
 rm -v "$pigzPath\\gcrane.tar.gz"
 dir $pigzPath
 
+# Install onepassword-cli
+OP_URL="https://cache.agilebits.com/dist/1P/op2/pkg/v2.24.0/op_windows_amd64_v2.24.0.zip"
+curl -SfL $OP_URL -o op.zip && unzip -j /tmp/op.zip op.exe -d $pigzPath && rm -v op.zip
+op --version
+
 # Setup Docker
 echo "Enable Hyper-V"
 Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Hyper-V" -All -NoRestart

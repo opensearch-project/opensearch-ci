@@ -38,6 +38,15 @@ if [ "$ARCH" = "arm64" ]; then
         "24@https://github.com/adoptium/temurin24-binaries/releases/download/jdk-24.0.1%2B9/OpenJDK24U-jdk_aarch64_mac_hotspot_24.0.1_9.tar.gz@100"
     )
 fi
+
+## Install onepassword-cli
+OP_URL="https://cache.agilebits.com/dist/1P/op2/pkg/v2.24.0/op_darwin_amd64_v2.24.0.zip"
+if [ "$ARCH" = "arm64" ]; then
+    OP_URL="https://cache.agilebits.com/dist/1P/op2/pkg/v2.24.0/op_darwin_arm64_v2.24.0.zip"
+fi
+sudo curl -SfL $OP_URL -o /tmp/op.zip && sudo unzip -j /tmp/op.zip op -d /usr/local/bin && sudo rm -v /tmp/op.zip
+op --version
+
 $BREW_PATH/brew update --preinstall
 $BREW_PATH/brew upgrade
 $BREW_PATH/brew install curl 
