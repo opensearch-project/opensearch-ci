@@ -29,9 +29,9 @@ curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo 
 sudo mkdir -p /var/jenkins && sudo chown -R ubuntu:ubuntu /var/jenkins
 
 # Install onepassword-cli
-OP_URL="https://cache.agilebits.com/dist/1P/op2/pkg/v2.24.0/op_linux_amd64_v2.24.0.zip"
+OP_URL="https://cache.agilebits.com/dist/1P/op2/pkg/v2.31.1/op_linux_amd64_v2.31.1.zip"
 if [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then
-    OP_URL="https://cache.agilebits.com/dist/1P/op2/pkg/v2.24.0/op_linux_arm64_v2.24.0.zip"
+    OP_URL="https://cache.agilebits.com/dist/1P/op2/pkg/v2.31.1/op_linux_arm64_v2.31.1.zip"
 fi
 sudo curl -SfL $OP_URL -o /tmp/op.zip && sudo unzip -j /tmp/op.zip op -d /usr/local/bin && sudo rm -v /tmp/op.zip
 op --version

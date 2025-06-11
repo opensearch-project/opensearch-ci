@@ -39,14 +39,6 @@ if [ "$ARCH" = "arm64" ]; then
     )
 fi
 
-## Install onepassword-cli
-OP_URL="https://cache.agilebits.com/dist/1P/op2/pkg/v2.24.0/op_darwin_amd64_v2.24.0.zip"
-if [ "$ARCH" = "arm64" ]; then
-    OP_URL="https://cache.agilebits.com/dist/1P/op2/pkg/v2.24.0/op_darwin_arm64_v2.24.0.zip"
-fi
-sudo curl -SfL $OP_URL -o /tmp/op.zip && sudo unzip -j /tmp/op.zip op -d /usr/local/bin && sudo rm -v /tmp/op.zip
-op --version
-
 $BREW_PATH/brew update --preinstall
 $BREW_PATH/brew upgrade
 $BREW_PATH/brew install curl 
@@ -58,6 +50,7 @@ $BREW_PATH/brew install maven
 $BREW_PATH/brew install dpkg
 $BREW_PATH/brew install ca-certificates
 $BREW_PATH/brew install gnupg
+$BREW_PATH/brew install 1password-cli
 $BREW_PATH/brew cleanup
 
 

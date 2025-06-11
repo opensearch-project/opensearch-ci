@@ -76,6 +76,10 @@ aws --version
 scoop install zip
 scoop install unzip
 
+# Install onepassword-cli
+scoop install "1password-cli"
+op.exe --version
+
 # Replace gzip with pigz/unpigz for docker extration
 # The pigz binary on the Windows OS is from this PR: https://github.com/kubernetes/kubernetes/pull/96470
 # It seems like pigz/unpigz can only be detect by docker if it is in [System.EnvironmentVariableTarget]::Machine env vars
@@ -94,11 +98,6 @@ curl.exe -SfL "https://github.com/google/go-containerregistry/releases/download/
 tar -xzvf "$pigzPath\\gcrane.tar.gz" -C "$pigzPath" "crane.exe"
 rm -v "$pigzPath\\gcrane.tar.gz"
 dir $pigzPath
-
-# Install onepassword-cli
-$opUrl = "https://cache.agilebits.com/dist/1P/op2/pkg/v2.24.0/op_windows_amd64_v2.24.0.zip"
-curl.exe -SfL $opUrl -o op.zip && unzip -j op.zip op.exe -d $pigzPath && rm -v op.zip
-op --version
 
 # Setup Docker
 echo "Enable Hyper-V"
