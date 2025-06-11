@@ -7,10 +7,33 @@
  */
 
 import { App } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { readFileSync } from 'fs';
 import { load } from 'js-yaml';
 import { CIStack } from '../../lib/ci-stack';
+
+function checkMainNodeYmlConfiguration(template: Template, expectedYmlEntries: Match[]) {
+  template.hasResource('AWS::AutoScaling::AutoScalingGroup', {
+    Metadata: {
+      'AWS::CloudFormation::Init': {
+        config: {
+          files: {
+            '/initial_jenkins.yaml': {
+              content: {
+                'Fn::Join': [
+                  // first element is the delimiter
+                  '',
+                  // second element is the array of fragments
+                  Match.arrayWith(expectedYmlEntries),
+                ],
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+}
 
 test('Agents Resource is present', () => {
   const app = new App({
@@ -20,7 +43,6 @@ test('Agents Resource is present', () => {
   });
   const stack = new CIStack(app, 'TestStack', {
     env: { account: 'test-account', region: 'us-east-1' },
-    alternativeNodeConfig: [],
   });
   const template = Template.fromStack(stack);
 
@@ -79,6 +101,49 @@ test('Agents Resource is present', () => {
       Version: '2012-10-17',
     },
   });
+
+  checkMainNodeYmlConfiguration(template, [
+    // Make sure we've got agents defined for two of the default set
+    Match.stringLikeRegexp('labelString: Jenkins-Agent-AL2023-X64-C54xlarge-Single-Host'),
+    Match.stringLikeRegexp('labelString: Jenkins-Agent-AL2-X64-C54xlarge-Docker-Host'),
+  ]);
+});
+
+test('Custom agent node passed into jenkins configuration', () => {
+  const app = new App({
+    context: {
+      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', jenkinsInstanceType: 'BTR', useProdAgents: 'true',
+    },
+  });
+  const stack = new CIStack(app, 'TestStack', {
+    env: { account: 'test-account', region: 'us-east-1' },
+    alternativeNodeConfig: [{
+      agentType: 'unix',
+      amiId: 'myAmi',
+      instanceType: 'myInstanceType',
+      customDeviceMapping: 'myCustomDeviceMapping',
+      workerLabelString: ['myWorker'],
+      remoteUser: 'myRemoteUser',
+      maxTotalUses: 0,
+      minimumNumberOfSpareInstances: 0,
+      numExecutors: 0,
+      initScript: 'custom init script',
+      remoteFs: 'myRemoteFs',
+    }],
+  });
+
+  const template = Template.fromStack(stack);
+  // Find the custom agent that was added
+  checkMainNodeYmlConfiguration(template, [
+    Match.stringLikeRegexp('myAmi'),
+    Match.stringLikeRegexp('custom init script'),
+    Match.stringLikeRegexp('myInstanceType'),
+  ]);
+
+  // Make sure the default agent was not created
+  checkMainNodeYmlConfiguration(template, [
+    Match.not(Match.stringLikeRegexp('labelString: Jenkins-Agent-AL2023-X64-C54xlarge-Single-Host')),
+  ]);
 });
 
 test('Agents Node policy with assume role Resource is present', () => {
