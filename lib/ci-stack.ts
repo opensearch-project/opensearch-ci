@@ -65,6 +65,8 @@ export interface CIStackProps extends StackProps {
   readonly jenkinsInstanceType?: string | DeploymentType;
   /** Fine grain access control specifications */
   readonly fineGrainedAccessSpecs?: FineGrainedAccessSpecs[];
+  /** Alternative agent node configurations */
+  readonly alternativeNodeConfig?: AgentNodeProps[];
 }
 
 function getServerAccess(serverAccessType: string, restrictServerAccessTo: string): IPeer {
@@ -181,7 +183,7 @@ export class CIStack extends Stack {
         + 'If you do not copy the AMI in required region and update the code then the jenkins agents will not spin up.');
     }
 
-    this.agentNodes = agentNode.getRequiredAgentNodes(jenkinsInstanceType.toString());
+    this.agentNodes = props.alternativeNodeConfig ?? agentNode.getRequiredAgentNodes(jenkinsInstanceType.toString());
 
     const mainJenkinsNode = new JenkinsMainNode(this, {
       vpc,
