@@ -149,7 +149,7 @@ test('Custom agent node passed into jenkins configuration', () => {
 test('Agents Node policy with assume role Resource is present', () => {
   const app = new App({
     context: {
-      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', jenkinsInstanceType: 'BTR',
+      useSsl: 'true', serverAccessType: 'ipv4', restrictServerAccessTo: '10.10.10.10/32', jenkinsInstanceType: 'BTR', useProdAgents: 'false',
     },
   });
   const stack = new CIStack(app, 'TestStack', {
