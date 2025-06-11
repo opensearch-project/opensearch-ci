@@ -76,7 +76,7 @@
     {
       "type":"shell",
       "scripts": [
-        "scripts/ubuntu/ubuntu2004-agent-setups.sh"
+        "scripts/ubuntu/legacy/ubuntu2004-agent-setups.sh"
       ]
     },
     {

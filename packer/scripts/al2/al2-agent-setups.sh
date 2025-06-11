@@ -24,6 +24,14 @@ sudo yum install -y ntp
 sudo amazon-linux-extras install docker -y
 sudo yum groupinstall -y "Development Tools"
 
+# Install onepassword-cli
+OP_URL="https://cache.agilebits.com/dist/1P/op2/pkg/v2.31.1/op_linux_amd64_v2.31.1.zip"
+if [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then
+    OP_URL="https://cache.agilebits.com/dist/1P/op2/pkg/v2.31.1/op_linux_arm64_v2.31.1.zip"
+fi
+sudo curl -SfL $OP_URL -o /tmp/op.zip && sudo unzip -j /tmp/op.zip op -d /usr/local/bin && sudo rm -v /tmp/op.zip
+op --version
+
 # Install jdk21
 sudo rpm --import https://yum.corretto.aws/corretto.key
 sudo curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo

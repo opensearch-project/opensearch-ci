@@ -76,6 +76,10 @@ aws --version
 scoop install zip
 scoop install unzip
 
+# Install onepassword-cli
+scoop install "1password-cli"
+op.exe --version
+
 # Replace gzip with pigz/unpigz for docker extration
 # The pigz binary on the Windows OS is from this PR: https://github.com/kubernetes/kubernetes/pull/96470
 # It seems like pigz/unpigz can only be detect by docker if it is in [System.EnvironmentVariableTarget]::Machine env vars
@@ -83,14 +87,14 @@ scoop install unzip
 Set-MpPreference -DisableRealtimeMonitoring $true
 $pigzPath = "C:\pigz"
 mkdir $pigzPath
-curl.exe -SL "https://ci.opensearch.org/ci/dbc/tools/pigz-2.3.1-20201104-134221-gke-release-windows.zip" -o "$pigzPath\\pigz.zip"
+curl.exe -SfL "https://ci.opensearch.org/ci/dbc/tools/pigz-2.3.1-20201104-134221-gke-release-windows.zip" -o "$pigzPath\\pigz.zip"
 unzip "$pigzPath\\pigz.zip" -d $pigzPath
 rm -v "$pigzPath\\*.zip"
 $machineenv = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
 [System.Environment]::SetEnvironmentVariable("PATH", $machineenv + ";$pigzPath", [System.EnvironmentVariableTarget]::Machine)
 
 # Install gcrane to handle dynamic ci image retrieval, use pigz path
-curl.exe -SL "https://github.com/google/go-containerregistry/releases/download/v0.15.2/go-containerregistry_Windows_x86_64.tar.gz" -o "$pigzPath\\gcrane.tar.gz"
+curl.exe -SfL "https://github.com/google/go-containerregistry/releases/download/v0.15.2/go-containerregistry_Windows_x86_64.tar.gz" -o "$pigzPath\\gcrane.tar.gz"
 tar -xzvf "$pigzPath\\gcrane.tar.gz" -C "$pigzPath" "crane.exe"
 rm -v "$pigzPath\\gcrane.tar.gz"
 dir $pigzPath

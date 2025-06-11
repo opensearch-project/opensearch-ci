@@ -38,6 +38,7 @@ if [ "$ARCH" = "arm64" ]; then
         "24@https://github.com/adoptium/temurin24-binaries/releases/download/jdk-24.0.1%2B9/OpenJDK24U-jdk_aarch64_mac_hotspot_24.0.1_9.tar.gz@100"
     )
 fi
+
 $BREW_PATH/brew update --preinstall
 $BREW_PATH/brew upgrade
 $BREW_PATH/brew install curl 
@@ -49,6 +50,7 @@ $BREW_PATH/brew install maven
 $BREW_PATH/brew install dpkg
 $BREW_PATH/brew install ca-certificates
 $BREW_PATH/brew install gnupg
+$BREW_PATH/brew install 1password-cli
 $BREW_PATH/brew cleanup
 
 
