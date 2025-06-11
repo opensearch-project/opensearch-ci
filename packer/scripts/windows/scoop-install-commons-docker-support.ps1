@@ -83,21 +83,21 @@ scoop install unzip
 Set-MpPreference -DisableRealtimeMonitoring $true
 $pigzPath = "C:\pigz"
 mkdir $pigzPath
-curl.exe -SL "https://ci.opensearch.org/ci/dbc/tools/pigz-2.3.1-20201104-134221-gke-release-windows.zip" -o "$pigzPath\\pigz.zip"
+curl.exe -SfL "https://ci.opensearch.org/ci/dbc/tools/pigz-2.3.1-20201104-134221-gke-release-windows.zip" -o "$pigzPath\\pigz.zip"
 unzip "$pigzPath\\pigz.zip" -d $pigzPath
 rm -v "$pigzPath\\*.zip"
 $machineenv = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
 [System.Environment]::SetEnvironmentVariable("PATH", $machineenv + ";$pigzPath", [System.EnvironmentVariableTarget]::Machine)
 
 # Install gcrane to handle dynamic ci image retrieval, use pigz path
-curl.exe -SL "https://github.com/google/go-containerregistry/releases/download/v0.15.2/go-containerregistry_Windows_x86_64.tar.gz" -o "$pigzPath\\gcrane.tar.gz"
+curl.exe -SfL "https://github.com/google/go-containerregistry/releases/download/v0.15.2/go-containerregistry_Windows_x86_64.tar.gz" -o "$pigzPath\\gcrane.tar.gz"
 tar -xzvf "$pigzPath\\gcrane.tar.gz" -C "$pigzPath" "crane.exe"
 rm -v "$pigzPath\\gcrane.tar.gz"
 dir $pigzPath
 
 # Install onepassword-cli
-OP_URL="https://cache.agilebits.com/dist/1P/op2/pkg/v2.24.0/op_windows_amd64_v2.24.0.zip"
-curl -SfL $OP_URL -o op.zip && unzip -j /tmp/op.zip op.exe -d $pigzPath && rm -v op.zip
+$opUrl = "https://cache.agilebits.com/dist/1P/op2/pkg/v2.24.0/op_windows_amd64_v2.24.0.zip"
+curl.exe -SfL $opUrl -o op.zip && unzip -j op.zip op.exe -d $pigzPath && rm -v op.zip
 op --version
 
 # Setup Docker
