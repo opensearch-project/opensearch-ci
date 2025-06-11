@@ -74,3 +74,4 @@ workflow-multibranch
 pipeline-utility-steps
 blueocean
 github-oauth
+onepassword-secrets
