@@ -112,8 +112,14 @@ echo "Check HyperV Features"
 Get-WindowsFeature "Hyper*"
 echo "Setup autostart of hyperviser and the docker services by default"
 bcdedit /set hypervisorlaunchtype auto
-echo "Install Docker Engine"
-scoop install docker
+
+# Install docker
+# Lock Docker 24.0.7
+# Lock Docker-Compose 2.23.0
+# https://github.com/opensearch-project/opensearch-build/issues/4126
+echo "Install Docker Engine and Docker Compose"
+scoop install https://raw.githubusercontent.com/ScoopInstaller/Main/f7cf8513558307e90b483ddff2394a023e894ccf/bucket/docker.json
+scoop install https://raw.githubusercontent.com/ScoopInstaller/Main/a6a7d8e2a7eecb13fb7200952c9bcea4eaeeb994/bucket/docker-compose.json
 
 # Scoop clear cache
 scoop cache rm *

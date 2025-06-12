@@ -8,6 +8,8 @@ export class AWSSecretsJenkinsCredentials {
 
     static centralPortalMavenPassword: Secret;
 
+    static onePasswordServiceToken: Secret;
+
     static snapshotsMavenUsername: ISecret;
 
     static snapshotsMavenPassword: ISecret;
@@ -28,6 +30,12 @@ export class AWSSecretsJenkinsCredentials {
         description: 'Password for publishing snapshots to maven central portal',
       });
       Tags.of(AWSSecretsJenkinsCredentials.centralPortalMavenPassword).add('jenkins:credentials:type', 'string');
+
+      AWSSecretsJenkinsCredentials.onePasswordServiceToken = new Secret(stack, 'one-password-service-token', {
+        secretName: 'one-password-service-token',
+        description: 'Service Account Token for OnePassword to access the vaults',
+      });
+      Tags.of(AWSSecretsJenkinsCredentials.onePasswordServiceToken).add('jenkins:credentials:type', 'string');
 
       const reposWithMavenSnapshotsCredsAccess = [
         'opensearch-sdk-java',
