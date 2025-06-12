@@ -1,10 +1,11 @@
 import { Stack } from 'aws-cdk-lib';
 import {
-  OpenIdConnectPrincipal, OpenIdConnectProvider, PolicyStatement, Role,
+  IOpenIdConnectProvider,
+  OpenIdConnectPrincipal, PolicyStatement, Role,
 } from 'aws-cdk-lib/aws-iam';
 
 export class GitHubActionsFederateIntegrationForTags {
-  constructor(stack: Stack, provider: OpenIdConnectProvider, secretArns: string[], githubRepo: string) {
+  constructor(stack: Stack, provider: IOpenIdConnectProvider, secretArns: string[], githubRepo: string) {
     // creating IAM role for accessing secret only using tags
     const ghaRole = new Role(stack, `${githubRepo}-github-role`, {
       roleName: `${githubRepo}-secret-access-role-for-tags`,
@@ -26,7 +27,7 @@ export class GitHubActionsFederateIntegrationForTags {
 }
 
 export class GitHubActionsFederateIntegrationForBranchesAndTags {
-  constructor(stack: Stack, provider: OpenIdConnectProvider, secretArns: string[], githubRepo: string) {
+  constructor(stack: Stack, provider: IOpenIdConnectProvider, secretArns: string[], githubRepo: string) {
     // creating IAM role for accessing secret only using branches
     // Ensure roleName meets AWS IAM requirements: alphanumeric characters and _+=,.@- only, max 64 chars
     const sanitizedRepo = githubRepo.replace(/[^a-zA-Z0-9_+=,.@-]/g, '-');
@@ -54,7 +55,7 @@ export class GitHubActionsFederateIntegrationForBranchesAndTags {
 }
 
 export class GitHubActionsFederateIntegrationForBranchesOnGenericActionsAndResources {
-  constructor(stack: Stack, provider: OpenIdConnectProvider, Actions: string[], Resources: string[], roleNamePostfix: string, githubRepo: string) {
+  constructor(stack: Stack, provider: IOpenIdConnectProvider, Actions: string[], Resources: string[], roleNamePostfix: string, githubRepo: string) {
     // creating IAM role for accessing secret only using branches on generic actions and resources`
     const ghaBranchRoleGeneric = new Role(stack, `${githubRepo}-github-role-branches-generic-actions-resources-${roleNamePostfix}`, {
       roleName: `${githubRepo}-role-branches-generic-${roleNamePostfix}`,
