@@ -42,6 +42,7 @@ pip install pipenv awscli
 pipenv --version && aws --version && docker-compose --version
 
 # Install onepassword-cli
+ARCH=`uname -m`
 OP_URL="https://cache.agilebits.com/dist/1P/op2/pkg/v2.31.1/op_linux_amd64_v2.31.1.zip"
 if [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then
     OP_URL="https://cache.agilebits.com/dist/1P/op2/pkg/v2.31.1/op_linux_arm64_v2.31.1.zip"
