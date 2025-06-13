@@ -49,6 +49,11 @@ jobs:
             );
             const maintainers = collaborators.filter(c => c.permissions.maintain).map(c => c.login);
             return maintainers;
+      - name: Configure beta deployment credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.BETA_DEPLOYMENT_ROLE }}
+          aws-region: 'us-east-1'
       - name: Create beta change-set for approval
         id: beta_stack_diff
         run: |
@@ -90,14 +95,14 @@ jobs:
             📎 **Full diff available in workflow artifacts:** [beta-stack-diff](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
             </details>
-      - name: Configure beta deployment credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.BETA_DEPLOYMENT_ROLE }}
-          aws-region: 'us-east-1'
       - name: Deploy beta stacks
         run: |
           cdk deploy "*" -c stage=Beta --require-approval=never
+      - name: Configure Production deployment credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.PROD_DEPLOYMENT_ROLE }}
+          aws-region: 'us-east-1'
       - name: Create Production change-set for approval
         id: prod_stack_diff
         run: |
@@ -141,11 +146,6 @@ jobs:
             📎 **Full diff available in workflow artifacts:** [production-stack-diff](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
             </details>
-      - name: Configure Production deployment credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.PROD_DEPLOYMENT_ROLE }}
-          aws-region: 'us-east-1'
       - name: Deploy Production stacks
         run: |
           cdk deploy "*" -c stage=Prod --require-approval=never
