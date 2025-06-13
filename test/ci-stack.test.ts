@@ -9,6 +9,7 @@
 import { App } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Peer } from 'aws-cdk-lib/aws-ec2';
+import { Effect } from 'aws-cdk-lib/aws-iam';
 import { CIStack } from '../lib/ci-stack';
 import { AgentNodes } from '../lib/compute/agent-nodes';
 
@@ -37,7 +38,7 @@ test('CI Stack Basic Resources', () => {
   template.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
   template.resourceCountIs('AWS::EC2::SecurityGroup', 4);
   template.resourceCountIs('AWS::IAM::Policy', 36);
-  template.resourceCountIs('AWS::IAM::Role', 38);
+  template.resourceCountIs('AWS::IAM::Role', 37);
   template.resourceCountIs('AWS::S3::Bucket', 2);
   template.resourceCountIs('AWS::EC2::KeyPair', 1);
   template.resourceCountIs('AWS::IAM::InstanceProfile', 2);
@@ -52,10 +53,6 @@ test('CI Stack Basic Resources', () => {
       Statement: [
         Match.objectLike({
           Action: 'sts:AssumeRoleWithWebIdentity',
-          Effect: 'Allow',
-          Principal: {
-            Federated: { Ref: 'githubopenidconnectE4C4027C' },
-          },
           Condition: {
             StringLike: {
               'token.actions.githubusercontent.com:sub': 'repo:opensearch-project/opensearch-jvector:ref:refs/*',
@@ -64,7 +61,12 @@ test('CI Stack Basic Resources', () => {
               'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
             },
           },
+          Effect: 'Allow',
+          Principal: {
+            Federated: 'arn:aws:iam::test-account:oidc-provider/token.actions.githubusercontent.com',
+          },
         }),
+
       ],
       Version: '2012-10-17',
     },

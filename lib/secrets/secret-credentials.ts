@@ -74,15 +74,8 @@ export class AWSSecretsJenkinsCredentials {
         'opensearch-protobufs',
       ];
 
-      // creating Github OIDC
-      const provider = new OpenIdConnectProvider(stack, 'github-open-id-connect', {
-        url: 'https://token.actions.githubusercontent.com',
-        clientIds: ['sts.amazonaws.com'],
-        thumbprints: [
-          '1C58A3A8518E8759BF075B76B750D4F2DF264FCD',
-          'F879ABCE0008E4EB126E0097E46620F5AAAE26AD',
-        ],
-      });
+      const provider = OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'open-id-connect-provider',
+        `arn:aws:iam::${stack.account}:oidc-provider/token.actions.githubusercontent.com`);
 
       reposWithMavenSnapshotsCredsAccess.forEach((repo) => {
         new GitHubActionsFederateIntegrationForBranchesAndTags(stack, provider,
