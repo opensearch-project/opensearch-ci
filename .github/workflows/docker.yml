@@ -1,9 +1,7 @@
 name: Push new jenkins docker image
 
 on:
-  push:
-    paths:
-      - docker/**
+  workflow_dispatch:
 
 jobs:
   docker:
