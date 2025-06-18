@@ -82,7 +82,7 @@ test('External security group is open', () => {
   });
 
   // WHEN
-  const stack = new CIStack(app, 'MyTestStack', { env: { account: 'test-account', region: 'us-east-1' } });
+  const stack = new CIStack(app, 'MyTestStack', { env: { account: 'test-account', region: 'us-east-1' }, useProdAgents: false });
   const template = Template.fromStack(stack);
 
   // THEN

@@ -17,9 +17,11 @@ export class AWSSecretsJenkinsCredentials {
     static snapshotsMavenPassword: ISecret;
 
     constructor(stack: Stack) {
-      AWSSecretsJenkinsCredentials.snapshotsMavenPassword = Secret.fromSecretNameV2(stack, 'imported-maven-snapshots-password', 'maven-snapshots-password');
+      AWSSecretsJenkinsCredentials.snapshotsMavenPassword = Secret.fromSecretCompleteArn(stack, 'imported-maven-snapshots-password',
+        `arn:aws:secretsmanager:us-east-1:${stack.account}:secret:maven-snapshots-password-uMmbAR`);
 
-      AWSSecretsJenkinsCredentials.snapshotsMavenUsername = Secret.fromSecretNameV2(stack, 'imported-maven-snapshots-username', 'maven-snapshots-username');
+      AWSSecretsJenkinsCredentials.snapshotsMavenUsername = Secret.fromSecretCompleteArn(stack, 'imported-maven-snapshots-username',
+        `arn:aws:secretsmanager:us-east-1:${stack.account}:secret:maven-snapshots-username-xfOoXz`);
 
       AWSSecretsJenkinsCredentials.centralPortalMavenUsername = new Secret(stack, 'maven-central-portal-username', {
         secretName: 'maven-central-portal-username',
