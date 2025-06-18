@@ -10,6 +10,8 @@ export class AWSSecretsJenkinsCredentials {
 
     static onePasswordServiceToken: Secret;
 
+    static remoteVectorIndexBuilderWebhookToken: Secret;
+
     static snapshotsMavenUsername: ISecret;
 
     static snapshotsMavenPassword: ISecret;
@@ -36,6 +38,12 @@ export class AWSSecretsJenkinsCredentials {
         description: 'Service Account Token for OnePassword to access the vaults',
       });
       Tags.of(AWSSecretsJenkinsCredentials.onePasswordServiceToken).add('jenkins:credentials:type', 'string');
+
+      AWSSecretsJenkinsCredentials.remoteVectorIndexBuilderWebhookToken = new Secret(stack, 'jenkins-remote-vector-index-builder-generic-webhook-token', {
+        secretName: 'jenkins-remote-vector-index-builder-generic-webhook-token',
+        description: 'Generic webhook token to trigger remote-vector-index-builder-release-images workflows in build.ci.opensearch.org jenkins instance',
+      });
+      Tags.of(AWSSecretsJenkinsCredentials.remoteVectorIndexBuilderWebhookToken).add('jenkins:credentials:type', 'string');
 
       const reposWithMavenSnapshotsCredsAccess = [
         'opensearch-sdk-java',

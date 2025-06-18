@@ -46,7 +46,7 @@ test('CI Stack Basic Resources', () => {
   template.resourceCountIs('AWS::SSM::Association', 1);
   template.resourceCountIs('AWS::EFS::FileSystem', 1);
   template.resourceCountIs('AWS::CloudWatch::Alarm', 4);
-  template.resourceCountIs('AWS::SecretsManager::Secret', 4);
+  template.resourceCountIs('AWS::SecretsManager::Secret', 5);
 
   template.hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
