@@ -36,10 +36,10 @@ jobs:
         run: |
           echo ${{ steps.getfile.outputs.files }}
       - name: Generate PNG Diagrams
-        uses: Timmy/plantuml-action@v1
+        uses: cloudbees/plantuml-github-action@master
         continue-on-error: true
         with:
-          args: -v -tpng ${{ steps.getfile.outputs.files }}
+            args: -v -tpng ${{ steps.getfile.outputs.files }}
       - name: Push Local Changes
         if: success()
         uses:  stefanzweifel/git-auto-commit-action@v4.1.2 
