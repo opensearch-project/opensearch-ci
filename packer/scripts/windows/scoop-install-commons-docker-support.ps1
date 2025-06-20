@@ -5,12 +5,15 @@
 # this file be licensed under the Apache-2.0 license or a
 # compatible open source license.
 
+# winrm checks
+cmd /c winrm get winrm/config
+
 # Disable "current" alias directory as it is not preserved after AMI creation
 # Use static path in environment variable
 scoop config no_junction true
 
-# Install git
-scoop install git
+# Install git 2.44.0
+scoop install https://raw.githubusercontent.com/ScoopInstaller/Main/ce634e1cc58fd7f557b18763023e4d5ddc850d52/bucket/git.json
 git --version
 # Path for git windows usr bin
 $fileName = 'nohup.exe'
@@ -47,10 +50,9 @@ Start-Sleep -Seconds 10
 scoop bucket add java
 scoop bucket add versions
 scoop bucket add extras
-scoop bucket add github-gh https://github.com/cli/scoop-gh.git
 
-# Install jdk
-$jdkVersionList = "temurin21-jdk JAVA21_HOME"
+# Install jdk 21.0.6-7.0 
+$jdkVersionList = "https://raw.githubusercontent.com/ScoopInstaller/Java/f685a81a1dfd175c4e7e62dd991f7affede1c3bd/bucket/temurin21-jdk.json JAVA21_HOME"
 Foreach ($jdkVersion in $jdkVersionList)
 {
     $jdkVersion
@@ -64,20 +66,20 @@ Foreach ($jdkVersion in $jdkVersionList)
     java -version
 }
 
-# Install gh
-scoop install gh
+# Install gh 2.55.0
+scoop install https://raw.githubusercontent.com/ScoopInstaller/Main/ad4628733c2d2b65c8ae7b6e2457a7bd6a2f0683/bucket/gh.json
 gh version
 
-# Install awscli
-scoop install aws
+# Install awscli 2.15.38
+scoop install https://raw.githubusercontent.com/ScoopInstaller/Main/eee1b70059fe0fd93d5d9d155ce694dfc1e7e39e/bucket/aws.json
 aws --version
 
 # Install zip
 scoop install zip
 scoop install unzip
 
-# Install onepassword-cli
-scoop install "1password-cli"
+# Install onepassword-cli 2.31.1
+scoop install "https://raw.githubusercontent.com/ScoopInstaller/Main/refs/heads/master/bucket/1password-cli.json"
 op.exe --version
 
 # Replace gzip with pigz/unpigz for docker extration
@@ -115,11 +117,9 @@ bcdedit /set hypervisorlaunchtype auto
 
 # Install docker
 # Lock Docker 24.0.7
-# Lock Docker-Compose 2.23.0
 # https://github.com/opensearch-project/opensearch-build/issues/4126
-echo "Install Docker Engine and Docker Compose"
+echo "Install Docker Engine"
 scoop install https://raw.githubusercontent.com/ScoopInstaller/Main/f7cf8513558307e90b483ddff2394a023e894ccf/bucket/docker.json
-scoop install https://raw.githubusercontent.com/ScoopInstaller/Main/a6a7d8e2a7eecb13fb7200952c9bcea4eaeeb994/bucket/docker-compose.json
 
 # Scoop clear cache
 scoop cache rm *
