@@ -17,7 +17,5 @@ if ($memorygb) {
 else {
     $memorymb = 30 * 1024
 }
-
-############################## With HTTP ######################################
 cmd /c winrm set "winrm/config/winrs" "@{MaxMemoryPerShellMB=\`"$memorymb\`"}"
 cmd /c winrm get winrm/config
