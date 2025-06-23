@@ -222,7 +222,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 4,
       numExecutors: 3,
-      amiId: 'ami-021eaef5ecf03ae4c',
+      amiId: 'ami-01160c379ea35bc55',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
         + 'echo initializing docker images now waiting for 5min && git clone https://github.com/opensearch-project/opensearch-build.git && '
         + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '
@@ -256,7 +256,7 @@ export class AgentNodes {
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 0, // Very old and not actively used, lacking jdk21 support to run on Jenkins since 2.492.3, remove soon
       numExecutors: 1,
-      amiId: 'ami-01160c379ea35bc55',
+      amiId: 'ami-0ca4f0ba85855e148',
       initScript: 'echo',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
