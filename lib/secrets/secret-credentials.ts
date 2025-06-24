@@ -53,6 +53,12 @@ export class AWSSecretsJenkinsCredentials {
     });
     Tags.of(dataPrepperAWSaccount).add('jenkins:credentials:type', 'string');
 
+    const dataPrepperS3BucketName = new Secret(stack, 'data-prepper-s3-bucket-name', {
+      secretName: 'data-prepper-s3-bucket-name',
+      description: 'Data Prepper S3 bucket name',
+    });
+    Tags.of(dataPrepperS3BucketName).add('jenkins:credentials:type', 'string');
+
     const reposWithMavenSnapshotsCredsAccess = [
       'opensearch-sdk-java',
       'opensearch-java',
