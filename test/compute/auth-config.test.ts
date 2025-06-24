@@ -47,6 +47,7 @@ describe('Test authType github', () => {
   const yml: any = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
   const fineGrainedAccess: FineGrainedAccessSpecs = {
     users: ['user1', 'user2', 'user3'],
+    groups: ['some-org*team1'],
     roleName: 'builder-job-role',
     pattern: '((distribution|integ).*)',
     templateName: 'builder-template',
@@ -96,7 +97,15 @@ describe('Test authType github', () => {
     const builderRole = yml.jenkins.authorizationStrategy.roleBased.roles.items.find((role: any) => role.name === 'builder-job-role');
 
     // Check users
-    const buildUsers = builderRole.entries.map((entry: any) => entry.user);
+    const buildUsers = builderRole.entries
+      .filter((entry: any) => entry.user)
+      .map((entry: any) => entry.user);
     expect(buildUsers).toEqual(['user1', 'user2', 'user3']);
+
+    // Check groups
+    const buildGroups = builderRole.entries
+      .filter((entry: any) => entry.group)
+      .map((entry: any) => entry.group);
+    expect(buildGroups).toEqual(['some-org*team1']);
   });
 });

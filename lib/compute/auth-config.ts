@@ -7,7 +7,8 @@
  */
 
 export interface FineGrainedAccessSpecs {
-  users: string[],
+  users?: string[],
+  groups?: string[],
   roleName: string,
   pattern: string,
   templateName: string
@@ -127,14 +128,25 @@ export class AuthConfig {
     };
 
     jenkinsYaml.jenkins.authorizationStrategy = rolesAndPermissions;
+
     if (typeof fineGrainedAccessItems !== 'undefined') {
-      jenkinsYaml.jenkins.authorizationStrategy.roleBased.roles.items = fineGrainedAccessItems.map((item) => ({
-        entries: item.users.map((user) => ({ user })),
-        name: item.roleName,
-        pattern: item.pattern,
-        templateName: item.templateName,
-      }));
+      jenkinsYaml.jenkins.authorizationStrategy.roleBased.roles.items = fineGrainedAccessItems.map((item) => {
+        if (!item.users && !item.groups) {
+          throw new Error(`At least one of 'users' or 'groups' must be supplied for role: ${item.roleName}`);
+        }
+
+        return ({
+          entries: [
+            ...(item.users ? item.users.map((user) => ({ user })) : []),
+            ...(item.groups ? item.groups.map((group) => ({ group })) : []),
+          ],
+          name: item.roleName,
+          pattern: item.pattern,
+          templateName: item.templateName,
+        });
+      });
     }
+
     if (authType === 'github') {
       jenkinsYaml.jenkins.securityRealm = githubAuthConfig;
     } else {

@@ -8,11 +8,10 @@
 
 import { App } from 'aws-cdk-lib';
 import { Peer } from 'aws-cdk-lib/aws-ec2';
-import { CiCdnStack } from '../lib/ci-cdn-stack';
 import { CIConfigStack } from '../lib/ci-config-stack';
 import { CIStack } from '../lib/ci-stack';
-import { StageDefs } from './stage-definitions';
 import { FineGrainedAccessSpecs } from '../lib/compute/auth-config';
+import { StageDefs } from './stage-definitions';
 
 const app = new App();
 
@@ -38,9 +37,16 @@ if (stage === 'Dev') {
   ciStack.addDependency(ciConfigStack);
 } else {
   const benchmarkFineGrainAccess: FineGrainedAccessSpecs = {
-    users: ['reta'],
+    groups: ['opensearch-project*submit-benchmark'],
     roleName: process.env.BENCHMARK_ROLE || 'benchmark-workflow-build-access-role', // benchmark.....role
     pattern: '(?i)benchmark-.*',
+    templateName: 'builder-template',
+  };
+
+  const distributionWorkflowsBuildAccess: FineGrainedAccessSpecs = {
+    users: ['opensearch-ci-bot'],
+    roleName: 'distribution-workflow-build-role',
+    pattern: 'manifest-update',
     templateName: 'builder-template',
   };
 
@@ -55,7 +61,7 @@ if (stage === 'Dev') {
     restrictServerAccessTo: stage === 'Prod' ? Peer.anyIpv4() : Peer.prefixList(prefixList.toString()),
     useProdAgents: true,
     enableViews: true,
-    fineGrainedAccessSpecs: [benchmarkFineGrainAccess],
+    fineGrainedAccessSpecs: [benchmarkFineGrainAccess, distributionWorkflowsBuildAccess],
     envVarsFilePath: './resources/envVars.yaml',
     env: {
       account: StageDefs[stage].accountId,
