@@ -9,7 +9,6 @@
 import { App } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Peer } from 'aws-cdk-lib/aws-ec2';
-import { Effect } from 'aws-cdk-lib/aws-iam';
 import { CIStack } from '../lib/ci-stack';
 import { AgentNodes } from '../lib/compute/agent-nodes';
 
@@ -46,7 +45,7 @@ test('CI Stack Basic Resources', () => {
   template.resourceCountIs('AWS::SSM::Association', 1);
   template.resourceCountIs('AWS::EFS::FileSystem', 1);
   template.resourceCountIs('AWS::CloudWatch::Alarm', 4);
-  template.resourceCountIs('AWS::SecretsManager::Secret', 5);
+  template.resourceCountIs('AWS::SecretsManager::Secret', 8);
 
   template.hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
