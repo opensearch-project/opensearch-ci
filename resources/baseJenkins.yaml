@@ -66,6 +66,10 @@ security:
   sSHD:
     port: -1
 unclassified:
+  1Password Config:
+    config:
+      opCLIPath: "/usr/local/bin"
+      serviceAccountCredentialId: "one-password-service-token"
   audit-trail:
     logBuildCause: true
     pattern: ".*/(?:configSubmit|doDelete|postBuildResult|enable|disable|cancelQueue|stop|toggleLogKeep|doWipeOutWorkspace|createItem|createView|toggleOffline|cancelQuietDown|quietDown|restart|exit|safeExit)/?.*"
