@@ -4,10 +4,6 @@ import { ISecret, Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { GitHubActionsFederateIntegrationForBranchesAndTags } from './gha-federate-access';
 
 export class AWSSecretsJenkinsCredentials {
-  static centralPortalMavenUsername: Secret;
-
-  static centralPortalMavenPassword: Secret;
-
   static snapshotsMavenUsername: ISecret;
 
   static snapshotsMavenPassword: ISecret;
@@ -17,17 +13,17 @@ export class AWSSecretsJenkinsCredentials {
 
     AWSSecretsJenkinsCredentials.snapshotsMavenUsername = Secret.fromSecretNameV2(stack, 'imported-maven-snapshots-username', 'maven-snapshots-username');
 
-    AWSSecretsJenkinsCredentials.centralPortalMavenUsername = new Secret(stack, 'maven-central-portal-username', {
+    const centralPortalMavenUsername = new Secret(stack, 'maven-central-portal-username', {
       secretName: 'maven-central-portal-username',
-      description: 'Username for publishing snapshots to maven central portal',
+      description: 'Username for publishing artifacts to maven central portal',
     });
-    Tags.of(AWSSecretsJenkinsCredentials.centralPortalMavenUsername).add('jenkins:credentials:type', 'string');
+    Tags.of(centralPortalMavenUsername).add('jenkins:credentials:type', 'string');
 
-    AWSSecretsJenkinsCredentials.centralPortalMavenPassword = new Secret(stack, 'maven-central-portal-password', {
-      secretName: 'maven-central-portal-password',
-      description: 'Password for publishing snapshots to maven central portal',
+    const centralPortalMavenPassword = new Secret(stack, 'maven-central-portal-token', {
+      secretName: 'maven-central-portal-token',
+      description: 'Token for publishing artifacts to maven central portal',
     });
-    Tags.of(AWSSecretsJenkinsCredentials.centralPortalMavenPassword).add('jenkins:credentials:type', 'string');
+    Tags.of(centralPortalMavenPassword).add('jenkins:credentials:type', 'string');
 
     const onePasswordServiceToken = new Secret(stack, 'one-password-service-token', {
       secretName: 'one-password-service-token',
@@ -102,9 +98,7 @@ export class AWSSecretsJenkinsCredentials {
     reposWithMavenSnapshotsCredsAccess.forEach((repo) => {
       new GitHubActionsFederateIntegrationForBranchesAndTags(stack, provider,
         [AWSSecretsJenkinsCredentials.snapshotsMavenUsername.secretArn,
-          AWSSecretsJenkinsCredentials.snapshotsMavenPassword.secretArn,
-          AWSSecretsJenkinsCredentials.centralPortalMavenUsername.secretArn,
-          AWSSecretsJenkinsCredentials.centralPortalMavenPassword.secretArn], repo);
+          AWSSecretsJenkinsCredentials.snapshotsMavenPassword.secretArn], repo);
     });
   }
 }
