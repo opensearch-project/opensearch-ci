@@ -392,7 +392,7 @@ export class JenkinsMainNode {
                 {
                   file_path: '/var/lib/jenkins/logs/custom/workflowRun.log',
                   log_group_name: 'JenkinsMainNode/workflow.log',
-                  auto_removal: true,
+                  auto_removal: false,
                   log_stream_name: 'workflow-logs',
                 },
                 {
