@@ -50,6 +50,13 @@ if (stage === 'Dev') {
     templateName: 'builder-template',
   };
 
+  const oscarBuildAccess: FineGrainedAccessSpecs = {
+    users: ['opensearch-ci-bot'],
+    roleName: 'oscar-build-role',
+    pattern: '(docker-scan|central-release-promotion)',
+    templateName: 'builder-template',
+  };
+
   const ciStack = new CIStack(app, `OpenSearch-CI-${stage}`, {
     useSsl: true,
     authType: 'github',
@@ -61,7 +68,7 @@ if (stage === 'Dev') {
     restrictServerAccessTo: stage === 'Prod' ? Peer.anyIpv4() : Peer.prefixList(prefixList.toString()),
     useProdAgents: true,
     enableViews: true,
-    fineGrainedAccessSpecs: [benchmarkFineGrainAccess, distributionWorkflowsBuildAccess],
+    fineGrainedAccessSpecs: [benchmarkFineGrainAccess, distributionWorkflowsBuildAccess, oscarBuildAccess],
     envVarsFilePath: './resources/envVars.yaml',
     env: {
       account: StageDefs[stage].accountId,
