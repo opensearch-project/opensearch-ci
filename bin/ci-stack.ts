@@ -46,14 +46,7 @@ if (stage === 'Dev') {
   const distributionWorkflowsBuildAccess: FineGrainedAccessSpecs = {
     users: ['opensearch-ci-bot'],
     roleName: 'distribution-workflow-build-role',
-    pattern: 'manifest-update',
-    templateName: 'builder-template',
-  };
-
-  const oscarBuildAccess: FineGrainedAccessSpecs = {
-    users: ['opensearch-ci-bot'],
-    roleName: 'oscar-build-role',
-    pattern: '(docker-scan|central-release-promotion)',
+    pattern: '(manifest-update|docker-scan)',
     templateName: 'builder-template',
   };
 
@@ -68,7 +61,7 @@ if (stage === 'Dev') {
     restrictServerAccessTo: stage === 'Prod' ? Peer.anyIpv4() : Peer.prefixList(prefixList.toString()),
     useProdAgents: true,
     enableViews: true,
-    fineGrainedAccessSpecs: [benchmarkFineGrainAccess, distributionWorkflowsBuildAccess, oscarBuildAccess],
+    fineGrainedAccessSpecs: [benchmarkFineGrainAccess, distributionWorkflowsBuildAccess],
     envVarsFilePath: './resources/envVars.yaml',
     env: {
       account: StageDefs[stage].accountId,
