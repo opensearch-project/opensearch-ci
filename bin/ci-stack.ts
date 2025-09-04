@@ -46,7 +46,7 @@ if (stage === 'Dev') {
   const distributionWorkflowsBuildAccess: FineGrainedAccessSpecs = {
     users: ['opensearch-ci-bot'],
     roleName: 'distribution-workflow-build-role',
-    pattern: '(manifest-update|docker-scan)',
+    pattern: '(manifest-update|docker-scan|distribution-build-opensearch)',
     templateName: 'builder-template',
   };
 
