@@ -14,6 +14,7 @@ jdk_versions=(
     "21@https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/OpenJDK21U-jdk_x64_mac_hotspot_21.0.1_12.tar.gz@1"
     "23@https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23%2B37/OpenJDK23U-jdk_x64_mac_hotspot_23_37.tar.gz@1"
     "24@https://github.com/adoptium/temurin24-binaries/releases/download/jdk-24.0.1%2B9/OpenJDK24U-jdk_x64_mac_hotspot_24.0.1_9.tar.gz@100"
+    "25@pending@100"
 )
 
 ## Setup brew Defaults
@@ -36,6 +37,7 @@ if [ "$ARCH" = "arm64" ]; then
         "21@https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jdk_aarch64_mac_hotspot_21.0.3_9.tar.gz@1"
         "23@https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23%2B37/OpenJDK23U-jdk_aarch64_mac_hotspot_23_37.tar.gz@1"
         "24@https://github.com/adoptium/temurin24-binaries/releases/download/jdk-24.0.1%2B9/OpenJDK24U-jdk_aarch64_mac_hotspot_24.0.1_9.tar.gz@100"
+        "25@pending@100"
     )
 fi
 
