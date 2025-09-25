@@ -54,7 +54,7 @@ if (stage === 'Dev') {
     useSsl: true,
     authType: 'github',
     ignoreResourcesFailures: false,
-    adminUsers: ['getsaurabh02', 'gaiksaya', 'peterzhuamazon', 'rishabh6788', 'zelinh', 'prudhvigodithi', 'Divyaasm'],
+    adminUsers: ['getsaurabh02', 'gaiksaya', 'peterzhuamazon', 'rishabh6788', 'zelinh', 'prudhvigodithi', 'Divyaasm', 'ryanaslett'],
     dataRetention: true,
     agentAssumeRole: StageDefs[stage].agentAssumeRole,
     macAgent: true,
