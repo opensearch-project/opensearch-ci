@@ -212,6 +212,12 @@ tool:
           installers:
           - adoptOpenJdkInstaller:
               id: "jdk-24.0.1+9"
+    - name: "openjdk-25"
+      properties:
+      - installSource:
+          installers:
+          - adoptOpenJdkInstaller:
+              id: "jdk-25+36"
   mavenGlobalConfig:
     globalSettingsProvider: "standard"
     settingsProvider: "standard"
