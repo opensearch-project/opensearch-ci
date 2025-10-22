@@ -41,6 +41,8 @@ if [ "$ARCH" = "arm64" ]; then
     )
 fi
 
+export HOMEBREW_NO_ANALYTICS=1
+$BREW_PATH/brew analytics off
 $BREW_PATH/brew update
 $BREW_PATH/brew upgrade
 $BREW_PATH/brew install curl 
