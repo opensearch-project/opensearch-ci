@@ -133,7 +133,7 @@ export class AgentNodes {
     };
     this.AL2023_X64_BENCHMARK_TEST = {
       agentType: 'unix',
-      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
+      customDeviceMapping: '/dev/xvda=:600:true:::encrypted',
       workerLabelString: ['Jenkins-Agent-AL2023-X64-M52xlarge-Benchmark-Test', 'benchmark'],
       instanceType: 'M52xlarge',
       remoteUser: 'ec2-user',
@@ -147,7 +147,7 @@ export class AgentNodes {
     };
     this.AL2023_X64_VECTOR_BENCHMARK_TEST = {
       agentType: 'unix',
-      customDeviceMapping: '/dev/xvda=:300:true:::encrypted',
+      customDeviceMapping: '/dev/xvda=:600:true:::encrypted',
       workerLabelString: ['Jenkins-Agent-AL2023-X64-M52xlarge-Vector-Benchmark-Test', 'benchmark'],
       instanceType: 'M52xlarge',
       remoteUser: 'ec2-user',
