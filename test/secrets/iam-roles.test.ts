@@ -8,7 +8,9 @@
 
 import { App, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { OpenIdConnectProvider } from 'aws-cdk-lib/aws-iam';
 import { AWSIdentityAccessManagementRolesStack } from '../../lib/secrets/iam-roles';
+import { AWSSecretsJenkinsCredentials } from '../../lib/secrets/secret-credentials';
 
 test('IAM Roles Stack Resources', () => {
   const app = new App({
@@ -19,6 +21,12 @@ test('IAM Roles Stack Resources', () => {
   const stack = new Stack(app, 'TestStack', {
     env: { account: 'test-account', region: 'us-east-1' },
   });
+
+  AWSSecretsJenkinsCredentials.provider = OpenIdConnectProvider.fromOpenIdConnectProviderArn(
+    stack,
+    'test-provider',
+    'arn:aws:iam::test-account:oidc-provider/token.actions.githubusercontent.com',
+  );
 
   new AWSIdentityAccessManagementRolesStack(stack);
 

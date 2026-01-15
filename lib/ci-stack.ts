@@ -224,6 +224,7 @@ export class CIStack extends Stack {
 
     const artifactBucket = new Bucket(this, 'BuildBucket');
 
+    // Deploy secret stack before IAM stack to re-use OIDC provider
     new AWSSecretsJenkinsCredentials(this);
 
     new AWSIdentityAccessManagementRolesStack(this);

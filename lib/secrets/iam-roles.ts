@@ -1,6 +1,6 @@
 import { Stack, Tags } from 'aws-cdk-lib';
-import { OpenIdConnectProvider } from 'aws-cdk-lib/aws-iam';
 import { GitHubActionsFederateIntegrationForBranchesAndTagsOnBedrockResources } from './gha-federate-access';
+import { AWSSecretsJenkinsCredentials } from './secret-credentials';
 
 export class AWSIdentityAccessManagementRolesStack {
   constructor(stack: Stack) {
@@ -8,11 +8,8 @@ export class AWSIdentityAccessManagementRolesStack {
       'OpenSearch',
     ];
 
-    const provider = OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'open-id-connect-provider',
-      `arn:aws:iam::${stack.account}:oidc-provider/token.actions.githubusercontent.com`);
-
     reposWithBedrockAccess.forEach((repo) => {
-      new GitHubActionsFederateIntegrationForBranchesAndTagsOnBedrockResources(stack, provider, repo);
+      new GitHubActionsFederateIntegrationForBranchesAndTagsOnBedrockResources(stack, AWSSecretsJenkinsCredentials.provider, repo);
     });
   }
 }

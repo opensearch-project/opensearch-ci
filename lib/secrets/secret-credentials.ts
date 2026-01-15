@@ -1,5 +1,5 @@
 import { Stack, Tags } from 'aws-cdk-lib';
-import { OpenIdConnectProvider } from 'aws-cdk-lib/aws-iam';
+import { IOpenIdConnectProvider, OpenIdConnectProvider } from 'aws-cdk-lib/aws-iam';
 import { ISecret, Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { GitHubActionsFederateIntegrationForBranchesAndTags } from './gha-federate-access';
 
@@ -7,6 +7,8 @@ export class AWSSecretsJenkinsCredentials {
   static snapshotsMavenUsername: ISecret;
 
   static snapshotsMavenPassword: ISecret;
+
+  static provider: IOpenIdConnectProvider;
 
   constructor(stack: Stack) {
     AWSSecretsJenkinsCredentials.snapshotsMavenPassword = Secret.fromSecretNameV2(stack, 'imported-maven-snapshots-password', 'maven-snapshots-password');
@@ -92,11 +94,11 @@ export class AWSSecretsJenkinsCredentials {
       'opensearch-protobufs',
     ];
 
-    const provider = OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'open-id-connect-provider',
+    AWSSecretsJenkinsCredentials.provider = OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'open-id-connect-provider',
       `arn:aws:iam::${stack.account}:oidc-provider/token.actions.githubusercontent.com`);
 
     reposWithMavenSnapshotsCredsAccess.forEach((repo) => {
-      new GitHubActionsFederateIntegrationForBranchesAndTags(stack, provider,
+      new GitHubActionsFederateIntegrationForBranchesAndTags(stack, AWSSecretsJenkinsCredentials.provider,
         [AWSSecretsJenkinsCredentials.snapshotsMavenUsername.secretArn,
           AWSSecretsJenkinsCredentials.snapshotsMavenPassword.secretArn], repo);
     });
