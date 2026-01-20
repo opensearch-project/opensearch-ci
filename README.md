@@ -55,11 +55,11 @@ OpenSearch Continuous Integration is an open source CI system for OpenSearch and
 1. Setup your local machine to credentials to deploy to the AWS Account
 2. Deploy the bootstrap stack by running the following command that sets up required resources to create the stacks. [More info](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
    
-   `npm run cdk bootstrap -- -c useSsl=false -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32`
+   `npm run cdk bootstrap -- -c useSsl=false -c authType=default -c stage=Dev -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32`
    
 3. Deploy the ci-config-stack using the following (takes ~1 minute to deploy) - 
    
-   `npm run cdk deploy OpenSearch-CI-Config-Dev -- -c useSsl=false -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32`
+   `npm run cdk deploy OpenSearch-CI-Config-Dev -- -c useSsl=false -c authType=default -c stage=Dev -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32`
    
 4. Locate the secret manager arns in the ci-config-stack outputs for `CASC_RELOAD_TOKEN` and update the secret value ([see docs](https://docs.aws.amazon.com/cli/latest/reference/secretsmanager/put-secret-value.html)) with the password you want to use to reload jenkins configuration. _Do not enclose it in quotes_
 ```
@@ -72,7 +72,7 @@ $aws secretsmanager put-secret-value \
 6. [Optional](#setup-authentication-using-openid-connect-oidc-or-github-authentication) Configure the elements setting up oidc or github Auth via federate
 7. Deploy the ci-stack, takes ~10 minutes to deploy (parameter values depend on step 2 and step 3)
    
-   `npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32`
+   `npm run cdk deploy OpenSearch-CI-Dev -- -c useSsl=false -c authType=default -c stage=Dev -c serverAccessType=ipv4 -c restrictServerAccessTo=10.10.10.10/32`
 8. Fetch the key-pair id of `AgentNodeKeyPair` and locate actual value in SSM Parameter Store, it will of the format `/ec2/keypair/{key_pair_id}`. Add the actual value in Secrets Manager to secret named `jenkins-agent-node-key-pair`. This will allow jenkins manager node to be able to connect to agent nodes. 
 
 9. When OIDC is disabled, this set up will enforce the user to secure jenkins by adding first admin user on deployment. Create admin user and password, fill in all other details like name and email id to start using jenkins.
@@ -85,6 +85,7 @@ $aws secretsmanager put-secret-value \
 |----------------------------------------------------------------------------------------|:---------|:---------------------------------------------------------------------------------------------------------------------------|
 | [useSsl](#ssl-configuration) <required>                                                | boolean  | Should the Jenkins use https                                                                                               |
 | [restrictServerAccessTo](#restricting-server-access) <required>                        | Ipeer    | Restrict jenkins server access                                                                                             |
+| [stage](#ci-deployment) <required>                                                     | string   | Dev, Beta, Prod                                                                                                            |
 | [authType](#setup-authentication-using-openid-connect-oidc-or-github-authentication)   | string   | Authentication type for Jenkins login. Acceptable values: github, oidc, default                                            |
 | [ignoreResourcesFailures](#ignore-resources-failure)                                   | boolean  | Additional verification during deployment and resource startup                                                             |
 | [adminUsers](#setup-authentication-using-openid-connect-oidc-or-github-authentication) | string[] | List of users with admin access during initial deployment                                                                  |
