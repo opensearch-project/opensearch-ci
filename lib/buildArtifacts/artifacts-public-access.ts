@@ -30,6 +30,16 @@ export class ArtifactsPublicAccess {
       principals: [new CanonicalUserPrincipal(originAccessIdentity.cloudFrontOriginAccessIdentityS3CanonicalUserId)],
     }));
 
+    // Specifically setup for maven snapshots browser
+    buildBucket.addToResourcePolicy(new PolicyStatement({
+      actions: ['s3:ListBucket'],
+      resources: [buildBucket.bucketArn],
+      conditions: {
+        StringLike: { 's3:prefix': 'snapshots/*' },
+      },
+      principals: [new CanonicalUserPrincipal(originAccessIdentity.cloudFrontOriginAccessIdentityS3CanonicalUserId)],
+    }));
+
     const urlRewriter = new NodejsFunction(stack, 'CfUrlRewriter', {
       runtime: Runtime.NODEJS_18_X,
       entry: `${__dirname}/../../resources/cf-url-rewriter/cf-url-rewriter.ts`,

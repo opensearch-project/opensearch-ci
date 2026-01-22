@@ -29,6 +29,7 @@ import { JenkinsExternalLoadBalancer } from './network/ci-external-load-balancer
 import { JenkinsSecurityGroups } from './security/ci-security-groups';
 import { JenkinsWAF } from './security/waf';
 import { AWSSecretsJenkinsCredentials } from './secrets/secret-credentials';
+import { AWSIdentityAccessManagementRolesStack } from './secrets/iam-roles';
 
 enum DeploymentType {
   BTR = 'BTR', // Build Test Release
@@ -222,6 +223,9 @@ export class CIStack extends Stack {
     });
 
     const artifactBucket = new Bucket(this, 'BuildBucket');
+
+    // Deploy IAM stack first to initialize OIDC provider
+    new AWSIdentityAccessManagementRolesStack(this);
 
     new AWSSecretsJenkinsCredentials(this);
 
