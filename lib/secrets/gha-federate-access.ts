@@ -56,7 +56,7 @@ export class GitHubActionsFederateIntegrationForBranchesAndTags {
 
 export class GitHubActionsFederateIntegrationForBranchesAndTagsOnBedrockResources {
   constructor(stack: Stack, provider: IOpenIdConnectProvider, githubRepo: string) {
-    // creating IAM role for accessing secret only using branches
+    // creating IAM role for accessing bedrock only using branches
     // Ensure roleName meets AWS IAM requirements: alphanumeric characters and _+=,.@- only, max 64 chars
     const sanitizedRepo = githubRepo.replace(/[^a-zA-Z0-9_+=,.@-]/g, '-');
     const roleNameBase = `${sanitizedRepo}-bedrock-access-role-for-branches-public`;
@@ -76,6 +76,39 @@ export class GitHubActionsFederateIntegrationForBranchesAndTagsOnBedrockResource
     });
 
     ghaBranchRoleBedrock.addToPolicy(new PolicyStatement({
+      actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
+      resources: [
+        `arn:aws:bedrock:*:${stack.account}:inference-profile/us.anthropic.claude-haiku-4-5-20251001-v1:0`,
+        `arn:aws:bedrock:*:${stack.account}:inference-profile/us.anthropic.claude-sonnet-4-5-20250929-v1:0`,
+        'arn:aws:bedrock:*::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0',
+        'arn:aws:bedrock:*::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0',
+      ],
+    }));
+  }
+}
+
+export class GitHubActionsFederateIntegrationForPrsOnBedrockResources {
+  constructor(stack: Stack, provider: IOpenIdConnectProvider, githubRepo: string) {
+    // creating IAM role for accessing bedrock only using PRs
+    // Ensure roleName meets AWS IAM requirements: alphanumeric characters and _+=,.@- only, max 64 chars
+    const sanitizedRepo = githubRepo.replace(/[^a-zA-Z0-9_+=,.@-]/g, '-');
+    const roleNameBase = `${sanitizedRepo}-bedrock-access-role-for-prs-public`;
+    // Ensure the roleName doesn't exceed 64 characters
+    const roleName = roleNameBase.length > 64 ? roleNameBase.substring(0, 64) : roleNameBase;
+
+    const ghaPrRoleBedrock = new Role(stack, `${githubRepo}-bedrock-github-role-prs-public`, {
+      roleName,
+      assumedBy: new OpenIdConnectPrincipal(provider, {
+        StringLike: {
+          'token.actions.githubusercontent.com:sub': `repo:opensearch-project/${githubRepo}:pull_request`,
+        },
+        StringEquals: {
+          'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
+        },
+      }),
+    });
+
+    ghaPrRoleBedrock.addToPolicy(new PolicyStatement({
       actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
       resources: [
         `arn:aws:bedrock:*:${stack.account}:inference-profile/us.anthropic.claude-haiku-4-5-20251001-v1:0`,

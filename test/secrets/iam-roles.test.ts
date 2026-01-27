@@ -24,8 +24,8 @@ test('IAM Roles Stack Resources', () => {
 
   const template = Template.fromStack(stack);
 
-  template.resourceCountIs('AWS::IAM::Role', 1);
-  template.resourceCountIs('AWS::IAM::Policy', 1);
+  template.resourceCountIs('AWS::IAM::Role', 2);
+  template.resourceCountIs('AWS::IAM::Policy', 2);
 
   template.hasResourceProperties('AWS::IAM::Role', {
     RoleName: 'OpenSearch-bedrock-access-role-for-branches-public',
@@ -36,6 +36,30 @@ test('IAM Roles Stack Resources', () => {
           Condition: {
             StringLike: {
               'token.actions.githubusercontent.com:sub': 'repo:opensearch-project/OpenSearch:ref:refs/*',
+            },
+            StringEquals: {
+              'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            Federated: 'arn:aws:iam::test-account:oidc-provider/token.actions.githubusercontent.com',
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+
+  template.hasResourceProperties('AWS::IAM::Role', {
+    RoleName: 'OpenSearch-bedrock-access-role-for-prs-public',
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRoleWithWebIdentity',
+          Condition: {
+            StringLike: {
+              'token.actions.githubusercontent.com:sub': 'repo:opensearch-project/OpenSearch:pull_request',
             },
             StringEquals: {
               'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
