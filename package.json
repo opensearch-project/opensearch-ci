@@ -30,7 +30,7 @@
     "aws-lambda": "^1.0.7",
     "constructs": "10.1.67",
     "esbuild": "^0.14.43",
-    "eslint": "^7.32.0",
+    "eslint": "^9.26.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.24.2",
     "js-yaml": "^4.1.1",
