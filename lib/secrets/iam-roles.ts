@@ -18,7 +18,11 @@ export class AWSIdentityAccessManagementRolesStack {
 
     const reposWithBedrockAccessOnPrs = [
       'OpenSearch',
+      'OpenSearch-Dashboards',
       'opensearch-build',
+      'sql',
+      'ml-commons',
+      'opensearch-benchmark',
     ];
 
     reposWithBedrockAccessOnBranches.forEach((repo) => {
