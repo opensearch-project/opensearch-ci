@@ -84,8 +84,10 @@ test('IAM Roles Stack Resources', () => {
           Resource: [
             'arn:aws:bedrock:*:test-account:inference-profile/us.anthropic.claude-haiku-4-5-20251001-v1:0',
             'arn:aws:bedrock:*:test-account:inference-profile/us.anthropic.claude-sonnet-4-5-20250929-v1:0',
+            'arn:aws:bedrock:*:test-account:inference-profile/us.anthropic.claude-sonnet-4-6',
             'arn:aws:bedrock:*::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0',
             'arn:aws:bedrock:*::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0',
+            'arn:aws:bedrock:*::foundation-model/anthropic.claude-sonnet-4-6',
           ],
         },
       ],
