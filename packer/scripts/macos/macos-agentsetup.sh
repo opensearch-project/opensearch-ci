@@ -41,6 +41,9 @@ if [ "$ARCH" = "arm64" ]; then
     )
 fi
 
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain stable -y
+
 export HOMEBREW_NO_ANALYTICS=1
 $BREW_PATH/brew analytics off
 $BREW_PATH/brew update
