@@ -55,6 +55,7 @@ $BREW_PATH/brew install dpkg
 $BREW_PATH/brew install ca-certificates
 $BREW_PATH/brew install gnupg
 $BREW_PATH/brew install 1password-cli
+$BREW_PATH/brew install protobuf
 $BREW_PATH/brew cleanup
 
 
