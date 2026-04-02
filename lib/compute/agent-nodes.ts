@@ -168,7 +168,7 @@ export class AgentNodes {
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-006dfbeed02fe9d40',
+      amiId: 'ami-0560d8e3472ead3cb',
       initScript: 'docker ps && sudo apt-get update -y && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
         + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
       remoteFs: '/var/jenkins',
@@ -182,7 +182,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 2,
       numExecutors: 1,
-      amiId: 'ami-006dfbeed02fe9d40',
+      amiId: 'ami-0560d8e3472ead3cb',
       initScript: 'docker ps && sudo apt-get update -y && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
         + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
       remoteFs: '/var/jenkins',
