@@ -37,6 +37,17 @@ fi
 sudo curl -SfL $OP_URL -o /tmp/op.zip && sudo unzip -j /tmp/op.zip op -d /usr/local/bin && sudo rm -v /tmp/op.zip
 op --version
 
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain stable -y
+
+# Install protoc
+if [ "$(uname -m)" = "x86_64" ]; then \
+    curl -SfL https://github.com/protocolbuffers/protobuf/releases/download/v33.0/protoc-33.0-linux-x86_64.zip -o /tmp/protoc.zip; \
+else \
+    curl -SfL https://github.com/protocolbuffers/protobuf/releases/download/v33.0/protoc-33.0-linux-aarch_64.zip -o /tmp/protoc.zip; \
+fi; \
+sudo unzip /tmp/protoc.zip -d /usr/local && rm -v /tmp/protoc.zip
+
 # Pre-install multi-jdk
 sudo apt-get install -y apt-transport-https gnupg curl
 sudo mkdir -p /etc/apt/keyrings

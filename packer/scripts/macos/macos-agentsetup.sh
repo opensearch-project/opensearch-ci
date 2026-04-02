@@ -41,6 +41,9 @@ if [ "$ARCH" = "arm64" ]; then
     )
 fi
 
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain stable -y
+
 export HOMEBREW_NO_ANALYTICS=1
 $BREW_PATH/brew analytics off
 $BREW_PATH/brew update
@@ -55,6 +58,7 @@ $BREW_PATH/brew install dpkg
 $BREW_PATH/brew install ca-certificates
 $BREW_PATH/brew install gnupg
 $BREW_PATH/brew install 1password-cli
+$BREW_PATH/brew install protobuf
 $BREW_PATH/brew cleanup
 
 
