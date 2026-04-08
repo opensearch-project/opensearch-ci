@@ -54,28 +54,37 @@ export class GitHubActionsFederateIntegrationForBranchesAndTags {
   }
 }
 
-export class GitHubActionsFederateIntegrationForBranchesAndTagsOnBedrockResources {
+export class GitHubActionsFederateIntegrationForWorkflowIssueDedupeOnBedrockResources {
   constructor(stack: Stack, provider: IOpenIdConnectProvider, githubRepo: string) {
-    // creating IAM role for accessing bedrock only using branches
+    // creating IAM role for accessing bedrock only using issue dedupe workflow on default branch
     // Ensure roleName meets AWS IAM requirements: alphanumeric characters and _+=,.@- only, max 64 chars
     const sanitizedRepo = githubRepo.replace(/[^a-zA-Z0-9_+=,.@-]/g, '-');
-    const roleNameBase = `${sanitizedRepo}-bedrock-access-role-for-branches-public`;
+    const roleNameBase = `${sanitizedRepo}-bedrock-access-role-for-workflow-issue-dedupe-public`;
     // Ensure the roleName doesn't exceed 64 characters
     const roleName = roleNameBase.length > 64 ? roleNameBase.substring(0, 64) : roleNameBase;
 
-    const ghaBranchRoleBedrock = new Role(stack, `${githubRepo}-bedrock-github-role-branches-public`, {
+    const ghaWorkflowIssueDedupeRoleBedrock = new Role(stack, `${githubRepo}-bedrock-github-role-workflow-issue-dedupe-public`, {
       roleName,
       assumedBy: new OpenIdConnectPrincipal(provider, {
         StringLike: {
-          'token.actions.githubusercontent.com:sub': `repo:opensearch-project/${githubRepo}:ref:refs/*`,
+          'token.actions.githubusercontent.com:sub': `repo:opensearch-project/${githubRepo}:*`,
         },
         StringEquals: {
           'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
+          'token.actions.githubusercontent.com:repository': `opensearch-project/${githubRepo}`,
+          'token.actions.githubusercontent.com:ref': 'refs/heads/main',
+          'token.actions.githubusercontent.com:workflow': 'Issue Dedupe Main',
+        },
+        'ForAnyValue:StringEquals': {
+          'token.actions.githubusercontent.com:job_workflow_ref': [
+            `opensearch-project/${githubRepo}/.github/workflows/issue-dedupe-detect.yml@refs/heads/main`,
+            `opensearch-project/${githubRepo}/.github/workflows/issue-dedupe-autoclose.yml@refs/heads/main`,
+          ],
         },
       }),
     });
 
-    ghaBranchRoleBedrock.addToPolicy(new PolicyStatement({
+    ghaWorkflowIssueDedupeRoleBedrock.addToPolicy(new PolicyStatement({
       actions: ['bedrock:InvokeModel', 'bedrock:InvokeModelWithResponseStream'],
       resources: [
         `arn:aws:bedrock:*:${stack.account}:inference-profile/us.anthropic.claude-haiku-4-5-20251001-v1:0`,

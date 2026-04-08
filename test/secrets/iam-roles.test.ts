@@ -24,21 +24,30 @@ test('IAM Roles Stack Resources', () => {
 
   const template = Template.fromStack(stack);
 
-  template.resourceCountIs('AWS::IAM::Role', 7);
-  template.resourceCountIs('AWS::IAM::Policy', 7);
+  template.resourceCountIs('AWS::IAM::Role', 12);
+  template.resourceCountIs('AWS::IAM::Policy', 12);
 
   template.hasResourceProperties('AWS::IAM::Role', {
-    RoleName: 'OpenSearch-bedrock-access-role-for-branches-public',
+    RoleName: 'OpenSearch-bedrock-access-role-for-workflow-issue-dedupe-public',
     AssumeRolePolicyDocument: {
       Statement: [
         {
           Action: 'sts:AssumeRoleWithWebIdentity',
           Condition: {
             StringLike: {
-              'token.actions.githubusercontent.com:sub': 'repo:opensearch-project/OpenSearch:ref:refs/*',
+              'token.actions.githubusercontent.com:sub': 'repo:opensearch-project/OpenSearch:*',
             },
             StringEquals: {
               'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
+              'token.actions.githubusercontent.com:repository': 'opensearch-project/OpenSearch',
+              'token.actions.githubusercontent.com:ref': 'refs/heads/main',
+              'token.actions.githubusercontent.com:workflow': 'Issue Dedupe Main',
+            },
+            'ForAnyValue:StringEquals': {
+              'token.actions.githubusercontent.com:job_workflow_ref': [
+                'opensearch-project/OpenSearch/.github/workflows/issue-dedupe-detect.yml@refs/heads/main',
+                'opensearch-project/OpenSearch/.github/workflows/issue-dedupe-autoclose.yml@refs/heads/main',
+              ],
             },
           },
           Effect: 'Allow',
