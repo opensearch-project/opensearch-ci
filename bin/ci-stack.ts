@@ -43,10 +43,20 @@ if (stage === 'Dev') {
     templateName: 'builder-template',
   };
 
-  const distributionWorkflowsBuildAccess: FineGrainedAccessSpecs = {
+  // Used by CI workflows to trigger manifest-update workflow
+  const ciWorkflowsBuildAccess: FineGrainedAccessSpecs = {
     users: ['opensearch-ci-bot'],
-    roleName: 'distribution-workflow-build-role',
-    pattern: '(manifest-update|docker-scan|distribution-release-chores)',
+    roleName: 'ci-workflow-build-role',
+    pattern: '(manifest-update)',
+    templateName: 'builder-template',
+  };
+
+  // Used by OSCAR to trigger distribution build, test and release workflows
+  const distWorkflowsBuildAccess: FineGrainedAccessSpecs = {
+    users: ['oscar-ci-bot'],
+    roleName: 'dist-build-test-release-role',
+    pattern: '(.*manifest.*|docker-scan|release-notes-(generate|tracker)|central-release-promotion'
+      + '|distribution-(release-chores|build-.*|release-tag-creation)|integ-test.*)',
     templateName: 'builder-template',
   };
 
@@ -61,7 +71,7 @@ if (stage === 'Dev') {
     restrictServerAccessTo: stage === 'Prod' ? Peer.anyIpv4() : Peer.prefixList(prefixList.toString()),
     useProdAgents: true,
     enableViews: true,
-    fineGrainedAccessSpecs: [benchmarkFineGrainAccess, distributionWorkflowsBuildAccess],
+    fineGrainedAccessSpecs: [benchmarkFineGrainAccess, ciWorkflowsBuildAccess, distWorkflowsBuildAccess],
     envVarsFilePath: './resources/envVars.yaml',
     env: {
       account: StageDefs[stage].accountId,
