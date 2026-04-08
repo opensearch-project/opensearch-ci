@@ -1,7 +1,7 @@
 import { Stack, Tags } from 'aws-cdk-lib';
 import { IOpenIdConnectProvider, OpenIdConnectProvider } from 'aws-cdk-lib/aws-iam';
 import {
-  GitHubActionsFederateIntegrationForBranchesAndTagsOnBedrockResources,
+  GitHubActionsFederateIntegrationForWorkflowIssueDedupeOnBedrockResources,
   GitHubActionsFederateIntegrationForPrsOnBedrockResources,
 } from './gha-federate-access';
 
@@ -12,7 +12,7 @@ export class AWSIdentityAccessManagementRolesStack {
     AWSIdentityAccessManagementRolesStack.provider = OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'open-id-connect-provider',
       `arn:aws:iam::${stack.account}:oidc-provider/token.actions.githubusercontent.com`);
 
-    const reposWithBedrockAccessOnBranches = [
+    const reposWithBedrockAccessOnWorkflowIssueDedupe = [
       'OpenSearch',
     ];
 
@@ -25,8 +25,8 @@ export class AWSIdentityAccessManagementRolesStack {
       'opensearch-benchmark',
     ];
 
-    reposWithBedrockAccessOnBranches.forEach((repo) => {
-      new GitHubActionsFederateIntegrationForBranchesAndTagsOnBedrockResources(stack, AWSIdentityAccessManagementRolesStack.provider, repo);
+    reposWithBedrockAccessOnWorkflowIssueDedupe.forEach((repo) => {
+      new GitHubActionsFederateIntegrationForWorkflowIssueDedupeOnBedrockResources(stack, AWSIdentityAccessManagementRolesStack.provider, repo);
     });
 
     reposWithBedrockAccessOnPrs.forEach((repo) => {
