@@ -14,6 +14,11 @@ export class AWSIdentityAccessManagementRolesStack {
 
     const reposWithBedrockAccessOnWorkflowIssueDedupe = [
       'OpenSearch',
+      'OpenSearch-Dashboards',
+      'opensearch-build',
+      'sql',
+      'ml-commons',
+      'opensearch-benchmark',
     ];
 
     const reposWithBedrockAccessOnPrs = [
