@@ -77,8 +77,8 @@ export class GitHubActionsFederateIntegrationForWorkflowIssueDedupeOnBedrockReso
         },
         'ForAnyValue:StringEquals': {
           'token.actions.githubusercontent.com:job_workflow_ref': [
-            `opensearch-project/${githubRepo}/.github/workflows/issue-dedupe-detect.yml@refs/heads/main`,
-            `opensearch-project/${githubRepo}/.github/workflows/issue-dedupe-autoclose.yml@refs/heads/main`,
+            'opensearch-project/opensearch-build/.github/workflows/issue-dedupe-detect.yml@refs/heads/main',
+            'opensearch-project/opensearch-build/.github/workflows/issue-dedupe-autoclose.yml@refs/heads/main',
           ],
         },
       }),
