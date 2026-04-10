@@ -98,9 +98,10 @@ export class CIStack extends Stack {
 
   constructor(scope: Construct, id: string, props: CIStackProps) {
     super(scope, id, props);
-
+    const region = process.env.CDK_DEFAULT_REGION || 'us-east-1';
     const auditloggingS3Bucket = new CiAuditLogging(this);
     const vpc = new Vpc(this, 'JenkinsVPC', {
+      availabilityZones: [`${region}a`, `${region}b`, `${region}c`],
       flowLogs: {
         cloudwatch: {
           destination: FlowLogDestination.toCloudWatchLogs(
