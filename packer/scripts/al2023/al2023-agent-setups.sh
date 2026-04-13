@@ -70,10 +70,10 @@ sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.re
 sudo dnf install -y gh
 
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-. ~/.nvm/nvm.sh && nvm install 18.16.0
+. ~/.nvm/nvm.sh && nvm install 22.22.0
 
 # Node and node-packages are required globally to execute aws cdk command to setup opensearch-cluster.
-npm install -g fs-extra chalk@4.1.2 @aws-cdk/cloudformation-diff aws-cdk cdk-assume-role-credential-plugin@1.4.0
+npm install -g fs-extra@11.3.4 chalk@4.1.2 @aws-cdk/cloudformation-diff@2.182.0 aws-cdk@2.1118.0 cdk-assume-role-credential-plugin@1.4.0
 
 # AL2023 Specific Tweaks to disable selinux by default
 sudo sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config

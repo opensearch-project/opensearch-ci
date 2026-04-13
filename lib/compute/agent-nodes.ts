@@ -30,6 +30,8 @@ export class AgentNodes {
 
   readonly UBUNTU2404_X64_GRADLE_CHECK: AgentNodeProps;
 
+  readonly UBUNTU2404_X64_GRADLE_CHECK_M7A: AgentNodeProps;
+
   readonly UBUNTU2404_X64_DOCKER_BUILDER: AgentNodeProps;
 
   readonly MACOS13_X64_MULTI_HOST: AgentNodeProps;
@@ -164,6 +166,20 @@ export class AgentNodes {
       customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
       workerLabelString: ['Jenkins-Agent-Ubuntu2404-X64-M58xlarge-Single-Host', 'gradle'],
       instanceType: 'M58xlarge',
+      remoteUser: 'ubuntu',
+      maxTotalUses: 1,
+      minimumNumberOfSpareInstances: 1,
+      numExecutors: 1,
+      amiId: 'ami-0560d8e3472ead3cb',
+      initScript: 'docker ps && sudo apt-get update -y && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
+        + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
+      remoteFs: '/var/jenkins',
+    };
+    this.UBUNTU2404_X64_GRADLE_CHECK_M7A = {
+      agentType: 'unix',
+      customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
+      workerLabelString: ['Jenkins-Agent-Ubuntu2404-X64-M7a8xlarge-Single-Host', 'gradle'],
+      instanceType: 'M7a8xlarge',
       remoteUser: 'ubuntu',
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
