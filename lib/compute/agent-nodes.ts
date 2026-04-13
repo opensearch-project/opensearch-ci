@@ -58,7 +58,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-01f420019462c36e2',
+      amiId: 'ami-09fd6de3ca7e6ec68',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -86,7 +86,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 4,
       numExecutors: 3,
-      amiId: 'ami-01f420019462c36e2',
+      amiId: 'ami-09fd6de3ca7e6ec68',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -100,7 +100,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-036bb6ec2faa3ee9b',
+      amiId: 'ami-0652278bd4a6204bd',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -128,7 +128,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 4,
       numExecutors: 3,
-      amiId: 'ami-036bb6ec2faa3ee9b',
+      amiId: 'ami-0652278bd4a6204bd',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -142,7 +142,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 2,
-      amiId: 'ami-01f420019462c36e2',
+      amiId: 'ami-09fd6de3ca7e6ec68',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -156,7 +156,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 2,
-      amiId: 'ami-01f420019462c36e2',
+      amiId: 'ami-09fd6de3ca7e6ec68',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
           + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
