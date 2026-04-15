@@ -37,6 +37,7 @@ export class AWSIdentityAccessManagementRolesStack {
       'OpenSearch',
       'opensearch-build',
       'opensearch-benchmark',
+      'agent-health',
       'opensearch-learning-to-rank-base',
       'opensearch-remote-metadata-sdk',
       'job-scheduler',

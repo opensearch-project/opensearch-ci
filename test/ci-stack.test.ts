@@ -36,8 +36,8 @@ test('CI Stack Basic Resources', () => {
   template.resourceCountIs('AWS::AutoScaling::LaunchConfiguration', 1);
   template.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
   template.resourceCountIs('AWS::EC2::SecurityGroup', 4);
-  template.resourceCountIs('AWS::IAM::Policy', 72);
-  template.resourceCountIs('AWS::IAM::Role', 73);
+  template.resourceCountIs('AWS::IAM::Policy', 73);
+  template.resourceCountIs('AWS::IAM::Role', 74);
   template.resourceCountIs('AWS::S3::Bucket', 2);
   template.resourceCountIs('AWS::EC2::KeyPair', 1);
   template.resourceCountIs('AWS::IAM::InstanceProfile', 2);
@@ -415,7 +415,7 @@ describe('AgentNodes', () => {
 
   it('should exclude "default" keys when type is "BTR"', () => {
     const result = agentNodes.getRequiredAgentNodes('BTR');
-    expect(result.length).toBe(16);
+    expect(result.length).toBe(15);
   });
 
   it('should return keys containing "benchmark" when type is "benchmark"', () => {
@@ -425,7 +425,7 @@ describe('AgentNodes', () => {
 
   it('should return keys containing "gradle" when type is "gradle"', () => {
     const result = agentNodes.getRequiredAgentNodes('gradle');
-    expect(result).toHaveLength(3);
+    expect(result).toHaveLength(2);
   });
 
   it('should return keys containing "default" when type is "default"', () => {
