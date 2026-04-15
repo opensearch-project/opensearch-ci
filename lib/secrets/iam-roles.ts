@@ -25,12 +25,12 @@ export class AWSIdentityAccessManagementRolesStack {
       'ml-commons',
       'sql',
       'OpenSearch-Dashboards',
-      'observabilityDashboards',
-      'reportsDashboards',
-      'queryWorkbenchDashboards',
-      'customImportMapDashboards',
-      'anomalyDetectionDashboards',
-      'mlCommonsDashboards',
+      'dashboards-observability',
+      'dashboards-reporting',
+      'dashboards-query-workbench',
+      'dashboards-maps',
+      'anomaly-detection-dashboards-plugin',
+      'ml-commons-dashboards',
     ];
 
     const reposWithBedrockAccessOnPrs = [
@@ -47,12 +47,12 @@ export class AWSIdentityAccessManagementRolesStack {
       'ml-commons',
       'sql',
       'OpenSearch-Dashboards',
-      'observabilityDashboards',
-      'reportsDashboards',
-      'queryWorkbenchDashboards',
-      'customImportMapDashboards',
-      'anomalyDetectionDashboards',
-      'mlCommonsDashboards',
+      'dashboards-observability',
+      'dashboards-reporting',
+      'dashboards-query-workbench',
+      'dashboards-maps',
+      'anomaly-detection-dashboards-plugin',
+      'ml-commons-dashboards',
     ];
 
     reposWithBedrockAccessOnWorkflowIssueDedupe.forEach((repo) => {
