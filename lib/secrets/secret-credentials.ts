@@ -93,9 +93,13 @@ export class AWSSecretsJenkinsCredentials {
     ];
 
     reposWithMavenSnapshotsCredsAccess.forEach((repo) => {
-      new GitHubActionsFederateIntegrationForBranchesAndTags(stack, AWSIdentityAccessManagementRolesStack.provider,
+      new GitHubActionsFederateIntegrationForBranchesAndTags(
+        stack,
+        AWSIdentityAccessManagementRolesStack.provider,
         [AWSSecretsJenkinsCredentials.snapshotsMavenUsername.secretArn,
-          AWSSecretsJenkinsCredentials.snapshotsMavenPassword.secretArn], repo);
+          AWSSecretsJenkinsCredentials.snapshotsMavenPassword.secretArn],
+        repo,
+      );
     });
   }
 }
