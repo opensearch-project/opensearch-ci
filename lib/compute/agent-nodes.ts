@@ -164,8 +164,8 @@ export class AgentNodes {
     this.UBUNTU2404_X64_GRADLE_CHECK = {
       agentType: 'unix',
       customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
-      workerLabelString: ['Jenkins-Agent-Ubuntu2404-X64-M58xlarge-Single-Host', 'gradle'],
-      instanceType: 'M58xlarge',
+      workerLabelString: ['Jenkins-Agent-Ubuntu2404-X64-M8a8xlarge-Single-Host', 'gradle'],
+      instanceType: 'M8a8xlarge',
       remoteUser: 'ubuntu',
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
