@@ -9,8 +9,10 @@
 import {
   CloudFrontEvent, CloudFrontHeaders, CloudFrontRequest, CloudFrontRequestCallback, CloudFrontRequestEvent, Context,
 } from 'aws-lambda';
-import { handler } from '../../../resources/cf-url-rewriter/cf-url-rewriter';
-import { httpsGet } from '../../../resources/cf-url-rewriter/https-get';
+// eslint-disable-next-line import/no-unresolved
+import { handler } from 'cf-url-rewriter';
+// eslint-disable-next-line import/no-unresolved
+import { httpsGet } from 'cf-url-rewriter/https-get';
 
 jest.mock('../../../resources/cf-url-rewriter/https-get');
 
