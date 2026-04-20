@@ -30,6 +30,7 @@
   },
   "exclude": [
     "node_modules",
-    "cdk.out"
+    "cdk.out",
+    "resources/**/node_modules"
   ]
 }
