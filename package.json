@@ -1,8 +1,11 @@
 {
   "name": "opensearch-ci-stack",
-  "version": "1.5.12",
+  "version": "1.5.13",
   "bin": {
     "ci": "bin/ci-stack.js"
+  },
+  "engines": {
+    "node": ">=18.0.0 <22.0.0"
   },
   "scripts": {
     "build": "tsc",
