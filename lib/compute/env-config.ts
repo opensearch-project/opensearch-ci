@@ -9,9 +9,9 @@ import { load } from 'js-yaml';
  * compatible open source license.
  */
 export class Env {
-  public readonly key: string
+  public readonly key: string;
 
-  public readonly value: string
+  public readonly value: string;
 
   constructor(key : string, value: string) {
     this.key = key;

@@ -9,8 +9,11 @@ export class AWSIdentityAccessManagementRolesStack {
   static provider: IOpenIdConnectProvider;
 
   constructor(stack: Stack) {
-    AWSIdentityAccessManagementRolesStack.provider = OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'open-id-connect-provider',
-      `arn:aws:iam::${stack.account}:oidc-provider/token.actions.githubusercontent.com`);
+    AWSIdentityAccessManagementRolesStack.provider = OpenIdConnectProvider.fromOpenIdConnectProviderArn(
+      stack,
+      'open-id-connect-provider',
+      `arn:aws:iam::${stack.account}:oidc-provider/token.actions.githubusercontent.com`,
+    );
 
     const reposWithBedrockAccessOnWorkflowIssueDedupe = [
       'OpenSearch',

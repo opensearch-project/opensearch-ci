@@ -21,10 +21,16 @@
     "strictPropertyInitialization": false,
     "typeRoots": [
       "./node_modules/@types"
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "cf-url-rewriter": ["resources/cf-url-rewriter/cf-url-rewriter"],
+      "cf-url-rewriter/*": ["resources/cf-url-rewriter/*"]
+    }
   },
   "exclude": [
     "node_modules",
-    "cdk.out"
+    "cdk.out",
+    "resources/**/node_modules"
   ]
 }

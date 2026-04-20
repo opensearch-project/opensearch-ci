@@ -9,7 +9,8 @@
 import { ClientRequest } from 'http';
 import { get } from 'https';
 import { Stream } from 'stream';
-import { httpsGet } from '../../../resources/cf-url-rewriter/https-get';
+// eslint-disable-next-line import/no-unresolved
+import { httpsGet } from 'cf-url-rewriter/https-get';
 
 jest.mock('https');
 
@@ -20,6 +21,7 @@ beforeEach(() => {
 test('httpGet valid json', async () => {
   const stream = new Stream();
 
+  // eslint-disable-next-line no-import-assign
   (get as jest.Mock) = jest.fn().mockImplementation((url, cb) => {
     const res = {
       statusCode: 200,

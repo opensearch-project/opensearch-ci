@@ -83,14 +83,14 @@ export class JenkinsMainNode {
 
   private static ACCOUNT: string;
 
-  private static STACKREGION: string
+  private static STACKREGION: string;
 
   public readonly mainNodeAsg: AutoScalingGroup;
 
   public readonly ec2InstanceMetrics: {
     memUsed: Metric,
     foundJenkinsProcessCount: Metric
-  }
+  };
 
   constructor(stack: Stack, props: JenkinsMainNodeProps, agentNode: AgentNodeProps[], macAgent: string, assumeRole?: string[]) {
     this.ec2InstanceMetrics = {
@@ -181,7 +181,9 @@ export class JenkinsMainNode {
     const accessPolicy = ManagedPolicy.fromAwsManagedPolicyName('SecretsManagerReadWrite');
 
     // Main jenkins node will start/stop agent ec2 instances to run build jobs
-    const mainJenkinsNodePolicy = new ManagedPolicy(stack, 'MainJenkinsNodePolicy',
+    const mainJenkinsNodePolicy = new ManagedPolicy(
+      stack,
+      'MainJenkinsNodePolicy',
       {
         description: 'Policy for a main jenkins node',
         statements: [new PolicyStatement({
@@ -224,14 +226,22 @@ export class JenkinsMainNode {
             },
           },
         })],
-      });
+      },
+    );
 
     return [ec2SsmManagementPolicy, cloudwatchEventPublishingPolicy, accessPolicy, mainJenkinsNodePolicy];
   }
 
-  public static configElements(stackName: string, stackRegion: string, httpConfigProps: HttpConfigProps,
-    loginAuthProps: LoginAuthProps, dataRetentionProps: DataRetentionProps, jenkinsyaml: string,
-    reloadPasswordSecretsArn: string, efsId?: string): InitElement[] {
+  public static configElements(
+    stackName: string,
+    stackRegion: string,
+    httpConfigProps: HttpConfigProps,
+    loginAuthProps: LoginAuthProps,
+    dataRetentionProps: DataRetentionProps,
+    jenkinsyaml: string,
+    reloadPasswordSecretsArn: string,
+    efsId?: string,
+  ): InitElement[] {
     return [
       InitPackage.yum('wget'),
       InitPackage.yum('cronie'),
@@ -283,7 +293,8 @@ export class JenkinsMainNode {
       InitCommand.shellCommand('sudo curl -SL https://raw.githubusercontent.com/jenkinsci-cert/SECURITY-3314-3315/55c15104fb70d6a2b46fd3f8ba7dec3913a4b1db/disable-cli.groovy -o /var/lib/jenkins/init.groovy.d/disable-cli.groovy'),
 
       // Configuration to proxy jenkins on :8080 -> :80
-      InitFile.fromString('/etc/httpd/conf.d/jenkins.conf',
+      InitFile.fromString(
+        '/etc/httpd/conf.d/jenkins.conf',
         httpConfigProps.useSsl
           // eslint-disable-next-line no-useless-escape,max-len
           ? `LogFormat "%{X-Forwarded-For}i %h %l %u %t \\\"%r\\\" %>s %b \\\"%{Referer}i\\\" \\\"%{User-Agent}i\\\"" combined
@@ -328,7 +339,8 @@ export class JenkinsMainNode {
           
             ProxyPass         /  http://127.0.0.1:8080/ nocanon
             ProxyPassReverse  /  http://127.0.0.1:8080/
-        </VirtualHost>`),
+        </VirtualHost>`,
+      ),
 
       // replacing the jenkins redirect url if the using ssl
       InitCommand.shellCommand(httpConfigProps.useSsl
@@ -444,12 +456,23 @@ export class JenkinsMainNode {
     ];
   }
 
-  public static addConfigtoJenkinsYaml(stack: Stack, jenkinsMainNodeProps: JenkinsMainNodeProps, loginAuthProps: LoginAuthProps,
-    agentNodeObject: AgentNodeConfig, props: AgentNodeNetworkProps, agentNode: AgentNodeProps[], macAgent: string): string {
+  public static addConfigtoJenkinsYaml(
+    stack: Stack,
+    jenkinsMainNodeProps: JenkinsMainNodeProps,
+    loginAuthProps: LoginAuthProps,
+    agentNodeObject: AgentNodeConfig,
+    props: AgentNodeNetworkProps,
+    agentNode: AgentNodeProps[],
+    macAgent: string,
+  ): string {
     let updatedConfig = agentNodeObject.addAgentConfigToJenkinsYaml(stack, agentNode, props, macAgent);
     if (loginAuthProps.authType !== 'default') {
-      updatedConfig = AuthConfig.addOidcConfigToJenkinsYaml(updatedConfig, loginAuthProps.authType,
-        loginAuthProps.adminUsers, loginAuthProps.fineGrainedAccessSpecs);
+      updatedConfig = AuthConfig.addOidcConfigToJenkinsYaml(
+        updatedConfig,
+        loginAuthProps.authType,
+        loginAuthProps.adminUsers,
+        loginAuthProps.fineGrainedAccessSpecs,
+      );
     }
     if (jenkinsMainNodeProps.envVarsFilePath !== '' && jenkinsMainNodeProps.envVarsFilePath != null) {
       updatedConfig = EnvConfig.addEnvConfigToJenkinsYaml(updatedConfig, jenkinsMainNodeProps.envVarsFilePath);
