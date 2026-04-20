@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Setup Node and install cdk cli
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20.x
 
@@ -50,7 +50,7 @@ jobs:
             const maintainers = collaborators.filter(c => c.permissions.maintain).map(c => c.login);
             return maintainers;
       - name: Configure beta deployment credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.BETA_DEPLOYMENT_ROLE }}
           aws-region: 'us-east-1'
@@ -68,7 +68,7 @@ jobs:
             echo "EOF" >> $GITHUB_OUTPUT
           fi
       - name: Upload beta diff as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: beta-stack-diff
           path: beta_diff.txt
@@ -99,7 +99,7 @@ jobs:
         run: |
           cdk deploy "*" -c stage=Beta --require-approval=never
       - name: Configure Production deployment credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.PROD_DEPLOYMENT_ROLE }}
           aws-region: 'us-east-1'
@@ -119,7 +119,7 @@ jobs:
             echo "EOF" >> $GITHUB_OUTPUT
           fi
       - name: Upload production diff as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: production-stack-diff
           path: prod_diff.txt

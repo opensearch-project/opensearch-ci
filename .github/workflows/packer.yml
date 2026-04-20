@@ -14,10 +14,10 @@ jobs:
     name: Run Packer
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup packer
-        uses: hashicorp/setup-packer@main
+        uses: hashicorp/setup-packer@v3
         id: setup
         with:
           version: ${{ env.PACKER_VERSION }}
