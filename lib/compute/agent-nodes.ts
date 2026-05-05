@@ -30,8 +30,6 @@ export class AgentNodes {
 
   readonly UBUNTU2404_X64_GRADLE_CHECK: AgentNodeProps;
 
-  readonly UBUNTU2404_X64_GRADLE_CHECK_M7A: AgentNodeProps;
-
   readonly UBUNTU2404_X64_DOCKER_BUILDER: AgentNodeProps;
 
   readonly MACOS13_X64_MULTI_HOST: AgentNodeProps;
@@ -58,7 +56,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-09fd6de3ca7e6ec68',
+      amiId: 'ami-0fc9f55de25320338',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -72,7 +70,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 4,
-      amiId: 'ami-0126a35fa14a1b8ac',
+      amiId: 'ami-09f3c816b2013edf6',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -86,7 +84,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 4,
       numExecutors: 3,
-      amiId: 'ami-09fd6de3ca7e6ec68',
+      amiId: 'ami-0fc9f55de25320338',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -100,7 +98,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-0652278bd4a6204bd',
+      amiId: 'ami-0b0199ed0b8629728',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -114,7 +112,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 4,
-      amiId: 'ami-023bce7b6a1588ee0',
+      amiId: 'ami-014760ac3c713b4a9',
       initScript: 'sudo yum clean all && sudo rm -rf /var/cache/yum /var/lib/yum/history && sudo yum repolist &&'
         + ' sudo yum update --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -128,7 +126,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 4,
       numExecutors: 3,
-      amiId: 'ami-0652278bd4a6204bd',
+      amiId: 'ami-0b0199ed0b8629728',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -142,7 +140,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 2,
-      amiId: 'ami-09fd6de3ca7e6ec68',
+      amiId: 'ami-0fc9f55de25320338',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -156,26 +154,12 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 2,
-      amiId: 'ami-09fd6de3ca7e6ec68',
+      amiId: 'ami-0fc9f55de25320338',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
           + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
     this.UBUNTU2404_X64_GRADLE_CHECK = {
-      agentType: 'unix',
-      customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
-      workerLabelString: ['Jenkins-Agent-Ubuntu2404-X64-M58xlarge-Single-Host', 'gradle'],
-      instanceType: 'M58xlarge',
-      remoteUser: 'ubuntu',
-      maxTotalUses: 1,
-      minimumNumberOfSpareInstances: 1,
-      numExecutors: 1,
-      amiId: 'ami-0560d8e3472ead3cb',
-      initScript: 'docker ps && sudo apt-get update -y && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
-        + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
-      remoteFs: '/var/jenkins',
-    };
-    this.UBUNTU2404_X64_GRADLE_CHECK_M7A = {
       agentType: 'unix',
       customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
       workerLabelString: ['Jenkins-Agent-Ubuntu2404-X64-M7a8xlarge-Single-Host', 'gradle'],
@@ -184,7 +168,7 @@ export class AgentNodes {
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-0560d8e3472ead3cb',
+      amiId: 'ami-072e609a5fc9c1527',
       initScript: 'docker ps && sudo apt-get update -y && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
         + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
       remoteFs: '/var/jenkins',
@@ -198,7 +182,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 2,
       numExecutors: 1,
-      amiId: 'ami-0560d8e3472ead3cb',
+      amiId: 'ami-072e609a5fc9c1527',
       initScript: 'docker ps && sudo apt-get update -y && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
         + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
       remoteFs: '/var/jenkins',
