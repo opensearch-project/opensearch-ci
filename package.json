@@ -1,6 +1,6 @@
 {
   "name": "opensearch-ci-stack",
-  "version": "1.5.13",
+  "version": "1.5.14",
   "bin": {
     "ci": "bin/ci-stack.js"
   },
