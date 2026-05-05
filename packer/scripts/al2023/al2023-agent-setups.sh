@@ -29,7 +29,7 @@ if ! command -v "python3.9" > /dev/null; then
     exit 1
 fi
 
-curl -o- https://bootstrap.pypa.io/get-pip.py | python3
+curl -o- https://bootstrap.pypa.io/pip/3.9/get-pip.py | python3
 echo "export PATH=$PATH:$HOME/.local/bin" >> $HOME/.bashrc
 export PATH=$PATH:$HOME/.local/bin
 # https://github.com/opensearch-project/opensearch-build/issues/4946
