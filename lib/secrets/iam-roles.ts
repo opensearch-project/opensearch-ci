@@ -1,8 +1,8 @@
-import { Stack, Tags } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib';
 import { IOpenIdConnectProvider, OpenIdConnectProvider } from 'aws-cdk-lib/aws-iam';
 import {
-  GitHubActionsFederateIntegrationForWorkflowIssueDedupeOnBedrockResources,
   GitHubActionsFederateIntegrationForPrsOnBedrockResources,
+  GitHubActionsFederateIntegrationForWorkflowIssueDedupeOnBedrockResources,
 } from './gha-federate-access';
 
 export class AWSIdentityAccessManagementRolesStack {
@@ -72,6 +72,7 @@ export class AWSIdentityAccessManagementRolesStack {
       'dashboards-maps',
       'anomaly-detection-dashboards-plugin',
       'ml-commons-dashboards',
+      'oscar-ai-bot',
     ];
 
     reposWithBedrockAccessOnWorkflowIssueDedupe.forEach((repo) => {
