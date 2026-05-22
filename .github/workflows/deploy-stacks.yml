@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Setup Node and install cdk cli
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 20.x
 
@@ -33,7 +33,7 @@ jobs:
           echo "REGION=us-east-1" >> $GITHUB_ENV
 
       - id: get_approvers
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           result-encoding: json
@@ -50,7 +50,7 @@ jobs:
             const maintainers = collaborators.filter(c => c.permissions.maintain).map(c => c.login);
             return maintainers;
       - name: Configure beta deployment credentials
-        uses: aws-actions/configure-aws-credentials@v6
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6
         with:
           role-to-assume: ${{ secrets.BETA_DEPLOYMENT_ROLE }}
           aws-region: 'us-east-1'
@@ -68,13 +68,13 @@ jobs:
             echo "EOF" >> $GITHUB_OUTPUT
           fi
       - name: Upload beta diff as artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: beta-stack-diff
           path: beta_diff.txt
           retention-days: 30
       - name: Approve or Deny beta change set
-        uses: trstringer/manual-approval@v1
+        uses: trstringer/manual-approval@74d99dff7380e3e4b122d4ededcbca2b6ce59367 # v1
         with:
           secret: ${{ secrets.GITHUB_TOKEN }}
           approvers: ${{ join(fromJSON(steps.get_approvers.outputs.result), ', ') }}
@@ -99,7 +99,7 @@ jobs:
         run: |
           cdk deploy "*" -c stage=Beta --require-approval=never
       - name: Configure Production deployment credentials
-        uses: aws-actions/configure-aws-credentials@v6
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6
         with:
           role-to-assume: ${{ secrets.PROD_DEPLOYMENT_ROLE }}
           aws-region: 'us-east-1'
@@ -119,13 +119,13 @@ jobs:
             echo "EOF" >> $GITHUB_OUTPUT
           fi
       - name: Upload production diff as artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         with:
           name: production-stack-diff
           path: prod_diff.txt
           retention-days: 30
       - name: Approve or Deny Production change set
-        uses: trstringer/manual-approval@v1
+        uses: trstringer/manual-approval@74d99dff7380e3e4b122d4ededcbca2b6ce59367 # v1
         with:
           secret: ${{ secrets.GITHUB_TOKEN }}
           approvers: ${{ join(fromJSON(steps.get_approvers.outputs.result), ', ') }}
