@@ -415,12 +415,12 @@ describe('AgentNodes', () => {
 
   it('should exclude "default" keys when type is "BTR"', () => {
     const result = agentNodes.getRequiredAgentNodes('BTR');
-    expect(result.length).toBe(15);
+    expect(result.length).toBe(16);
   });
 
   it('should return keys containing "benchmark" when type is "benchmark"', () => {
     const result = agentNodes.getRequiredAgentNodes('benchmark');
-    expect(result).toHaveLength(2);
+    expect(result).toHaveLength(3);
   });
 
   it('should return keys containing "gradle" when type is "gradle"', () => {
