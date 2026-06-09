@@ -3,12 +3,12 @@
     "ami_name": "Jenkins-Agent-MacOS14-X64-Mac1Metal",
     "os_version": "14.7.8",
     "os_architecture": "x86_64_mac",
-    "build-region": "us-east-1",
+    "build-region": "region-<>",
     "build-vpc": "vpc-<>",
     "build-subnet": "subnet-<>",
     "build-secgrp": "sg-<>",
     "build-time": "{{isotime \"2006-01-02T03-04-05Z\"}}",
-    "aws_ami_region": "us-east-1",
+    "aws_ami_region": "region-<>",
     "root_volume_size_gb": "300"
   },
   "builders": [
