@@ -10,11 +10,13 @@
 ### Templates
 * jenkins-agent-al2-x64.json: AmazonLinux 2 x64/x86_64 Server.
 * jenkins-agent-al2-arm64.json: AmazonLinux 2 arm64/aarch64 Server.
-* jenkins-agent-ubuntu2004-x64.json: Ubuntu 20.04 x64/x86_64 Server.
-* jenkins-agent-win2016-x64.json: Windows 2016 x64/x86_64 Server.
-* jenkins-agent-win2019-x64.json: Windows 2019 x64/x86_64 Server (Recommended).
-* jenkins-agent-win2019-x64-alpine-wsl.json: Windows 2019 x64/x86_64 Server with WSL enabled running Alpine 3.
-* jenkins-agent-macos12-x64.json: MacOS 12 with x64/x86_64_mac os_architecture.
+* jenkins-agent-al2023-x64.json: AmazonLinux 2023 x64/x86_64 Server.
+* jenkins-agent-al2023-arm64.json: AmazonLinux 2023 arm64/aarch64 Server.
+* jenkins-agent-ubuntu2404-x64.json: Ubuntu 24.04 x64/x86_64 Server.
+* jenkins-agent-win2019-x64.json: Windows 2019 x64/x86_64 Server.
+* jenkins-agent-win2019-x64-gradle-check.json: Windows 2019 x64/x86_64 Server for Gradle Check.
+* jenkins-agent-macos14-x64.json: MacOS 14 x64/x86_64 Server.
+* jenkins-agent-macos14-arm64.json: MacOS 14 arm64/aarch64 Server.
 
 ### Usages
 
