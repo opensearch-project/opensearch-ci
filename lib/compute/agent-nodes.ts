@@ -206,7 +206,7 @@ export class AgentNodes {
     this.MACOS14_X64_MULTI_HOST = {
       agentType: 'mac',
       customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
-      workerLabelString: ['Jenkins-Agent-MacOS14-X64-Mac1Metal-Multi-Host', 'BTR'],
+      workerLabelString: ['Jenkins-Agent-MacOS14-X64-Mac1-Multi-Host', 'BTR'],
       instanceType: 'Mac1Metal',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
@@ -219,7 +219,7 @@ export class AgentNodes {
     this.MACOS14_ARM64_MULTI_HOST = {
       agentType: 'mac',
       customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
-      workerLabelString: ['Jenkins-Agent-MacOS14-ARM64-Mac2M2proMetal-Multi-Host', 'BTR'],
+      workerLabelString: ['Jenkins-Agent-MacOS14-ARM64-Mac2-Multi-Host', 'BTR'],
       instanceType: 'Mac2M2proMetal',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
