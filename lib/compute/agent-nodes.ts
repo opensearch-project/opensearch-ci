@@ -34,9 +34,9 @@ export class AgentNodes {
 
   readonly UBUNTU2404_X64_DOCKER_BUILDER: AgentNodeProps;
 
-  readonly MACOS13_X64_MULTI_HOST: AgentNodeProps;
+  readonly MACOS14_X64_MULTI_HOST: AgentNodeProps;
 
-  readonly MACOS13_ARM64_MULTI_HOST: AgentNodeProps;
+  readonly MACOS14_ARM64_MULTI_HOST: AgentNodeProps;
 
   readonly WINDOWS2019_X64_DOCKER_HOST: AgentNodeProps;
 
@@ -135,14 +135,14 @@ export class AgentNodes {
     };
     this.AL2023_X64_BENCHMARK_TEST = {
       agentType: 'unix',
-      customDeviceMapping: '/dev/xvda=:2500:true:gp3:6000:encrypted:500',
+      customDeviceMapping: '/dev/xvda=:600:true:gp3:6000:encrypted:500',
       workerLabelString: ['Jenkins-Agent-AL2023-X64-M52xlarge-Benchmark-Test', 'benchmark'],
       instanceType: 'M52xlarge',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 2,
-      amiId: 'ami-0534165cc639704af',
+      amiId: 'ami-0fc9f55de25320338',
       initScript: 'sudo dnf clean all && sudo rm -rf /var/cache/dnf && sudo dnf repolist &&'
         + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
@@ -203,10 +203,10 @@ export class AgentNodes {
         + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
       remoteFs: '/var/jenkins',
     };
-    this.MACOS13_X64_MULTI_HOST = {
+    this.MACOS14_X64_MULTI_HOST = {
       agentType: 'mac',
       customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
-      workerLabelString: ['Jenkins-Agent-MacOS13-X64-Mac1Metal-Multi-Host', 'BTR'],
+      workerLabelString: ['Jenkins-Agent-MacOS14-X64-Mac1-Multi-Host', 'BTR'],
       instanceType: 'Mac1Metal',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
@@ -216,10 +216,10 @@ export class AgentNodes {
       initScript: 'echo',
       remoteFs: '/var/jenkins',
     };
-    this.MACOS13_ARM64_MULTI_HOST = {
+    this.MACOS14_ARM64_MULTI_HOST = {
       agentType: 'mac',
       customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
-      workerLabelString: ['Jenkins-Agent-MacOS13-ARM64-Mac2M2proMetal-Multi-Host', 'BTR'],
+      workerLabelString: ['Jenkins-Agent-MacOS14-ARM64-Mac2-Multi-Host', 'BTR'],
       instanceType: 'Mac2M2proMetal',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
