@@ -19,7 +19,7 @@
       "encrypt_boot": "false",
       "region": "{{user `build-region`}}",
       "ami_regions": "{{user `aws_ami_region`}}",
-      "instance_type": "mac2-m2pro.metal",
+      "instance_type": "mac2-m2.metal",
       "ami_name": "{{user `ami_name`}}-{{user `os_version`}}-{{user `build-time`}}",
       "vpc_id": "{{user `build-vpc`}}",
       "subnet_id": "{{user `build-subnet`}}",
