@@ -43,7 +43,7 @@
     "eslint": "^8.56.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.24.2",
-    "js-yaml": "^4.1.1",
+    "js-yaml": "^4.2.0",
     "npm-check-updates": "^17.0.0",
     "set-value": ">=4.0.1",
     "source-map-support": "^0.5.16"
