@@ -34,9 +34,9 @@ export class AgentNodes {
 
   readonly UBUNTU2404_X64_DOCKER_BUILDER: AgentNodeProps;
 
-  readonly MACOS13_X64_MULTI_HOST: AgentNodeProps;
+  readonly MACOS14_X64_MULTI_HOST: AgentNodeProps;
 
-  readonly MACOS13_ARM64_MULTI_HOST: AgentNodeProps;
+  readonly MACOS14_ARM64_MULTI_HOST: AgentNodeProps;
 
   readonly WINDOWS2019_X64_DOCKER_HOST: AgentNodeProps;
 
@@ -203,10 +203,10 @@ export class AgentNodes {
         + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
       remoteFs: '/var/jenkins',
     };
-    this.MACOS13_X64_MULTI_HOST = {
+    this.MACOS14_X64_MULTI_HOST = {
       agentType: 'mac',
       customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
-      workerLabelString: ['Jenkins-Agent-MacOS13-X64-Mac1Metal-Multi-Host', 'BTR'],
+      workerLabelString: ['Jenkins-Agent-MacOS14-X64-Mac1Metal-Multi-Host', 'BTR'],
       instanceType: 'Mac1Metal',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
@@ -216,10 +216,10 @@ export class AgentNodes {
       initScript: 'echo',
       remoteFs: '/var/jenkins',
     };
-    this.MACOS13_ARM64_MULTI_HOST = {
+    this.MACOS14_ARM64_MULTI_HOST = {
       agentType: 'mac',
       customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
-      workerLabelString: ['Jenkins-Agent-MacOS13-ARM64-Mac2M2proMetal-Multi-Host', 'BTR'],
+      workerLabelString: ['Jenkins-Agent-MacOS14-ARM64-Mac2M2proMetal-Multi-Host', 'BTR'],
       instanceType: 'Mac2M2proMetal',
       remoteUser: 'ec2-user',
       maxTotalUses: 10,
