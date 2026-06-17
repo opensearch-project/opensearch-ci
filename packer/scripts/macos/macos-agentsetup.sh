@@ -60,7 +60,7 @@ $BREW_PATH/brew install ca-certificates
 $BREW_PATH/brew install gnupg
 $BREW_PATH/brew install 1password-cli
 $BREW_PATH/brew install protobuf
-$BREW_PATH/brew cleanup
+$BREW_PATH/brew cleanup || echo brew has issues when cleanup cache
 
 
 ## Loop through JDK versions and install them
