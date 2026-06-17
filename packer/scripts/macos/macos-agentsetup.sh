@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 ## Setup jenkins workspace
 sudo mkdir -p /var/jenkins/
@@ -81,20 +82,20 @@ sudo $BREW_PATH/update-alternatives --set java `$BREW_PATH/update-alternatives -
 
 ## Install MacPorts and python39
 sudo rm -rf /opt/local/etc/macports /opt/local/var/macports
-$BREW_PATH/wget -nv https://github.com/macports/macports-base/releases/download/v2.9.3/MacPorts-2.9.3.tar.gz
-tar -xzf MacPorts-2.9.3.tar.gz
-rm -v MacPorts-2.9.3.tar.gz
-cd MacPorts-2.9.3
+$BREW_PATH/wget -nv https://github.com/macports/macports-base/releases/download/v2.12.5/MacPorts-2.12.5.tar.gz
+tar -xzf MacPorts-2.12.5.tar.gz
+rm -v MacPorts-2.12.5.tar.gz
+cd MacPorts-2.12.5
 ./configure && make && sudo make install
-cd .. && rm -rf MacPorts-2.9.3.tar.gz
+cd ../
 export PATH=/opt/local/bin:$PATH
 sudo port -v selfupdate
-yes | sudo port install python39
+yes | sudo port -f install python39
 sudo port select --set python python39
 sudo port select --set python3 python39
 
 ## Install pip and pip packages
-$BREW_PATH/wget -nv https://bootstrap.pypa.io/get-pip.py
+$BREW_PATH/wget -nv https://bootstrap.pypa.io/pip/3.9/get-pip.py
 python3 get-pip.py
 export PATH=/Users/ec2-user/Library/Python/3.9/bin:/opt/local/Library/Frameworks/Python.framework/Versions/3.9/bin:$PATH
 pip install pipenv==2023.6.12
