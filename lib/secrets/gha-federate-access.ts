@@ -90,9 +90,13 @@ export class GitHubActionsFederateIntegrationForWorkflowIssueDedupeOnBedrockReso
         `arn:aws:bedrock:*:${stack.account}:inference-profile/us.anthropic.claude-haiku-4-5-20251001-v1:0`,
         `arn:aws:bedrock:*:${stack.account}:inference-profile/us.anthropic.claude-sonnet-4-5-20250929-v1:0`,
         `arn:aws:bedrock:*:${stack.account}:inference-profile/us.anthropic.claude-sonnet-4-6`,
+        `arn:aws:bedrock:*:${stack.account}:inference-profile/us.anthropic.claude-opus-4-7`,
+        `arn:aws:bedrock:*:${stack.account}:inference-profile/us.anthropic.claude-opus-4-8`,
         'arn:aws:bedrock:*::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0',
         'arn:aws:bedrock:*::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0',
         'arn:aws:bedrock:*::foundation-model/anthropic.claude-sonnet-4-6',
+        'arn:aws:bedrock:*::foundation-model/anthropic.claude-opus-4-7',
+        'arn:aws:bedrock:*::foundation-model/anthropic.claude-opus-4-8',
       ],
     }));
   }
@@ -125,9 +129,13 @@ export class GitHubActionsFederateIntegrationForPrsOnBedrockResources {
         `arn:aws:bedrock:*:${stack.account}:inference-profile/us.anthropic.claude-haiku-4-5-20251001-v1:0`,
         `arn:aws:bedrock:*:${stack.account}:inference-profile/us.anthropic.claude-sonnet-4-5-20250929-v1:0`,
         `arn:aws:bedrock:*:${stack.account}:inference-profile/us.anthropic.claude-sonnet-4-6`,
+        `arn:aws:bedrock:*:${stack.account}:inference-profile/us.anthropic.claude-opus-4-7`,
+        `arn:aws:bedrock:*:${stack.account}:inference-profile/us.anthropic.claude-opus-4-8`,
         'arn:aws:bedrock:*::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0',
         'arn:aws:bedrock:*::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0',
         'arn:aws:bedrock:*::foundation-model/anthropic.claude-sonnet-4-6',
+        'arn:aws:bedrock:*::foundation-model/anthropic.claude-opus-4-7',
+        'arn:aws:bedrock:*::foundation-model/anthropic.claude-opus-4-8',
       ],
     }));
   }
