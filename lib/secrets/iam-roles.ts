@@ -68,9 +68,12 @@ export class AWSIdentityAccessManagementRolesStack {
 
     const reposWithBedrockAccessOnPrs = [
       'opensearch-build',
+      'opensearch-build-libraries',
+      'opensearch-ci',
       'opensearch-benchmark',
       'oscar-ai-bot',
       'agent-health',
+      'opensearch-agent-skills',
       'OpenSearch',
       'common-utils',
       'opensearch-learning-to-rank-base',
