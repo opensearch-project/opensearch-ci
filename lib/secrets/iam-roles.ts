@@ -74,6 +74,7 @@ export class AWSIdentityAccessManagementRolesStack {
       'oscar-ai-bot',
       'agent-health',
       'opensearch-agent-skills',
+      'data-prepper',
       'OpenSearch',
       'common-utils',
       'opensearch-learning-to-rank-base',
