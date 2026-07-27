@@ -24,8 +24,8 @@ test('IAM Roles Stack Resources', () => {
 
   const template = Template.fromStack(stack);
 
-  template.resourceCountIs('AWS::IAM::Role', 101);
-  template.resourceCountIs('AWS::IAM::Policy', 101);
+  template.resourceCountIs('AWS::IAM::Role', 102);
+  template.resourceCountIs('AWS::IAM::Policy', 102);
 
   template.hasResourceProperties('AWS::IAM::Role', {
     RoleName: 'OpenSearch-bedrock-access-role-for-workflow-issue-dedupe-public',
