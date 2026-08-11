@@ -75,6 +75,7 @@ export class AWSIdentityAccessManagementRolesStack {
       'agent-health',
       'opensearch-agent-skills',
       'data-prepper',
+      'opensearch-mcp-server-py',
       'OpenSearch',
       'common-utils',
       'opensearch-learning-to-rank-base',
