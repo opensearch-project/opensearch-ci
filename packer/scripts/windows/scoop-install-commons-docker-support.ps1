@@ -79,7 +79,7 @@ scoop install zip
 scoop install unzip
 
 # Install onepassword-cli 2.31.1
-scoop install "https://raw.githubusercontent.com/ScoopInstaller/Main/refs/heads/master/bucket/1password-cli.json"
+scoop install "https://raw.githubusercontent.com/ScoopInstaller/Main/f6c5225f49f6d89522ef5b258e038084e8223858/bucket/1password-cli.json"
 op.exe --version
 
 # Replace gzip with pigz/unpigz for docker extration
@@ -87,6 +87,7 @@ op.exe --version
 # It seems like pigz/unpigz can only be detect by docker if it is in [System.EnvironmentVariableTarget]::Machine env vars
 # Per this PR it uses LookPath: https://github.com/moby/moby/pull/35697, which checks the system path here: https://pkg.go.dev/v.io/x/lib/lookpath
 Set-MpPreference -DisableRealtimeMonitoring $true
+Uninstall-WindowsFeature -Name Windows-Defender
 $pigzPath = "C:\pigz"
 mkdir $pigzPath
 curl.exe -SfL "https://ci.opensearch.org/ci/dbc/tools/pigz-2.3.1-20201104-134221-gke-release-windows.zip" -o "$pigzPath\\pigz.zip"

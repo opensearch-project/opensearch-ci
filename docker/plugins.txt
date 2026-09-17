@@ -15,7 +15,7 @@ description-setter
 disable-github-multibranch-status
 docker-custom-build-environment
 docker-workflow
-ec2
+ec2:2034.v0a_11fb_792b_ee
 email-ext
 environment-script
 extensible-choice-parameter

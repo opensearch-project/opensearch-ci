@@ -231,7 +231,7 @@ export class AgentNodes {
     };
     this.WINDOWS2019_X64_DOCKER_HOST = {
       agentType: 'windows',
-      customDeviceMapping: '/dev/sda1=:600:true:::encrypted',
+      customDeviceMapping: '/dev/sda1=:700:true:::encrypted',
       workerLabelString: ['Jenkins-Agent-Windows2019-X64-M54xlarge-Docker-Host', 'BTR'],
       instanceType: 'M54xlarge',
       remoteUser: 'Administrator',
@@ -239,11 +239,7 @@ export class AgentNodes {
       minimumNumberOfSpareInstances: 4,
       numExecutors: 3,
       amiId: 'ami-01160c379ea35bc55',
-      initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
-        + 'echo initializing docker images now waiting for 5min && git clone https://github.com/opensearch-project/opensearch-build.git && '
-        + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '
-        + '-p windows2019 -u opensearch -t build | head -1` bash.exe && sleep 5" && docker exec docker-windows-test whoami && '
-        + 'docker ps && docker stop docker-windows-test && docker ps && rm -rf opensearch-build',
+      initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.WINDOWS2019_X64_DOCKER_BUILDER = {
@@ -256,11 +252,7 @@ export class AgentNodes {
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
       amiId: 'ami-01160c379ea35bc55',
-      initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps && '
-        + 'echo initializing docker images now waiting for 5min && git clone https://github.com/opensearch-project/opensearch-build.git && '
-        + 'bash.exe -c "docker run --rm -it  --name docker-windows-test -d `opensearch-build/docker/ci/get-ci-images.sh '
-        + '-p windows2019 -u opensearch -t build | head -1` bash.exe && sleep 5" && docker exec docker-windows-test whoami && '
-        + 'docker ps && docker stop docker-windows-test && docker ps && rm -rf opensearch-build',
+      initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.WINDOWS2019_X64_GRADLE_CHECK = {

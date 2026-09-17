@@ -1,0 +1,20 @@
+version: 1.0
+config:
+- stage: boot
+  tasks:
+  - task: extendRootPartition
+- stage: preReady
+  tasks:
+  - task: activateWindows
+    inputs:
+      activation:
+        type: amazon
+  - task: setAdminAccount
+    inputs:
+      name: Administrator
+      password:
+        type: random
+  - task: enableOpenSsh
+- stage: postReady
+  tasks:
+  - task: startSsm

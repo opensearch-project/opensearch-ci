@@ -334,8 +334,8 @@ export class AgentNodeConfig {
       ami: config.amiId,
       amiType:
          {
-           windowsData: {
-             allowSelfSignedCertificate: false, bootDelay: '180', specifyPassword: false, useHTTPS: false,
+           windowsSSHData: {
+             sshPort: '22', bootDelay: '30',
            },
          },
       associatePublicIp: false,
