@@ -238,7 +238,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 4,
       numExecutors: 3,
-      amiId: 'ami-01160c379ea35bc55',
+      amiId: 'ami-0184d37d3e4a418fb',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
@@ -251,7 +251,7 @@ export class AgentNodes {
       maxTotalUses: 10,
       minimumNumberOfSpareInstances: 1,
       numExecutors: 1,
-      amiId: 'ami-01160c379ea35bc55',
+      amiId: 'ami-0184d37d3e4a418fb',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
