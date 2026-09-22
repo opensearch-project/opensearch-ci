@@ -1,3 +1,10 @@
+# Copyright OpenSearch Contributors
+# SPDX-License-Identifier: Apache-2.0
+#
+# The OpenSearch Contributors require contributions made to
+# this file be licensed under the Apache-2.0 license or a
+# compatible open source license.
+
 # Install EC2Launch v2; the 2019 Full-Base AMI ships v1 only.
 $ErrorActionPreference = "Stop"
 
