@@ -34,8 +34,6 @@ export class AgentNodes {
 
   readonly UBUNTU2404_X64_DOCKER_BUILDER: AgentNodeProps;
 
-  readonly MACOS14_X64_MULTI_HOST: AgentNodeProps;
-
   readonly MACOS14_ARM64_MULTI_HOST: AgentNodeProps;
 
   readonly WINDOWS2019_X64_DOCKER_HOST: AgentNodeProps;
@@ -201,19 +199,6 @@ export class AgentNodes {
       amiId: 'ami-01e94406847f189c4',
       initScript: 'docker ps && sudo apt-get update -y && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
         + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
-      remoteFs: '/var/jenkins',
-    };
-    this.MACOS14_X64_MULTI_HOST = {
-      agentType: 'mac',
-      customDeviceMapping: '/dev/sda1=:300:true:gp3::encrypted',
-      workerLabelString: ['Jenkins-Agent-MacOS14-X64-Mac1-Multi-Host', 'BTR'],
-      instanceType: 'Mac1Metal',
-      remoteUser: 'ec2-user',
-      maxTotalUses: 10,
-      minimumNumberOfSpareInstances: 1,
-      numExecutors: 4,
-      amiId: 'ami-0a79d268a5ad71fce',
-      initScript: 'echo',
       remoteFs: '/var/jenkins',
     };
     this.MACOS14_ARM64_MULTI_HOST = {

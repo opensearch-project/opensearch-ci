@@ -185,7 +185,7 @@ describe('JenkinsMainNode Config with macAgent template', () => {
   });
   test('Verify Mac template type', async () => {
     const macConfig = yml.jenkins.clouds[0].amazonEC2.templates[0].type;
-    expect(macConfig).toEqual('Mac1Metal');
+    expect(macConfig).toEqual('Mac2M2proMetal');
   });
   test('Verify Mac template amiType.macData.sshPort', async () => {
     const macConfig = yml.jenkins.clouds[0].amazonEC2.templates[0].amiType.macData.sshPort;

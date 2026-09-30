@@ -19,7 +19,7 @@ jenkins:
         ebsOptimized: true
         hostKeyVerificationStrategy: 'OFF'
         iamInstanceProfile: "arn:aws:iam::1234567890:instance-profile/JenkinsStack-AgentNodeInstanceRole"
-        labelString: 'Jenkins-Agent-MacOS-x64-Mac1Metal-Multi-Host'
+        labelString: 'Jenkins-Agent-MacOS-arm64-Mac2M2proMetal-Multi-Host'
         maxTotalUses: -1
         minimumNumberOfInstances: 1
         minimumNumberOfSpareInstances: 0
@@ -41,7 +41,7 @@ jenkins:
         - name: "Name"
           value: "Jenkins-Agent-Mac-M1-Single-Host"
         tenancy: Host
-        type: Mac1Metal
+        type: Mac2M2proMetal
         useEphemeralDevices: false
         zone: "us-east-1a"
       useInstanceProfileForCredentials: true
