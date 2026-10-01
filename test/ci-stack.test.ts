@@ -415,7 +415,7 @@ describe('AgentNodes', () => {
 
   it('should exclude "default" keys when type is "BTR"', () => {
     const result = agentNodes.getRequiredAgentNodes('BTR');
-    expect(result.length).toBe(16);
+    expect(result.length).toBe(15);
   });
 
   it('should return keys containing "benchmark" when type is "benchmark"', () => {

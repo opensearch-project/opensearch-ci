@@ -13,42 +13,32 @@ set -e
 sudo mkdir -p /var/jenkins/
 sudo chown -R ec2-user:staff /var/jenkins
 
-## Array of JDK versions in form of version@URL@priority
-jdk_versions=(
-    "8@https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u412-b08/OpenJDK8U-jdk_x64_mac_hotspot_8u412b08.tar.gz@1"
-    "11@https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.23%2B9/OpenJDK11U-jdk_x64_mac_hotspot_11.0.23_9.tar.gz@1"
-    "17@https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.11%2B9/OpenJDK17U-jdk_x64_mac_hotspot_17.0.11_9.tar.gz@1"
-    "19@https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2%2B7/OpenJDK19U-jdk_x64_mac_hotspot_19.0.2_7.tar.gz@1"
-    "20@https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20.0.2%2B9/OpenJDK20U-jdk_x64_mac_hotspot_20.0.2_9.tar.gz@1"
-    "21@https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.1%2B12/OpenJDK21U-jdk_x64_mac_hotspot_21.0.1_12.tar.gz@1"
-    "23@https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23%2B37/OpenJDK23U-jdk_x64_mac_hotspot_23_37.tar.gz@1"
-    "24@https://github.com/adoptium/temurin24-binaries/releases/download/jdk-24.0.1%2B9/OpenJDK24U-jdk_x64_mac_hotspot_24.0.1_9.tar.gz@1"
-    "25@https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25%2B36/OpenJDK25U-jdk_x64_mac_hotspot_25_36.tar.gz@100"
-)
-
 ## Setup brew Defaults
+## OpenSearch CI only supports arm64 (Apple silicon) macOS agents.
 ARCH=`uname -m`
-BREW_PATH=/usr/local/bin
-if [ "$ARCH" = "arm64" ]; then
-    BREW_PATH=/opt/homebrew/bin
-    echo "Install rosetta, ignore 'Package Authoring Error: 052-96248'"
-    sudo /usr/sbin/softwareupdate --install-rosetta --agree-to-license
-
-    # Use Oracle HotSpot version as Adoptium does not have macOS arm64 support on JDK8
-    # https://github.com/adoptium/adoptium/issues/96
-    # We can also use rosetta but a bit slower so default to Oracle HotSpot for now
-    jdk_versions=(
-        "8@https://ci.opensearch.org/ci/dbc/tools/jdk-8u411-macosx-aarch64.tar.gz@1"
-        "11@https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.23%2B9/OpenJDK11U-jdk_aarch64_mac_hotspot_11.0.23_9.tar.gz@1"
-        "17@https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.11%2B9/OpenJDK17U-jdk_aarch64_mac_hotspot_17.0.11_9.tar.gz@1"
-        "19@https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2%2B7/OpenJDK19U-jdk_aarch64_mac_hotspot_19.0.2_7.tar.gz@1"
-        "20@https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20.0.2%2B9/OpenJDK20U-jdk_aarch64_mac_hotspot_20.0.2_9.tar.gz@1"
-        "21@https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jdk_aarch64_mac_hotspot_21.0.3_9.tar.gz@1"
-        "23@https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23%2B37/OpenJDK23U-jdk_aarch64_mac_hotspot_23_37.tar.gz@1"
-        "24@https://github.com/adoptium/temurin24-binaries/releases/download/jdk-24.0.1%2B9/OpenJDK24U-jdk_aarch64_mac_hotspot_24.0.1_9.tar.gz@1"
-        "25@https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25%2B36/OpenJDK25U-jdk_aarch64_mac_hotspot_25_36.tar.gz@100"
-    )
+if [ "$ARCH" != "arm64" ]; then
+    echo "Unsupported architecture: $ARCH. Only arm64 (Apple silicon) macOS agents are supported."
+    exit 1
 fi
+BREW_PATH=/opt/homebrew/bin
+echo "Install rosetta, ignore 'Package Authoring Error: 052-96248'"
+sudo /usr/sbin/softwareupdate --install-rosetta --agree-to-license
+
+## Array of JDK versions in form of version@URL@priority
+# Use Oracle HotSpot version as Adoptium does not have macOS arm64 support on JDK8
+# https://github.com/adoptium/adoptium/issues/96
+# We can also use rosetta but a bit slower so default to Oracle HotSpot for now
+jdk_versions=(
+    "8@https://ci.opensearch.org/ci/dbc/tools/jdk-8u411-macosx-aarch64.tar.gz@1"
+    "11@https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.23%2B9/OpenJDK11U-jdk_aarch64_mac_hotspot_11.0.23_9.tar.gz@1"
+    "17@https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.11%2B9/OpenJDK17U-jdk_aarch64_mac_hotspot_17.0.11_9.tar.gz@1"
+    "19@https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2%2B7/OpenJDK19U-jdk_aarch64_mac_hotspot_19.0.2_7.tar.gz@1"
+    "20@https://github.com/adoptium/temurin20-binaries/releases/download/jdk-20.0.2%2B9/OpenJDK20U-jdk_aarch64_mac_hotspot_20.0.2_9.tar.gz@1"
+    "21@https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.3%2B9/OpenJDK21U-jdk_aarch64_mac_hotspot_21.0.3_9.tar.gz@1"
+    "23@https://github.com/adoptium/temurin23-binaries/releases/download/jdk-23%2B37/OpenJDK23U-jdk_aarch64_mac_hotspot_23_37.tar.gz@1"
+    "24@https://github.com/adoptium/temurin24-binaries/releases/download/jdk-24.0.1%2B9/OpenJDK24U-jdk_aarch64_mac_hotspot_24.0.1_9.tar.gz@1"
+    "25@https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25%2B36/OpenJDK25U-jdk_aarch64_mac_hotspot_25_36.tar.gz@100"
+)
 
 # Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain stable -y
