@@ -193,7 +193,7 @@ export class AgentNodes {
       agentType: 'unix',
       customDeviceMapping: '/dev/sda1=:350:true:::encrypted',
       workerLabelString: ['Jenkins-Agent-Ubuntu2404-X64-M8a8xlarge-Single-Host', 'gradle'],
-      instanceType: 'M8a8xlarge',
+      instanceType: 'm8a.8xlarge',
       remoteUser: 'ubuntu',
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
