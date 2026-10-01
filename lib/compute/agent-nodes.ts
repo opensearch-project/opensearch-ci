@@ -30,6 +30,8 @@ export class AgentNodes {
 
   readonly AL2023_X64_VECTOR_BENCHMARK_TEST: AgentNodeProps;
 
+  readonly UBUNTU2404_X64_GRADLE_CHECK_OLD: AgentNodeProps;
+
   readonly UBUNTU2404_X64_GRADLE_CHECK: AgentNodeProps;
 
   readonly UBUNTU2404_X64_DOCKER_BUILDER: AgentNodeProps;
@@ -173,11 +175,25 @@ export class AgentNodes {
           + ' sudo dnf update --releasever=latest --skip-broken --exclude=openssh* --exclude=docker* --exclude=gh* --exclude=openssl* -y && docker ps',
       remoteFs: '/var/jenkins',
     };
-    this.UBUNTU2404_X64_GRADLE_CHECK = {
+    this.UBUNTU2404_X64_GRADLE_CHECK_OLD = {
       agentType: 'unix',
       customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
       workerLabelString: ['Jenkins-Agent-Ubuntu2404-X64-M7a8xlarge-Single-Host', 'gradle'],
       instanceType: 'M7a8xlarge',
+      remoteUser: 'ubuntu',
+      maxTotalUses: 1,
+      minimumNumberOfSpareInstances: 1,
+      numExecutors: 1,
+      amiId: 'ami-01e94406847f189c4',
+      initScript: 'docker ps && sudo apt-get update -y && sudo env "DEBIAN_FRONTEND=noninteractive" apt-get upgrade -y &&'
+        + ' sudo update-alternatives --set "java" "/usr/lib/jvm/temurin-21-jdk-amd64/bin/java" && java -version',
+      remoteFs: '/var/jenkins',
+    };
+    this.UBUNTU2404_X64_GRADLE_CHECK = {
+      agentType: 'unix',
+      customDeviceMapping: '/dev/sda1=:350:true:::encrypted',
+      workerLabelString: ['Jenkins-Agent-Ubuntu2404-X64-M8a8xlarge-Single-Host', 'gradle'],
+      instanceType: 'M8a8xlarge',
       remoteUser: 'ubuntu',
       maxTotalUses: 1,
       minimumNumberOfSpareInstances: 1,
