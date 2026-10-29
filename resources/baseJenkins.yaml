@@ -107,24 +107,6 @@ unclassified:
   fingerprints:
     fingerprintCleanupDisabled: false
     storage: "file"
-  ghprbTrigger:
-    autoCloseFailedPullRequests: false
-    cron: "H/5 * * * *"
-    extensions:
-    - ghprbSimpleStatus:
-        addTestResults: false
-        showMatrixStatus: false
-    githubAuth:
-    - description: "Anonymous connection"
-      id: "d4456c70-9c5e-4b40-bee4-e1ebb693153b"
-      serverAPIUrl: "https://api.github.com"
-    manageWebhooks: true
-    okToTestPhrase: ".*ok\\W+to\\W+test.*"
-    retestPhrase: ".*test\\W+this\\W+please.*"
-    skipBuildPhrase: ".*\\[skip\\W+ci\\].*"
-    useComments: false
-    useDetailedComments: false
-    whitelistPhrase: ".*add\\W+to\\W+whitelist.*"
   gitHubConfiguration:
     apiRateLimitChecker: ThrottleForNormalize
   gitHubPluginConfig:
