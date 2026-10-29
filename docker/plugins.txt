@@ -87,7 +87,6 @@ external-monitor-job:223.vb_fddcf42c9b_3
 favorite:2.253.v9b_413168133b_
 font-awesome-api:7.0.1-859.v128d3a_efb_6e5
 generic-webhook-trigger:2.4.1
-ghprb:1.42.2
 git-client:6.2.1
 git-parameter:444.vca_b_84d3703c2
 git:5.7.0
