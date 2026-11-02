@@ -243,6 +243,7 @@ export class JenkinsMainNode {
     efsId?: string,
   ): InitElement[] {
     return [
+      InitCommand.shellCommand('sudo dnf update --releasever=latest -y'),
       InitPackage.yum('wget'),
       InitPackage.yum('cronie'),
       InitPackage.yum('openssl'),
