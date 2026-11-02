@@ -26,5 +26,6 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           context: "{{defaultContext}}:docker"
+          pull: true
           push: true
           tags: opensearchstaging/jenkins:2.492.3-lts-jdk21,opensearchstaging/jenkins:latest
