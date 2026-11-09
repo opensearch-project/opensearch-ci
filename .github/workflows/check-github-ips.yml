@@ -1,0 +1,67 @@
+name: Check GitHub runner IP allowlist
+
+# GitHub updates the `actions` IP ranges in https://api.github.com/meta weekly.
+# Runners on ranges missing from lib/security/allowed_github_ips.json are
+# blocked by the Jenkins WAF (HTTP 403). This opens (or updates) an issue when
+# the allowlist is out of date, and closes it once it matches again.
+# To refresh the allowlist, run `npm run update-github-ips` and open a PR.
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-github-ips:
+    if: github.repository == 'opensearch-project/opensearch-ci'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      ISSUE_TITLE: GitHub runner IP allowlist is out of date
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
+
+      - name: Compare allowlist with api.github.com/meta
+        run: |
+          export LC_ALL=C # consistent ordering for sort and comm
+          gh api meta --jq '.actions[]' | sort -u > meta.txt
+          jq -r '.ipv4[], .ipv6[]' lib/security/allowed_github_ips.json | sort -u > allowlist.txt
+          missing=$(comm -23 meta.txt allowlist.txt | wc -l)
+          stale=$(comm -13 meta.txt allowlist.txt | wc -l)
+          echo "Missing from allowlist: $missing, no longer in /meta: $stale"
+
+          issue=$(gh issue list --state open --search "in:title \"$ISSUE_TITLE\"" --json number,title \
+            | jq -r --arg t "$ISSUE_TITLE" '[.[] | select(.title == $t)][0].number // empty')
+
+          if [ "$missing" -eq 0 ] && [ "$stale" -eq 0 ]; then
+            echo "Allowlist is up to date"
+            if [ -n "$issue" ]; then
+              gh issue close "$issue" --comment "The allowlist matches api.github.com/meta again ($RUN_URL)."
+            fi
+            exit 0
+          fi
+
+          body=$(printf '%s\n' \
+            "\`lib/security/allowed_github_ips.json\` no longer matches the \`actions\` IP ranges in https://api.github.com/meta." \
+            "" \
+            "- Ranges missing from the allowlist: **$missing**" \
+            "- Ranges in the allowlist no longer listed by GitHub: **$stale**" \
+            "" \
+            "Runners on missing ranges can be blocked by the Jenkins WAF (HTTP 403)." \
+            "To fix, run \`npm run update-github-ips\`, open a pull request, and deploy once merged." \
+            "" \
+            "Last checked: $RUN_URL")
+
+          if [ -n "$issue" ]; then
+            gh issue edit "$issue" --body "$body"
+          else
+            gh issue create --title "$ISSUE_TITLE" --body "$body"
+          fi
