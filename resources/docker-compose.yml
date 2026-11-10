@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   jenkins:
-    image: opensearchstaging/jenkins:2.516.3-lts-jdk21
+    image: opensearchstaging/jenkins:2.580.2-lts-jdk21
     pull_policy: always
     restart: on-failure
     privileged: true

@@ -28,4 +28,4 @@ jobs:
           context: "{{defaultContext}}:docker"
           pull: true
           push: true
-          tags: opensearchstaging/jenkins:2.516.3-lts-jdk21,opensearchstaging/jenkins:latest
+          tags: opensearchstaging/jenkins:2.580.2-lts-jdk21,opensearchstaging/jenkins:latest
