@@ -40,8 +40,6 @@ export class AgentNodes {
 
   readonly WINDOWS2019_X64_DOCKER_BUILDER: AgentNodeProps;
 
-  readonly WINDOWS2019_X64_GRADLE_CHECK: AgentNodeProps;
-
   readonly AL2_X64_DEFAULT_AGENT: AgentNodeProps;
 
   readonly AL2_ARM64_DEFAULT_AGENT: AgentNodeProps;
@@ -238,19 +236,6 @@ export class AgentNodes {
       numExecutors: 1,
       amiId: 'ami-0184d37d3e4a418fb',
       initScript: 'echo %USERNAME% && dockerd --register-service && net start docker && echo started docker deamon && docker ps',
-      remoteFs: 'C:/Users/Administrator/jenkins',
-    };
-    this.WINDOWS2019_X64_GRADLE_CHECK = {
-      agentType: 'windows',
-      customDeviceMapping: '/dev/sda1=:300:true:::encrypted',
-      workerLabelString: ['Jenkins-Agent-Windows2019-X64-C524xlarge-Single-Host', 'gradle'],
-      instanceType: 'C524xlarge',
-      remoteUser: 'Administrator',
-      maxTotalUses: 1,
-      minimumNumberOfSpareInstances: 0, // Very old and not actively used, lacking jdk21 support to run on Jenkins since 2.492.3, remove soon
-      numExecutors: 1,
-      amiId: 'ami-0ca4f0ba85855e148',
-      initScript: 'echo',
       remoteFs: 'C:/Users/Administrator/jenkins',
     };
     this.AL2_X64_DEFAULT_AGENT = {
