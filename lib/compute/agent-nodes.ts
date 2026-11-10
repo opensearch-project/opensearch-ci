@@ -265,7 +265,7 @@ export class AgentNodes {
       amiId: MachineImage.latestAmazonLinux2023({
         cpuType: AmazonLinuxCpuType.X86_64,
       }).getImage(stack).imageId.toString(),
-      initScript: 'sudo amazon-linux-extras install java-openjdk11 -y && sudo yum install -y cmake python3 python3-pip && '
+      initScript: 'sudo yum install -y java-21-amazon-corretto-devel && sudo yum install -y cmake python3 python3-pip && '
         + 'sudo yum groupinstall -y \'Development Tools\' && sudo ln -sfn `which pip3` /usr/bin/pip && '
         + 'pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin',
       remoteFs: '/home/ec2-user',
@@ -282,7 +282,7 @@ export class AgentNodes {
       amiId: MachineImage.latestAmazonLinux2023({
         cpuType: AmazonLinuxCpuType.ARM_64,
       }).getImage(stack).imageId.toString(),
-      initScript: 'sudo amazon-linux-extras install java-openjdk11 -y && sudo yum install -y cmake python3 python3-pip && '
+      initScript: 'sudo yum install -y java-21-amazon-corretto-devel && sudo yum install -y cmake python3 python3-pip && '
         + 'sudo yum groupinstall -y \'Development Tools\' && sudo ln -sfn `which pip3` /usr/bin/pip && '
         + 'pip3 install pipenv && sudo ln -s ~/.local/bin/pipenv /usr/local/bin',
       remoteFs: '/home/ec2-user',
