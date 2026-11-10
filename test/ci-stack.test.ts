@@ -174,6 +174,7 @@ test('MainNode', () => {
   // WHEN
   const stack = new CIStack(app, 'MyTestStack', {
     env: { account: 'test-account', region: 'us-east-1' },
+    adminUsers: ['admin1'],
   });
 
   // THEN
@@ -206,6 +207,7 @@ test('LoadBalancer', () => {
   // WHEN
   const stack = new CIStack(app, 'MyTestStack', {
     env: { account: 'test-account', region: 'us-east-1' },
+    adminUsers: ['admin1'],
   });
 
   // THEN

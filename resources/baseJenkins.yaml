@@ -6,9 +6,7 @@ jenkins:
         name: "org.jenkinsci.plugins.workflow.job.WorkflowRun"
       name: "workflowRun"
   authorizationStrategy: "loggedInUsersCanDoAnything"
-  crumbIssuer:
-    standard:
-      excludeClientIPFromCrumb: false
+  crumbIssuer: "standard"
   disableRememberMe: false
   labelAtoms:
   - name: "built-in"

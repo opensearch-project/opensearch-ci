@@ -69,11 +69,11 @@ export class AuthConfig {
 
   public static addOidcConfigToJenkinsYaml(yamlObject: any, authType: string, admins?: string[], fineGrainedAccessItems?: FineGrainedAccessSpecs[]): any {
     const jenkinsYaml: any = yamlObject;
-    let adminUsers: string[] = ['admin'];
+    const adminUsers: string[] = admins ?? [];
     const readOnlyGroup: string[] = ['authenticated'];
 
-    if (admins) {
-      adminUsers = adminUsers.concat(admins);
+    if (adminUsers.length === 0) {
+      throw new Error(`adminUsers must contain at least one user when authType is '${authType}'`);
     }
 
     const oidcConfig: { [x: string]: any; } = {

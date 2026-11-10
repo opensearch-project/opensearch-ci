@@ -37,7 +37,13 @@ describe('Test authType OIDC', () => {
   test('Verify admins', async () => {
     const adminRole = yml.jenkins.authorizationStrategy.roleBased.roles.global[0].entries;
     const adminUsernames = adminRole.map((entry: { user: any; }) => entry.user);
-    expect(adminUsernames).toEqual(['admin', 'admin1', 'admin2']);
+    expect(adminUsernames).toEqual(['admin1', 'admin2']);
+  });
+
+  test('Throws when no admins are provided', async () => {
+    const emptyYml: any = load(readFileSync(JenkinsMainNode.BASE_JENKINS_YAML_PATH, 'utf-8'));
+    expect(() => AuthConfig.addOidcConfigToJenkinsYaml(emptyYml, 'oidc')).toThrow('adminUsers must contain at least one user');
+    expect(() => AuthConfig.addOidcConfigToJenkinsYaml(emptyYml, 'github', [])).toThrow('adminUsers must contain at least one user');
   });
 });
 
@@ -79,7 +85,7 @@ describe('Test authType github', () => {
 
     // Check admin users
     const adminUsers = adminRole.entries.map((entry: any) => entry.user);
-    expect(adminUsers).toEqual(['admin', 'foo', 'bar']);
+    expect(adminUsers).toEqual(['foo', 'bar']);
   });
 
   test('Verify read only access', async () => {
