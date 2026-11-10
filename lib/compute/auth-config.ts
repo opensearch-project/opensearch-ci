@@ -33,8 +33,6 @@ export class AuthConfig {
     'Credentials/Update',
     'Credentials/View',
     'Credentials/Create',
-    'Manage ownership/Nodes',
-    'Manage ownership/Jobs',
     'Agent/Configure',
     'Agent/Create',
     'Agent/Build',
