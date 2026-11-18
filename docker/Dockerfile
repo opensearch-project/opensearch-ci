@@ -1,6 +1,6 @@
 FROM jenkins/jenkins:2.580.2-lts-jdk21
 LABEL maintainer="OpenSearch"
-ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false -XX:-UseBASE64Intrinsics"
 COPY plugins.txt plugins.txt
 USER 0
 ARG DEBIAN_FRONTEND=noninteractive
