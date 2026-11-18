@@ -11,7 +11,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "postbuild": "eslint --fix \"bin/**/*.ts\" \"lib/**/*.ts\" \"test/**/*.ts\" --ignore-pattern \"**/*.d.ts\" && jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "update-github-ips": "ts-node --prefer-ts-exts bin/update-github-ips.ts"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.130",
